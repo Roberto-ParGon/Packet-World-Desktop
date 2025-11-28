@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="PacketWorld.jnlp">
+  <information>
+    <title>PacketWorld</title>
+    <vendor>Lenovo</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="PacketWorld.jar" size="457252" download="eager" />
+    <jar href="lib\animateFX-1.2.2.jar" size="96551" download="eager" />
+    <jar href="lib\controlsfx-8.40.17-javadoc.jar" size="2767515" download="eager" />
+    <jar href="lib\controlsfx-8.40.18.jar" size="1436095" download="eager" />
+  </resources>
+  <jfx:javafx-desc  width="800" height="600" main-class="packetworld.PacketWorld"  name="PacketWorld" />
+  <update check="always"/>
+</jnlp>
