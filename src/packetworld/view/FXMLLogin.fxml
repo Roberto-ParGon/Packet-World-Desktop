@@ -11,11 +11,9 @@
     <left>
         <VBox alignment="CENTER" spacing="50" prefWidth="960" styleClass="left-pane">
             <children>
-
                 <Label styleClass="title-label" text="Inicio de sesión" />
-
                 <Label styleClass="subtitle-label" text="Por favor, inserte sus credenciales para iniciar sesión" />
-                
+
                 <VBox alignment="CENTER_LEFT" spacing="30" maxWidth="400">
                     <children>
                         <VBox spacing="5">
@@ -23,7 +21,7 @@
                                 <Label styleClass="field-label" text="Número de Personal" />
                                 <TextField fx:id="personalNumberField" promptText="PN000000" styleClass="text-field" />
                                 <Label fx:id="personalNumberError" text="No se puede dejar el campo vacío"
-                                       styleClass="error-label" visible="true"/>
+                                       styleClass="error-label" visible="false"/>
                             </children>
                         </VBox>
                         <VBox spacing="5">
@@ -31,14 +29,18 @@
                                 <Label styleClass="field-label" text="Contraseña" />
                                 <PasswordField fx:id="passwordField" promptText="********" styleClass="password-field" />
                                 <Label fx:id="passwordError" text="No se puede dejar el campo vacío"
-                                       styleClass="error-label" visible="true"/>
+                                       styleClass="error-label" visible="false"/>
                             </children>
                         </VBox>
                     </children>
                 </VBox>
+
                 <Button onAction="#handleLogin" styleClass="login-button" text="Iniciar Sesión" maxWidth="300"/>
+                <Label fx:id="loginError" text="Número de Personal y/o Contraseña incorrectas"
+                       styleClass="error-label" visible="false"/>
             </children>
-        </VBox> 
+        </VBox>
+
     </left>
 
     <center>

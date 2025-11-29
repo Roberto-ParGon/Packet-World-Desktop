@@ -24,6 +24,7 @@ public class Utility {
     public static void createNotification(String message, NotificationType type) {
         Label content = new Label(message);
         content.getStyleClass().add("notification-label");
+        content.setStyle("-fx-font-size: 28px;");
         content.setContentDisplay(ContentDisplay.RIGHT);
 
         Image icon = type.getIcon();

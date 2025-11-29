@@ -52,13 +52,13 @@
     -fx-cursor: hand;
     -fx-padding: 16px;
 }
-.login-button:hover {
+.login-button:hover, .login-button:focused{
     -fx-background-color: -fx-success-color-selected;
 }
 
 .error-label {
-    -fx-text-fill: #FF6F61;
-    -fx-font-size: 18px;
+    -fx-text-fill: #F44336;
+    -fx-font-size: 20px;
     -fx-font-style: italic;
     -fx-padding: 2px 0 0 0;
 }

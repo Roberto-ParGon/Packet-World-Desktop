@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import packetworld.utility.NotificationType;
@@ -24,30 +25,65 @@ public class FXMLLoginController implements Initializable {
     private PasswordField passwordField;
     @FXML
     private TextField personalNumberField;
+    @FXML
+    private Label personalNumberError;
+    @FXML
+    private Label passwordError;
+    @FXML
+    private Label loginError;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        hideAllErrors();
     }
 
     @FXML
     private void handleLogin(ActionEvent event) {
-        /* Pruebas de Notification
-        Utility.createNotification("Prueba de Confirmación", NotificationType.CONFIRMATION);
-        Utility.createNotification("Prueba de Eliminar", NotificationType.DELETE);
-        Utility.createNotification("Prueba de Fallo", NotificationType.FAILURE);
-        Utility.createNotification("Prueba de Información", NotificationType.INFORMATION);
-        Utility.createNotification("Prueba de Conseguido", NotificationType.SUCCESS);
-         */
+        hideAllErrors();
 
-        /*Pruebas de Alert
-        Utility.createAlert("Prueba de Eliminar", "Prueba de Eliminar", NotificationType.DELETE);
-        Utility.createAlert("Prueba de Confirmación", "Prueba de confirmación", NotificationType.CONFIRMATION);
-        Utility.createAlert("Prueba de Fallo", "Prueba de Fallo", NotificationType.FAILURE);
-        Utility.createAlert("Prueba de Información", "Prueba de Información", NotificationType.INFORMATION);
-        Utility.createAlert("Prueba de Realizado", "Prueba de Realizado", NotificationType.SUCCESS);
-        */
+        if (!validateInputs()) {
+            return;
+        }
 
+        if (authenticate(personalNumberField.getText(), passwordField.getText())) {
+            Utility.createNotification("Inicio de sesión exitoso", NotificationType.SUCCESS);
+            loginError.setVisible(false);
+
+        } else {
+            loginError.setVisible(true);
+        }
     }
 
+    private boolean validateInputs() {
+        boolean valid = true;
+
+        if (isEmpty(personalNumberField)) {
+            personalNumberError.setVisible(true);
+            valid = false;
+        }
+
+        if (isEmpty(passwordField)) {
+            passwordError.setVisible(true);
+            valid = false;
+        }
+        return valid;
+    }
+
+    private boolean isEmpty(TextField field) {
+        return field.getText() == null || field.getText().trim().isEmpty();
+    }
+
+    private boolean isEmpty(PasswordField field) {
+        return field.getText() == null || field.getText().trim().isEmpty();
+    }
+
+    private void hideAllErrors() {
+        personalNumberError.setVisible(false);
+        passwordError.setVisible(false);
+        loginError.setVisible(false);
+    }
+
+    private boolean authenticate(String personalNumber, String password) {
+        return "0".equals(personalNumber) && "0".equals(password);
+    }
 }
