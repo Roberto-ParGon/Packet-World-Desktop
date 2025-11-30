@@ -3,13 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/PacketWorld.java</file>
-            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/utility/NotificationType.java</file>
-            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/utility/Utility.java</file>
-            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/resources/styles/styles.css</file>
-            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/resources/styles/login.css</file>
             <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/controller/FXMLLoginController.java</file>
-            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/view/FXMLLogin.fxml</file>
+            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/view/FXMLDashboard.fxml</file>
+            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/view/FXMLCollaborators.fxml</file>
+            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/resources/styles/dashboard.css</file>
+            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/controller/FXMLDashboardController.java</file>
+            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/controller/FXMLCollaboratorsController.java</file>
+            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/controller/FXMLUnitsController.java</file>
+            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/view/FXMLUnits.fxml</file>
         </group>
     </open-files>
 </project-private>

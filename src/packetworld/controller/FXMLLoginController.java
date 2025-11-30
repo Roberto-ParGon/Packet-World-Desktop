@@ -4,14 +4,20 @@
  */
 package packetworld.controller;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
 import packetworld.utility.NotificationType;
 import packetworld.utility.Utility;
 
@@ -46,8 +52,24 @@ public class FXMLLoginController implements Initializable {
         }
 
         if (authenticate(personalNumberField.getText(), passwordField.getText())) {
-            Utility.createNotification("Inicio de sesión exitoso", NotificationType.SUCCESS);
             loginError.setVisible(false);
+            try {
+                Parent root = FXMLLoader.load(getClass().getResource("/packetworld/view/FXMLDashboard.fxml"));
+                Scene dashboardScene = new Scene(root);
+                Stage dashboardStage = new Stage();
+                dashboardStage.setScene(dashboardScene);
+                dashboardStage.setTitle("Panel de Control");
+                dashboardStage.getIcons().add(new Image(getClass().getResourceAsStream("/packetworld/resources/icons/icon.png")));
+                dashboardStage.setMaximized(true);
+                dashboardStage.show();
+
+                Stage currentStage = (Stage) personalNumberField.getScene().getWindow();
+                currentStage.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                Utility.createNotification("Error al cargar el Dashboard", NotificationType.FAILURE);
+            }
 
         } else {
             loginError.setVisible(true);

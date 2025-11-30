@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="packetworld.controller.FXMLCollaboratorsController"
+            style="-fx-background-color: #F4F6F9;" prefHeight="1080.0" prefWidth="1640.0">
+            <children>
+        <HBox alignment="CENTER_LEFT" prefHeight="120" styleClass="header-banner" 
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets left="30.0" />
+            </padding>
+            <children>
+                <Label text="Colaboradores" styleClass="view-title" />
+            </children>
+        </HBox>
+
+        <HBox spacing="15.0" alignment="CENTER_LEFT" 
+              AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="150.0">
+            <children>
+                <HBox alignment="CENTER_LEFT" styleClass="search-box" HBox.hgrow="ALWAYS" maxWidth="400.0">
+                    <children>
+                        <Label text="≡" styleClass="search-icon-filter"/>
+                            
+                        <TextField fx:id="searchField" promptText="Buscar Colaborador (Nombre o Número)" 
+                                   styleClass="transparent-textfield" HBox.hgrow="ALWAYS"/>
+                        
+                        <Label text="🔍" styleClass="search-icon"/>
+                    </children>
+                </HBox>
+                
+                <Pane HBox.hgrow="SOMETIMES" maxWidth="20.0"/>
+
+                <Button text="Añadir Colaborador  👤+" onAction="#handleAddCollaborator" styleClass="action-button, btn-green" />
+                <Button text="Editar Colaborador  ✎" onAction="#handleEditCollaborator" styleClass="action-button, btn-blue" disable="true" />
+                <Button text="Asignar  🏷" onAction="#handleAssignCollaborator" styleClass="action-button, btn-orange" />
+                <Button text="Eliminar Colaborador  ✕" onAction="#handleDeleteCollaborator" styleClass="action-button, btn-red" disable="true" />
+            </children>
+        </HBox>
+
+        <TableView fx:id="tvCollaborators" styleClass="custom-table"
+                   AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0"
+                   AnchorPane.topAnchor="220.0" AnchorPane.bottomAnchor="30.0">
+            <columns>
+                <TableColumn fx:id="colName" text="Nombre" />
+                <TableColumn fx:id="colLastname" text="Apellido Paterno" />
+                <TableColumn fx:id="colSurname" text="Apellido Materno" />
+                <TableColumn fx:id="colCurp" text="CURP" />
+                <TableColumn fx:id="colEmail" text="Correo Electrónico" />
+                <TableColumn fx:id="colpersonalNumber" text="Número de Personal" />
+                <TableColumn fx:id="colRole" text="Rol" />
+                <TableColumn fx:id="colStore" text="Sucursal" />
+                <TableColumn fx:id="colLicense" text="Licencia" />
+            </columns>
+            
+        </TableView>
+    </children>
+
+    <stylesheets>
+        <URL value="@../resources/styles/collaborators.css"/>
+    </stylesheets>
+</AnchorPane>
