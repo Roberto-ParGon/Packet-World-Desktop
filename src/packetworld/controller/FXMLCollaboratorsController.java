@@ -4,15 +4,22 @@
  */
 package packetworld.controller;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -54,7 +61,17 @@ public class FXMLCollaboratorsController implements Initializable {
     }    
 
     @FXML
-    private void handleAddCollaborator(ActionEvent event) {
+    private void handleAddCollaborator(ActionEvent event) throws IOException {
+        
+         Parent root = FXMLLoader.load(getClass().getResource("/packetworld/view/FXMLCollaboratorForm.fxml"));
+                Scene collaboratorScene = new Scene(root);
+                Stage collaboratorStage = new Stage();
+                collaboratorStage.initModality(Modality.APPLICATION_MODAL);
+                collaboratorStage.setScene(collaboratorScene);
+                collaboratorStage.setTitle("Formulario de Colaborador");
+                collaboratorStage.getIcons().add(new Image(getClass().getResourceAsStream("/packetworld/resources/icons/icon.png")));
+                collaboratorStage.showAndWait();
+        
     }
 
     @FXML

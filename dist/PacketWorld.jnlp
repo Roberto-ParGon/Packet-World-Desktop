@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="PacketWorld.jar" size="468537" download="eager" />
+    <jar href="PacketWorld.jar" size="478815" download="eager" />
     <jar href="lib\animateFX-1.2.2.jar" size="96551" download="eager" />
     <jar href="lib\controlsfx-8.40.17-javadoc.jar" size="2767515" download="eager" />
     <jar href="lib\controlsfx-8.40.18.jar" size="1436095" download="eager" />

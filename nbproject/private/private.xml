@@ -11,6 +11,9 @@
             <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/controller/FXMLCollaboratorsController.java</file>
             <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/controller/FXMLUnitsController.java</file>
             <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/view/FXMLUnits.fxml</file>
+            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/view/FXMLCollaboratorForm.fxml</file>
+            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/controller/FXMLCollaboratorFormController.java</file>
+            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/resources/styles/collaboratorform.css</file>
         </group>
     </open-files>
 </project-private>
