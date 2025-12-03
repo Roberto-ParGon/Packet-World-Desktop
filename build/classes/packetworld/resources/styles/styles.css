@@ -13,8 +13,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
 }
 
 .notification-label{
+    -fx-font-size: 32px !important;
+    -fx-background-color: #FAFAFA;
     -fx-font-weight: bold;
-    -fx-padding: 24px;
+    -fx-padding: 26px !important;
 }
 
 .custom-alert-failure{

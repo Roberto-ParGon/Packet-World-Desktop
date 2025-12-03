@@ -11,7 +11,7 @@
 <AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="packetworld.controller.FXMLCollaboratorsController"
             style="-fx-background-color: #F4F6F9;" prefHeight="1080.0" prefWidth="1640.0">
-            <children>
+    <children>
         <HBox alignment="CENTER_LEFT" prefHeight="120" styleClass="header-banner" 
               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <padding>
@@ -39,9 +39,9 @@
                 <Pane HBox.hgrow="SOMETIMES" maxWidth="20.0"/>
 
                 <Button text="Añadir Colaborador  👤+" onAction="#handleAddCollaborator" styleClass="action-button, btn-green" />
-                <Button text="Editar Colaborador  ✎" onAction="#handleEditCollaborator" styleClass="action-button, btn-blue" disable="true" />
-                <Button text="Asignar  🏷" onAction="#handleAssignCollaborator" styleClass="action-button, btn-orange" />
-                <Button text="Eliminar Colaborador  ✕" onAction="#handleDeleteCollaborator" styleClass="action-button, btn-red" disable="true" />
+                <Button fx:id="btnEdit" text="Editar Colaborador  ✎" onAction="#handleEditCollaborator" styleClass="action-button, btn-blue" disable="false" />
+                <Button fx:id="btnAssign" text="Asignar  🏷" onAction="#handleAssignCollaborator" styleClass="action-button, btn-orange" />
+                <Button fx:id="btnDelete" text="Eliminar Colaborador  ✕" onAction="#handleDeleteCollaborator" styleClass="action-button, btn-red" disable="false" />
             </children>
         </HBox>
 

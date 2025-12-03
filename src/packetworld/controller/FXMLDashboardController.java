@@ -1,6 +1,6 @@
 package packetworld.controller;
 
-import animatefx.animation.FadeIn; // <--- Importante: Importar la animación
+import animatefx.animation.FadeIn;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
@@ -50,8 +50,6 @@ public class FXMLDashboardController implements Initializable {
         menuButtons = Arrays.asList(btnCollaborators, btnUnits, btnStores, btnCustomers, btnDeliveries, btnPackages);
 
         loadView("/packetworld/view/FXMLCollaborators.fxml");
-
-      //  btnCollaborators.getStyleClass().add("menu-button-active");
     }
 
     @FXML
@@ -70,25 +68,25 @@ public class FXMLDashboardController implements Initializable {
     @FXML
     private void handleStoresMenu(ActionEvent event) {
         setActiveMenuButton(btnStores);
-        // loadView("/packetworld/view/FXMLSucursales.fxml");
+        // loadView("/packetworld/view/FXMLStores.fxml");
     }
 
     @FXML
     private void handleCustomersMenu(ActionEvent event) {
         setActiveMenuButton(btnCustomers);
-        // loadView("/packetworld/view/FXMLClientes.fxml");
+        // loadView("/packetworld/view/FXMLCustomers.fxml");
     }
 
     @FXML
     private void handleDeliveriesMenu(ActionEvent event) {
         setActiveMenuButton(btnDeliveries);
-        // loadView("/packetworld/view/FXMLEnvios.fxml");
+        // loadView("/packetworld/view/FXMLDeliveries.fxml");
     }
 
     @FXML
     private void handlePackpagesMenu(ActionEvent event) {
         setActiveMenuButton(btnPackages);
-        // loadView("/packetworld/view/FXMLPaquetes.fxml");
+        // loadView("/packetworld/view/FXMLPackages.fxml");
     }
 
     @FXML
@@ -99,11 +97,11 @@ public class FXMLDashboardController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Node view = loader.load();
-            
+
             contentArea.getChildren().clear();
             contentArea.getChildren().add(view);
-            
-            new FadeIn(contentArea).play(); 
+
+            new FadeIn(contentArea).play();
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Error al cargar la vista: " + fxmlPath);
@@ -114,7 +112,7 @@ public class FXMLDashboardController implements Initializable {
         for (Button btn : menuButtons) {
             btn.getStyleClass().remove("menu-button-active");
         }
-        
+
         if (!selectedButton.getStyleClass().contains("menu-button-active")) {
             selectedButton.getStyleClass().add("menu-button-active");
 

@@ -11,16 +11,16 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="packetworld.controller.FXMLCollaboratorFormController"
-            prefHeight="700.0" prefWidth="900.0" styleClass="modal-root">
+            prefHeight="780.0" prefWidth="900.0" styleClass="modal-root">
 
     <children>
-        <HBox alignment="CENTER_LEFT" prefHeight="70.0" styleClass="modal-header"
+        <HBox fx:id="headerContainer" alignment="CENTER_LEFT" prefHeight="70.0" styleClass="modal-header"
               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <padding>
                 <Insets left="30.0" />
             </padding>
             <children>
-                <Label text="Registro de Colaborador" styleClass="modal-title" />
+                <Label fx:id="lblTitle" text="Registrar Colaborador" styleClass="modal-title" />
             </children>
         </HBox>
 

@@ -24,12 +24,18 @@ public class Utility {
     public static void createNotification(String message, NotificationType type) {
         Label content = new Label(message);
         content.getStyleClass().add("notification-label");
-        content.setStyle("-fx-font-size: 28px;");
         content.setContentDisplay(ContentDisplay.RIGHT);
+
+        try {
+            content.getStylesheets().add(Utility.class.getResource(STYLESHEET).toExternalForm());
+        } catch (Exception e) {
+            System.err.println("Error al cargar estilos para notificación: " + e.getMessage());
+        }
 
         Image icon = type.getIcon();
         if (icon != null) {
             content.setGraphic(new ImageView(icon));
+            content.setGraphicTextGap(22);
         }
 
         Notifications.create()
