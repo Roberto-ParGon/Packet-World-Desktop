@@ -105,11 +105,13 @@ public class FXMLCollaboratorsController implements Initializable {
     private void configureTableSelection() {
         btnEdit.setDisable(true);
         btnDelete.setDisable(true);
+        btnAssign.setDisable(true);
         tvCollaborators.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             boolean isSelected = (newSelection != null);
 
             btnEdit.setDisable(!isSelected);
             btnDelete.setDisable(!isSelected);
+            btnAssign.setDisable(!isSelected);
         });
 
     }
@@ -132,6 +134,17 @@ public class FXMLCollaboratorsController implements Initializable {
 
     @FXML
     private void handleAssignCollaborator(ActionEvent event) {
+        Collaborator selected = tvCollaborators.getSelectionModel().getSelectedItem();
+
+        if (selected != null) {
+            if ("Conductor".equalsIgnoreCase(selected.getRole())) {
+                openAssignModal(selected);
+            } else {
+                Utility.createAlert("Rol Incorrecto", "Solo se pueden asignar vehículos a colaboradores con el rol de 'Conductor'.", NotificationType.FAILURE);
+            }
+        } else {
+            Utility.createAlert("Selección Requerida", "Selecciona un conductor de la lista.", NotificationType.FAILURE);
+        }
     }
 
     @FXML
@@ -182,6 +195,38 @@ public class FXMLCollaboratorsController implements Initializable {
         } catch (IOException ex) {
             ex.printStackTrace();
             System.err.println("Error al abrir el formulario: " + ex.getMessage());
+        }
+    }
+
+    private void openAssignModal(Collaborator driver) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/packetworld/view/FXMLAssignVehicle.fxml"));
+            Parent root = loader.load();
+
+            FXMLAssignVehicleController controller = loader.getController();
+            controller.initData(driver);
+
+            Scene scene = new Scene(root);
+            scene.setFill(Color.TRANSPARENT);
+
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage.initStyle(StageStyle.TRANSPARENT);
+            stage.initModality(Modality.APPLICATION_MODAL);
+
+            ZoomIn zoomIn = new ZoomIn(root);
+            zoomIn.setSpeed(1.5);
+            zoomIn.play();
+
+            stage.showAndWait();
+
+            if (controller.isOperationSuccess()) {
+                Utility.createNotification("Vehículo asignado exitosamente", NotificationType.SUCCESS);
+            }
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            System.err.println("Error al abrir asignación: " + ex.getMessage());
         }
     }
 

@@ -40,7 +40,7 @@
 
                 <Button text="Añadir Colaborador  👤+" onAction="#handleAddCollaborator" styleClass="action-button, btn-green" />
                 <Button fx:id="btnEdit" text="Editar Colaborador  ✎" onAction="#handleEditCollaborator" styleClass="action-button, btn-blue" disable="false" />
-                <Button fx:id="btnAssign" text="Asignar  🏷" onAction="#handleAssignCollaborator" styleClass="action-button, btn-orange" />
+                <Button fx:id="btnAssign" text="Asignar  🏷" onAction="#handleAssignCollaborator" styleClass="action-button, btn-orange" disable="false"/>
                 <Button fx:id="btnDelete" text="Eliminar Colaborador  ✕" onAction="#handleDeleteCollaborator" styleClass="action-button, btn-red" disable="false" />
             </children>
         </HBox>
