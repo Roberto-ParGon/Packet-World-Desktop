@@ -147,11 +147,23 @@ public class FXMLCollaboratorsController implements Initializable {
         }
     }
 
-    @FXML
+@FXML
     private void handleDeleteCollaborator(ActionEvent event) {
         Collaborator selected = tvCollaborators.getSelectionModel().getSelectedItem();
+        
         if (selected != null) {
+            String mensaje = "¿Está seguro que desea eliminar al colaborador " 
+                    + selected.getPersonalNumber() + ": " 
+                    + selected.getName() + " " + selected.getLastname() + " " + selected.getSurname() + "?\n"
+                    + "Recuerde que esta acción es irreversible.";
 
+            boolean confirmarEliminacion = Utility.createAlert("Eliminar Colaborador", mensaje, NotificationType.DELETE);
+
+            if (confirmarEliminacion) {
+                collaboratorsList.remove(selected);
+                
+                Utility.createNotification("Colaborador eliminado exitosamente", NotificationType.DELETE);
+            }
         }
     }
 

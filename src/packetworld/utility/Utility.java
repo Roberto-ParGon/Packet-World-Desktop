@@ -46,10 +46,13 @@ public class Utility {
                 .show();
     }
 
-    public static void createAlert(String title, String message, NotificationType type) {
+    public static boolean createAlert(String title, String message, NotificationType type) {
         Alert alert = buildAlert(title, message, type);
         configureAlert(alert, type);
-        alert.showAndWait();
+
+        java.util.Optional<ButtonType> result = alert.showAndWait();
+
+        return result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.APPLY;
     }
 
     private static Alert buildAlert(String title, String message, NotificationType type) {
