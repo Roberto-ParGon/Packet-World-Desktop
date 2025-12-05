@@ -19,11 +19,12 @@
             </children>
         </VBox>
 
-        <VBox alignment="CENTER_LEFT" spacing="20.0" 
-              AnchorPane.topAnchor="100.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+        <VBox alignment="CENTER" spacing="20.0" 
+              AnchorPane.topAnchor="80.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
             <children>
                 
-                <Label fx:id="lblMessage" wrapText="true" textAlignment="CENTER" maxWidth="400.0"
+                <Label fx:id="lblMessage" wrapText="true" 
+                       textAlignment="CENTER" alignment="CENTER" maxWidth="Infinity"
                        text="¿A qué vehículo desea asignarle el conductor Nombre Apellido?" 
                        style="-fx-font-size: 16px; -fx-text-fill: #424242;"/>
                 
@@ -37,8 +38,8 @@
             </children>
         </VBox>
 
-        <HBox spacing="20.0" alignment="CENTER" prefHeight="70.0"
-              AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <HBox spacing="35.0" alignment="BASELINE_RIGHT" prefHeight="70.0"
+              AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="50">
             <children>
                 <Button fx:id="btnCancel" text="Cancelar" onAction="#handleCancel" 
                         styleClass="button-cancel" prefWidth="120.0" />

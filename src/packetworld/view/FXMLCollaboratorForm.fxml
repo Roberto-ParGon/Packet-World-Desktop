@@ -28,7 +28,7 @@
               AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0">
             <children>
                 
-                <VBox alignment="TOP_CENTER" spacing="20.0" prefWidth="250.0" styleClass="photo-container">
+                <VBox alignment="TOP_CENTER" spacing="15.0" prefWidth="250.0" styleClass="photo-container">
                     <children>
                         <Label text="Fotografía de Perfil" styleClass="section-label"/>
                         
@@ -43,6 +43,12 @@
                         
                         <Button fx:id="btnSelectPhoto" text="Seleccionar Fotografía 📷" 
                                 onAction="#handlePhotoSelection" styleClass="secondary-button" maxWidth="Infinity"/>
+
+                        <Label text="Por favor, procura que tu imagen no pese más de 1MB, y que no pase de los 512px x 512px" 
+                               wrapText="true" 
+                               textAlignment="CENTER" 
+                               maxWidth="230.0"
+                               styleClass="image-info-label"/>
                     </children>
                 </VBox>
 
@@ -109,10 +115,10 @@
             </children>
         </HBox>
 
-        <HBox spacing="15.0" alignment="CENTER_RIGHT" prefHeight="70.0"
+        <HBox spacing="35.0" alignment="CENTER_RIGHT" prefHeight="70.0"
               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <padding>
-                <Insets right="40.0" />
+                <Insets right="40.0" bottom="40.0" />
             </padding>
             <children>
                 <Button fx:id="btnCancel" text="Cancelar" onAction="#handleCancel" styleClass="button-cancel" />

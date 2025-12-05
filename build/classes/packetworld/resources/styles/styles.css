@@ -40,9 +40,20 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
 }
 
 .alert-btn-cancel{
+    -fx-background-color: #E0E0E0;
+    -fx-text-fill: #424242;
+    -fx-cursor: hand;
+}
 
+.alert-btn-cancel:hover, alert-btn-cancer:focused{
+    -fx-background-color: #BDBDBD;
 }
 
 .alert-btn-delete{
     -fx-background-color: -fx-failure-color;
+    -fx-cursor: hand;
+}
+
+.alert-btn-delete:hover, .alert-btn-delete:focused {
+    -fx-background-color: #FE7268;
 }

@@ -7,13 +7,13 @@
 }
 
 .root {
-    -fx-font-family: 'Segoe UI', sans-serif;
+    -fx-font-family: 'Inter', sans-serif;
 }
 
 .modal-root {
     -fx-background-color: #FFFFFF;
     -fx-border-color: #1E2240;
-    -fx-border-width: 1px;
+    -fx-border-width: 2px;
 }
 
 .modal-header {
@@ -27,13 +27,13 @@
 }
 
 .section-label {
-    -fx-font-size: 16px;
+    -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-text-fill: #1E2240;
 }
 
 .field-label {
-    -fx-font-size: 13px;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-text-fill: #616161;
 }
@@ -95,4 +95,10 @@
 }
 .button-cancel:hover {
     -fx-background-color: #BDBDBD;
+}
+.image-info-label{
+    -fx-font-style: italic;
+     -fx-text-fill: #757575; 
+     -fx-font-size: 18px;
+     -fx-padding: 24px;    
 }

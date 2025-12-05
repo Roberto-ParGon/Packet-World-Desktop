@@ -82,18 +82,13 @@
     -fx-table-cell-border-color: transparent;
 }
 
-/* --- ENCABEZADO --- */
 .custom-table .column-header-background {
     -fx-background-color: #9FA8DA;
     -fx-background-radius: 5px 5px 0 0;
 }
 
 .custom-table .column-header {
-    /* Fondo transparente */
     -fx-background-color: transparent;
-    
-    /* Simulación de borde derecho usando bordes internos estrictos */
-    /* Color de la línea separadora */
     -fx-border-color: transparent #8C96C5 transparent transparent;
     -fx-border-width: 0 1px 0 0;
     -fx-padding: 12px;
@@ -106,11 +101,6 @@
     -fx-alignment: CENTER;
 }
 
-/* --- CELDAS (SOLUCIÓN AL DESFASE) --- */
-/* El truco: Pintamos dos fondos. 
-   1. El primero (#E0E0E0) actúa como el borde derecho e inferior.
-   2. El segundo (white) es el relleno, que tapamos 1px a la derecha y abajo. */
-
 .custom-table .table-row-cell {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
@@ -118,40 +108,27 @@
 }
 
 .custom-table .table-cell {
-    /* Capa 1: Color de la línea divisoria (#E0E0E0) */
-    /* Capa 2: Color del fondo de la celda (White) */
     -fx-background-color: #E0E0E0, white;
-    
-    /* Capa 1: Ocupa todo el espacio (0) */
-    /* Capa 2: Se encoge 1px a la derecha y 1px abajo (0 1 1 0) para revelar la capa 1 */
     -fx-background-insets: 0, 0 1 1 0;
-    
     -fx-padding: 10px;
     -fx-alignment: CENTER;
     -fx-text-fill: #424242;
     -fx-font-size: 13px;
-    
-    /* IMPORTANTE: Aseguramos que no haya bordes reales que sumen anchura */
     -fx-border-width: 0;
 }
 
-/* Filas impares (Zebra) */
 .custom-table .table-row-cell:odd .table-cell {
-    /* Mismo truco: Línea gris (#E0E0E0) y Fondo Gris Claro (#FAFAFA) */
     -fx-background-color: #E0E0E0, #FAFAFA;
     -fx-background-insets: 0, 0 1 1 0;
 }
 
-/* Fila Seleccionada */
 .custom-table .table-row-cell:selected .table-cell {
-    /* Línea gris y Fondo de Selección (#E8EAF6) */
     -fx-background-color: #E0E0E0, #E8EAF6;
     -fx-background-insets: 0, 0 1 1 0;
     -fx-text-fill: black;
 }
 
-/* Quitar la línea de la última columna para limpieza visual */
 .custom-table .table-column:last-visible .table-cell {
-    -fx-background-color: white; /* O el color que corresponda par/impar */
-    -fx-background-insets: 0 0 1 0; /* Solo línea abajo */
+    -fx-background-color: white;
+    -fx-background-insets: 0 0 1 0;
 }

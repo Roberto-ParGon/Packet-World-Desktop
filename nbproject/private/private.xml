@@ -4,12 +4,16 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/controller/FXMLCollaboratorsController.java</file>
-            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/view/FXMLAssignVehicle.fxml</file>
             <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/controller/FXMLAssignVehicleController.java</file>
             <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/view/FXMLCollaborators.fxml</file>
             <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/utility/Utility.java</file>
             <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/utility/NotificationType.java</file>
             <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/controller/FXMLCollaboratorFormController.java</file>
+            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/resources/styles/collaborators.css</file>
+            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/view/FXMLAssignVehicle.fxml</file>
+            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/resources/styles/styles.css</file>
+            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/resources/styles/collaboratorform.css</file>
+            <file>file:/C:/Users/Lenovo/Documents/Escolar/Integracion/ProyectoFinal/PacketWorld/src/packetworld/resources/styles/login.css</file>
         </group>
     </open-files>
 </project-private>
