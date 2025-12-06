@@ -27,10 +27,12 @@
             <children>
                 <HBox alignment="CENTER_LEFT" styleClass="search-box" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                     <children>
-                        <Label text="≡" styleClass="search-icon-filter"/>
-                        <TextField fx:id="searchField" promptText="Buscar Colaborador (Nombre o Número)" 
+                        <Label fx:id="lblFilter" text="≡" styleClass="search-icon-filter" onMouseClicked="#handleFilterIconClick"/>
+        
+                        <TextField fx:id="searchField" promptText="Buscar Colaborador (Nombre Completo, Número de Personal o Rol)" 
                                    styleClass="transparent-textfield" HBox.hgrow="ALWAYS"/>
-                        <Label text="🔍" styleClass="search-icon"/>
+        
+                        <Label fx:id="lblSearch" text="×" styleClass="search-icon" onMouseClicked="#handleDeleteSearch"/>
                     </children>
                 </HBox>
         
