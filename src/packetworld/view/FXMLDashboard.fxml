@@ -29,22 +29,22 @@
                         <Insets top="30.0" right="20.0" bottom="20.0" left="20.0"/>
                     </padding>
                     <children>
-                        <Button fx:id="btnCollaborators" text="Colaboradores 👤" onAction="#handleCollaboratorsMenu" 
+                        <Button fx:id="btnCollaborators" text="👤 Colaboradores" onAction="#handleCollaboratorsMenu" 
                                 maxWidth="Infinity" styleClass="menu-button, menu-button-active"/>
                         
-                        <Button fx:id="btnUnits" text="Unidades 🚛" onAction="#handleUnitsMenu" 
+                        <Button fx:id="btnUnits" text="🚛 Unidades" onAction="#handleUnitsMenu" 
                                 maxWidth="Infinity" styleClass="menu-button"/>
                                 
-                        <Button fx:id="btnStores" text="Sucursales 🏛" onAction="#handleStoresMenu" 
+                        <Button fx:id="btnStores" text="🏛 Sucursales" onAction="#handleStoresMenu" 
                                 maxWidth="Infinity" styleClass="menu-button"/>
                                 
-                        <Button fx:id="btnCustomers" text="Clientes 👥" onAction="#handleCustomersMenu" 
+                        <Button fx:id="btnCustomers" text="👥 Clientes" onAction="#handleCustomersMenu" 
                                 maxWidth="Infinity" styleClass="menu-button"/>
                                 
-                        <Button fx:id="btnDeliveries" text="Envíos 🚚" onAction="#handleDeliveriesMenu" 
+                        <Button fx:id="btnDeliveries" text="🚚 Envíos" onAction="#handleDeliveriesMenu" 
                                 maxWidth="Infinity" styleClass="menu-button"/>
                                 
-                        <Button fx:id="btnPackages" text="Paquetes 📦" onAction="#handlePackpagesMenu" 
+                        <Button fx:id="btnPackages" text="📦 Paquetes" onAction="#handlePackpagesMenu" 
                                 maxWidth="Infinity" styleClass="menu-button"/>
 
                         <Pane VBox.vgrow="ALWAYS"/>

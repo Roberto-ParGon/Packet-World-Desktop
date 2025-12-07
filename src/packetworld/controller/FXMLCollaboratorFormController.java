@@ -1,6 +1,5 @@
 package packetworld.controller;
 
-import animatefx.animation.ZoomOut;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -229,14 +228,6 @@ public class FXMLCollaboratorFormController implements Initializable {
     private void closeWindow() {
         Stage stage = (Stage) btnCancel.getScene().getWindow();
         Node root = btnCancel.getScene().getRoot();
-        ZoomOut zoomOutAnimation = new ZoomOut(root);
-
-        zoomOutAnimation.setSpeed(1.7);
-
-        zoomOutAnimation.setOnFinished(event -> {
-            stage.close();
-        });
-
-        zoomOutAnimation.play();
+        Utility.animateExit(root, stage);
     }
 }

@@ -4,8 +4,6 @@
  */
 package packetworld.controller;
 
-import animatefx.animation.ZoomIn;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
@@ -14,10 +12,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -28,11 +23,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-
-import javafx.scene.paint.Color;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import packetworld.pojo.Collaborator;
 import packetworld.utility.NotificationType;
 import packetworld.utility.Utility;
@@ -48,8 +38,6 @@ public class FXMLCollaboratorsController implements Initializable {
     private TextField searchField;
     @FXML
     private Label lblFilter;
-    @FXML
-    private Label lblSearch;
     @FXML
     private TableColumn<Collaborator, String> colCurp;
     @FXML
@@ -70,7 +58,6 @@ public class FXMLCollaboratorsController implements Initializable {
     private TableColumn<Collaborator, String> colStore;
     @FXML
     private TableColumn<Collaborator, String> colLicense;
-
     @FXML
     private Button btnEdit;
     @FXML
@@ -154,7 +141,7 @@ public class FXMLCollaboratorsController implements Initializable {
                     case "Apellido Materno":
                         return collaborator.getSurname().toLowerCase().contains(lowerCaseFilter);
 
-                    case "No. Personal":
+                    case "Número de Personal":
                         return personalNumber.contains(lowerCaseFilter);
 
                     case "Rol":
@@ -184,19 +171,19 @@ public class FXMLCollaboratorsController implements Initializable {
         ToggleGroup group = new ToggleGroup();
 
         RadioMenuItem itemGeneral = createFilterOption("General (Todos los campos)", group, true);
-        RadioMenuItem itemNombre = createFilterOption("Nombre(s)", group, false);
-        RadioMenuItem itemPaterno = createFilterOption("Apellido Paterno", group, false);
-        RadioMenuItem itemMaterno = createFilterOption("Apellido Materno", group, false);
-        RadioMenuItem itemPersonal = createFilterOption("Número de Personal", group, false);
-        RadioMenuItem itemRol = createFilterOption("Rol", group, false);
+        RadioMenuItem itemName = createFilterOption("Nombre(s)", group, false);
+        RadioMenuItem itemLastname = createFilterOption("Apellido Paterno", group, false);
+        RadioMenuItem itemSurname = createFilterOption("Apellido Materno", group, false);
+        RadioMenuItem itemPersonalNumber = createFilterOption("Número de Personal", group, false);
+        RadioMenuItem itemRole = createFilterOption("Rol", group, false);
 
         contextMenu.getItems().addAll(
                 itemGeneral,
-                itemNombre,
-                itemPaterno,
-                itemMaterno,
-                itemPersonal,
-                itemRol
+                itemName,
+                itemLastname,
+                itemSurname,
+                itemPersonalNumber,
+                itemRole
         );
 
         contextMenu.show(lblFilter, event.getScreenX(), event.getScreenY());
@@ -246,7 +233,12 @@ public class FXMLCollaboratorsController implements Initializable {
 
     @FXML
     private void handleAddCollaborator(ActionEvent event) {
-        openModal(null);
+        Utility.<FXMLCollaboratorFormController>openAnimatedModal(
+                "/packetworld/view/FXMLCollaboratorForm.fxml",
+                null,
+                controller -> controller.isOperationSuccess(),
+                controller -> "Colaborador guardado exitosamente"
+        );
     }
 
     @FXML
@@ -254,7 +246,12 @@ public class FXMLCollaboratorsController implements Initializable {
         Collaborator selected = tvCollaborators.getSelectionModel().getSelectedItem();
 
         if (selected != null) {
-            openModal(selected);
+            Utility.<FXMLCollaboratorFormController>openAnimatedModal(
+                    "/packetworld/view/FXMLCollaboratorForm.fxml",
+                    controller -> controller.setCollaborator(selected),
+                    controller -> controller.isOperationSuccess(),
+                    controller -> "Colaborador editado exitosamente"
+            );
         } else {
             Utility.createAlert("No hay Colaborador Seleccionado", "Por favor, Seleccionar un Colaborador de la lista", NotificationType.INFORMATION);
         }
@@ -266,7 +263,12 @@ public class FXMLCollaboratorsController implements Initializable {
 
         if (selected != null) {
             if ("Conductor".equalsIgnoreCase(selected.getRole())) {
-                openAssignModal(selected);
+                Utility.<FXMLAssignVehicleController>openAnimatedModal(
+                        "/packetworld/view/FXMLAssignVehicle.fxml",
+                        controller -> controller.initData(selected),
+                        controller -> controller.isOperationSuccess(),
+                        controller -> "Vehículo asignado exitosamente"
+                );
             } else {
                 Utility.createAlert("Rol Incorrecto", "Solo se pueden asignar vehículos a colaboradores con el rol de 'Conductor'.", NotificationType.FAILURE);
             }
@@ -277,96 +279,21 @@ public class FXMLCollaboratorsController implements Initializable {
 
     @FXML
     private void handleDeleteCollaborator(ActionEvent event) {
-        Collaborator selected = tvCollaborators.getSelectionModel().getSelectedItem();
+        Collaborator selectedCollaborator = tvCollaborators.getSelectionModel().getSelectedItem();
 
-        if (selected != null) {
+        if (selectedCollaborator != null) {
             String mensaje = "¿Está seguro que desea eliminar al colaborador "
-                    + selected.getPersonalNumber() + ": "
-                    + selected.getName() + " " + selected.getLastname() + " " + selected.getSurname() + "?\n"
+                    + selectedCollaborator.getPersonalNumber() + ": "
+                    + selectedCollaborator.getName() + " " + selectedCollaborator.getLastname() + " " + selectedCollaborator.getSurname() + "?\n"
                     + "Recuerde que esta acción es irreversible.";
 
-            boolean confirmarEliminacion = Utility.createAlert("Eliminar Colaborador", mensaje, NotificationType.DELETE);
+            boolean confirmElimination = Utility.createAlert("Eliminar Colaborador", mensaje, NotificationType.DELETE);
 
-            if (confirmarEliminacion) {
-                collaboratorsList.remove(selected);
+            if (confirmElimination) {
+                collaboratorsList.remove(selectedCollaborator);
 
                 Utility.createNotification("Colaborador eliminado exitosamente", NotificationType.DELETE);
             }
-        }
-    }
-
-    private void openModal(Collaborator collaborator) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/packetworld/view/FXMLCollaboratorForm.fxml"));
-            Parent root = loader.load();
-
-            FXMLCollaboratorFormController controller = loader.getController();
-
-            boolean isEditing = (collaborator != null);
-
-            if (isEditing) {
-                controller.setCollaborator(collaborator);
-            }
-
-            Scene scene = new Scene(root);
-            scene.setFill(Color.TRANSPARENT);
-            Stage stage = new Stage();
-            stage.setScene(scene);
-            stage.initStyle(StageStyle.TRANSPARENT);
-            stage.initModality(Modality.APPLICATION_MODAL);
-
-            ZoomIn zoomInAnimation = new ZoomIn(root);
-            zoomInAnimation.setSpeed(1.4);
-            zoomInAnimation.play();
-
-            stage.showAndWait();
-            if (controller.isOperationSuccess()) {
-                String message;
-
-                if (isEditing) {
-                    message = "Colaborador editado exitosamente";
-                } else {
-                    message = "Colaborador guardado exitosamente";
-                }
-
-                Utility.createNotification(message, NotificationType.SUCCESS);
-            }
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            System.err.println("Error al abrir el formulario: " + ex.getMessage());
-        }
-    }
-
-    private void openAssignModal(Collaborator driver) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/packetworld/view/FXMLAssignVehicle.fxml"));
-            Parent root = loader.load();
-
-            FXMLAssignVehicleController controller = loader.getController();
-            controller.initData(driver);
-
-            Scene scene = new Scene(root);
-            scene.setFill(Color.TRANSPARENT);
-
-            Stage stage = new Stage();
-            stage.setScene(scene);
-            stage.initStyle(StageStyle.TRANSPARENT);
-            stage.initModality(Modality.APPLICATION_MODAL);
-
-            ZoomIn zoomIn = new ZoomIn(root);
-            zoomIn.setSpeed(1.5);
-            zoomIn.play();
-
-            stage.showAndWait();
-
-            if (controller.isOperationSuccess()) {
-                Utility.createNotification("Vehículo asignado exitosamente", NotificationType.SUCCESS);
-            }
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            System.err.println("Error al abrir asignación: " + ex.getMessage());
         }
     }
 

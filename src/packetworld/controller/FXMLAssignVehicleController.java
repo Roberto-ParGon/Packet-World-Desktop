@@ -86,9 +86,6 @@ public class FXMLAssignVehicleController implements Initializable {
     private void closeWindow() {
         Stage stage = (Stage) btnCancel.getScene().getWindow();
         Node root = btnCancel.getScene().getRoot();
-        ZoomOut zoomOutAnimation = new ZoomOut(root);
-        zoomOutAnimation.setSpeed(2);
-        zoomOutAnimation.setOnFinished(e -> stage.close());
-        zoomOutAnimation.play();
+        Utility.animateExit(root, stage);
     }
 }

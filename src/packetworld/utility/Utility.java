@@ -1,6 +1,16 @@
 package packetworld.utility;
 
+import animatefx.animation.ZoomIn;
+import animatefx.animation.ZoomOut;
+import java.io.IOException;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -9,7 +19,10 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import org.controlsfx.control.Notifications;
 
@@ -20,6 +33,29 @@ import org.controlsfx.control.Notifications;
 public class Utility {
 
     private static final String STYLESHEET = "/packetworld/resources/styles/styles.css";
+
+    public static Stage createTransparentModalStage(Parent root) {
+        Scene scene = new Scene(root);
+        scene.setFill(Color.TRANSPARENT);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.initStyle(StageStyle.TRANSPARENT);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        return stage;
+    }
+
+    public static void animateEntrance(Node node) {
+        ZoomIn zoomIn = new ZoomIn(node);
+        zoomIn.setSpeed(1.4);
+        zoomIn.play();
+    }
+
+    public static void animateExit(Node node, Stage stageToClose) {
+        ZoomOut zoomOut = new ZoomOut(node);
+        zoomOut.setSpeed(1.7);
+        zoomOut.setOnFinished(e -> stageToClose.close());
+        zoomOut.play();
+    }
 
     public static void createNotification(String message, NotificationType type) {
         Label content = new Label(message);
@@ -93,4 +129,35 @@ public class Utility {
         Button button = (Button) alert.getDialogPane().lookupButton(buttonType);
         button.getStyleClass().add(cssClass);
     }
+
+    public static <T> void openAnimatedModal(
+            String fxmlPath,
+            Consumer<T> initializer,
+            Predicate<T> successChecker,
+            Function<T, String> messageProvider) {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(Utility.class.getResource(fxmlPath));
+            Parent root = loader.load();
+            T controller = loader.getController();
+
+            if (initializer != null) {
+                initializer.accept(controller);
+            }
+
+            Stage stage = createTransparentModalStage(root);
+            animateEntrance(root);
+            stage.showAndWait();
+
+            if (successChecker.test(controller)) {
+                String msg = messageProvider.apply(controller);
+                createNotification(msg, NotificationType.SUCCESS);
+            }
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            System.err.println("Error al abrir modal (" + fxmlPath + "): " + ex.getMessage());
+        }
+    }
+
 }
