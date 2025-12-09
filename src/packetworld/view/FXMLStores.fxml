@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="packetworld.controller.FXMLStoresController"
+            style="-fx-background-color: #F4F6F9;" prefHeight="1080.0" prefWidth="1640.0">
+    <children>
+        <HBox alignment="CENTER_LEFT" prefHeight="120" styleClass="header-banner" 
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets left="30.0" />
+            </padding>
+            <children>
+                <Label text="Sucursales" styleClass="view-title" />
+            </children>
+        </HBox>
+
+        <HBox spacing="15.0" alignment="CENTER_RIGHT" 
+              AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="150.0">
+            <children>
+                <Button text="Añadir Sucursal  🏛+" onAction="#handleAddStore" styleClass="action-button, btn-green" minWidth="160.0"/>
+                <Button fx:id="btnEdit" text="Editar Sucursal  ✎" onAction="#handleEditStore" styleClass="action-button, btn-blue" disable="true" minWidth="160.0"/>
+            </children>
+        </HBox>
+
+        <TableView fx:id="tvStores" styleClass="custom-table"
+                   AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0"
+                   AnchorPane.topAnchor="220.0" AnchorPane.bottomAnchor="30.0">
+            <columns>
+                <TableColumn fx:id="colName" text="Nombre de Sucursal" />
+                <TableColumn fx:id="colAddress" text="Dirección" />
+                <TableColumn fx:id="colCity" text="Ciudad" />
+                <TableColumn fx:id="colZipCode" text="Código Postal" />
+                <TableColumn fx:id="colPhone" text="Teléfono" />
+                <TableColumn fx:id="colManager" text="Encargado" />
+                <TableColumn fx:id="colStatus" text="Estado" prefWidth="80.0" />
+            </columns>
+        </TableView>
+    </children>
+
+    <stylesheets>
+        <URL value="@../resources/styles/collaborators.css"/>
+    </stylesheets>
+</AnchorPane>

@@ -68,7 +68,7 @@ public class FXMLDashboardController implements Initializable {
     @FXML
     private void handleStoresMenu(ActionEvent event) {
         setActiveMenuButton(btnStores);
-        // loadView("/packetworld/view/FXMLStores.fxml");
+        loadView("/packetworld/view/FXMLStores.fxml");
     }
 
     @FXML
