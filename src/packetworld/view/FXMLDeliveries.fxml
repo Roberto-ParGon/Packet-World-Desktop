@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import java.net.URL?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="packetworld.controller.FXMLDeliveriesController"
+            style="-fx-background-color: #F4F6F9;" prefHeight="1080.0" prefWidth="1640.0">
+
+    <children>
+        <HBox alignment="CENTER_LEFT" prefHeight="120" styleClass="header-banner"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets left="30.0"/>
+            </padding>
+            <children>
+                <Label text="Envíos" styleClass="view-title"/>
+            </children>
+        </HBox>
+
+        <HBox spacing="15.0" alignment="CENTER_LEFT"
+              AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="150.0">
+            <children>
+                <HBox alignment="CENTER_LEFT" styleClass="search-box" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                    <children>
+                        <TextField fx:id="searchField" promptText="Buscar Envío (Tracking, Destinatario, Estado)"
+                                   styleClass="transparent-textfield" HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblClear" text="×" styleClass="search-icon" onMouseClicked="#handleClearSearch"/>
+                    </children>
+                </HBox>
+
+                <Button text="Añadir Envío  ✚" onAction="#handleAddDelivery" styleClass="action-button, btn-green" minWidth="160.0"/>
+                <Button fx:id="btnEdit" text="Editar Envío  ✎" onAction="#handleEditDelivery" styleClass="action-button, btn-blue" disable="true" minWidth="160.0"/>
+                <Button fx:id="btnDelete" text="Eliminar Envío  ✕" onAction="#handleDeleteDelivery" styleClass="action-button, btn-red" disable="true" minWidth="170.0"/>
+            </children>
+        </HBox>
+
+        <TableView fx:id="tvDeliveries" styleClass="custom-table"
+                   AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0"
+                   AnchorPane.topAnchor="220.0" AnchorPane.bottomAnchor="30.0">
+            <columns>
+                <TableColumn fx:id="colTracking" text="Tracking" prefWidth="180"/>
+                <TableColumn fx:id="colRecipient" text="Destinatario" prefWidth="260"/>
+                <TableColumn fx:id="colOrigin" text="Origen" prefWidth="160"/>
+                <TableColumn fx:id="colDestination" text="Destino" prefWidth="160"/>
+                <TableColumn fx:id="colWeight" text="Peso" prefWidth="90"/>
+                <TableColumn fx:id="colDate" text="Fecha" prefWidth="120"/>
+                <TableColumn fx:id="colStatus" text="Estado" prefWidth="120"/>
+            </columns>
+        </TableView>
+    </children>
+
+    <stylesheets>
+        <URL value="@../resources/styles/collaborators.css"/>
+    </stylesheets>
+</AnchorPane>

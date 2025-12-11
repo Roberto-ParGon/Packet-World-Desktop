@@ -1,0 +1,59 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 28 nov. 2025, 07:18:37
+    Author     : Lenovo
+*/
+.root{
+    -fx-failure-color:#F44336;
+    -fx-confirmation-color:#03A9F4;
+    -fx-information-color:#FFEB3B;
+}
+
+.notification-label{
+    -fx-font-size: 32px !important;
+    -fx-background-color: #FAFAFA;
+    -fx-font-weight: bold;
+    -fx-padding: 26px !important;
+}
+
+.custom-alert-failure{
+
+}
+
+.custom-alert-confirmation{
+
+}
+
+.custom-alert-info{
+
+}
+
+.custom-alert-delete{
+
+}
+
+.custom-alert-success{
+
+}
+
+.alert-btn-cancel{
+    -fx-background-color: #E0E0E0;
+    -fx-text-fill: #424242;
+    -fx-cursor: hand;
+}
+
+.alert-btn-cancel:hover, alert-btn-cancer:focused{
+    -fx-background-color: #BDBDBD;
+}
+
+.alert-btn-delete{
+    -fx-background-color: -fx-failure-color;
+    -fx-cursor: hand;
+}
+
+.alert-btn-delete:hover, .alert-btn-delete:focused {
+    -fx-background-color: #FE7268;
+}

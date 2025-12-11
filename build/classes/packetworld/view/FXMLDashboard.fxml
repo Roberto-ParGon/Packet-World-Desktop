@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane fx:id="mainPane" prefHeight="1080.0" prefWidth="1920.0"
+            styleClass="main-container"
+            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="packetworld.controller.FXMLDashboardController">
+
+    <left>
+        <VBox styleClass="sidebar" prefWidth="280.0">
+            <children>
+
+                <VBox styleClass="sidebar-header" alignment="CENTER_LEFT" prefHeight="120" minHeight="120">
+                    <children>
+                        <Label fx:id="lbCollaboratorName" text="Nombre de Colaborador" styleClass="sidebar-header-title"/>
+                        <Label fx:id="lblCollaboratorRole" text="Rol de Colaborador" styleClass="sidebar-header-subtitle"/>
+                    </children>
+                </VBox>
+
+                <VBox spacing="15.0" styleClass="sidebar-menu" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets top="30.0" right="20.0" bottom="20.0" left="20.0"/>
+                    </padding>
+                    <children>
+                        <Button fx:id="btnCollaborators" text="👤 Colaboradores" onAction="#handleCollaboratorsMenu" 
+                                maxWidth="Infinity" styleClass="menu-button, menu-button-active"/>
+                        
+                        <Button fx:id="btnUnits" text="🚛 Unidades" onAction="#handleUnitsMenu" 
+                                maxWidth="Infinity" styleClass="menu-button"/>
+                                
+                        <Button fx:id="btnStores" text="🏛 Sucursales" onAction="#handleStoresMenu" 
+                                maxWidth="Infinity" styleClass="menu-button"/>
+                                
+                        <Button fx:id="btnCustomers" text="👥 Clientes" onAction="#handleCustomersMenu" 
+                                maxWidth="Infinity" styleClass="menu-button"/>
+                                
+                        <Button fx:id="btnDeliveries" text="🚚 Envíos" onAction="#handleDeliveriesMenu" 
+                                maxWidth="Infinity" styleClass="menu-button"/>
+                                
+                        <Button fx:id="btnPackages" text="📦 Paquetes" onAction="#handlePackpagesMenu" 
+                                maxWidth="Infinity" styleClass="menu-button"/>
+
+                        <Pane VBox.vgrow="ALWAYS"/>
+
+                        <Button fx:id="btnLogout" text="⬅ Cerrar Sesión" onAction="#handleLogout" 
+                                maxWidth="Infinity" styleClass="logout-button"/>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="contentArea" styleClass="content-area" />
+    </center>
+
+    <stylesheets>
+        <URL value="@../resources/styles/dashboard.css"/>
+    </stylesheets>
+</BorderPane>
