@@ -1,0 +1,6 @@
+﻿# Generated outputs and IDE private settings
+/build/
+/dist/
+/nbproject/private/
+*.class
+*.jar
