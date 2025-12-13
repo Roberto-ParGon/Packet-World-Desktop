@@ -26,6 +26,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import packetworld.domain.CollaboratorImp;
+import packetworld.dto.MessageResponse;
 import packetworld.pojo.Collaborator;
 import packetworld.utility.NotificationType;
 import packetworld.utility.Utility;
@@ -98,19 +99,24 @@ public class FXMLCollaboratorsController implements Initializable {
         tvCollaborators.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
-private void loadData() {
+    private void loadData() {
         new Thread(() -> {
             HashMap<String, Object> response = CollaboratorImp.getAll();
-            
             javafx.application.Platform.runLater(() -> {
                 if (!(boolean) response.get("error")) {
                     List<Collaborator> list = (List<Collaborator>) response.get("collaborators");
                     collaboratorsList = FXCollections.observableArrayList(list);
-                    
+
                     filteredData = new FilteredList<>(collaboratorsList, p -> true);
                     SortedList<Collaborator> sortedData = new SortedList<>(filteredData);
                     sortedData.comparatorProperty().bind(tvCollaborators.comparatorProperty());
                     tvCollaborators.setItems(sortedData);
+
+                    String currentSearch = searchField.getText();
+                    if (!currentSearch.isEmpty()) {
+                        searchField.setText("");
+                        searchField.setText(currentSearch);
+                    }
                 } else {
                     Utility.createAlert("Error", (String) response.get("message"), NotificationType.FAILURE);
                 }
@@ -243,6 +249,7 @@ private void loadData() {
                 controller -> controller.isOperationSuccess(),
                 controller -> "Colaborador guardado exitosamente"
         );
+        loadData();
     }
 
     @FXML
@@ -250,14 +257,16 @@ private void loadData() {
         Collaborator selected = tvCollaborators.getSelectionModel().getSelectedItem();
 
         if (selected != null) {
+            System.out.println("Editando colaborador: " + selected.getName() + " ID: " + selected.getIdCollaborator());
             Utility.<FXMLCollaboratorFormController>openAnimatedModal(
                     "/packetworld/view/FXMLCollaboratorForm.fxml",
                     controller -> controller.setCollaborator(selected),
                     controller -> controller.isOperationSuccess(),
                     controller -> "Colaborador editado exitosamente"
             );
+            loadData();
         } else {
-            Utility.createAlert("No hay Colaborador Seleccionado", "Por favor, Seleccionar un Colaborador de la lista", NotificationType.INFORMATION);
+            Utility.createAlert("Selección requerida", "Por favor, selecciona un colaborador.", NotificationType.INFORMATION);
         }
     }
 
@@ -283,20 +292,29 @@ private void loadData() {
 
     @FXML
     private void handleDeleteCollaborator(ActionEvent event) {
-        Collaborator selectedCollaborator = tvCollaborators.getSelectionModel().getSelectedItem();
+        Collaborator selected = tvCollaborators.getSelectionModel().getSelectedItem();
 
-        if (selectedCollaborator != null) {
-            String mensaje = "¿Está seguro que desea eliminar al colaborador "
-                    + selectedCollaborator.getPersonalNumber() + ": "
-                    + selectedCollaborator.getName() + " " + selectedCollaborator.getLastname() + " " + selectedCollaborator.getSurname() + "?\n"
-                    + "Recuerde que esta acción es irreversible.";
+        if (selected != null) {
+            String message = "¿Está seguro que desea eliminar al colaborador "
+                    + selected.getName() + " " + selected.getLastname() + "?\n"
+                    + "Esta acción es irreversible.";
 
-            boolean confirmElimination = Utility.createAlert("Eliminar Colaborador", mensaje, NotificationType.DELETE);
+            boolean confirmDelete = Utility.createAlert("Eliminar Colaborador", message, NotificationType.DELETE);
 
-            if (confirmElimination) {
-                collaboratorsList.remove(selectedCollaborator);
+            if (confirmDelete) {
+                MessageResponse response = CollaboratorImp.delete(selected.getIdCollaborator());
 
-                Utility.createNotification("Colaborador eliminado exitosamente", NotificationType.DELETE);
+                if (!response.isError()) {
+                    String msg = (response.getMessage() != null && !response.getMessage().isEmpty())
+                            ? response.getMessage()
+                            : "Colaborador eliminado exitosamente";
+
+                    Utility.createNotification(msg, NotificationType.DELETE);
+
+                    loadData();
+                } else {
+                    Utility.createAlert("Error", response.getMessage(), NotificationType.FAILURE);
+                }
             }
         }
     }

@@ -85,9 +85,9 @@ public class CollaboratorImp {
         return response;
     }
 
-    public static MessageResponse delete(String personalNumber) {
+public static MessageResponse delete(Integer idCollaborator) {
         MessageResponse response = new MessageResponse();
-        String url = Constants.URL_WS + "colaborador/eliminar/" + personalNumber;
+        String url = Constants.URL_WS + "colaborador/eliminar/" + idCollaborator; 
         
         ResponseHTTP responseAPI = Connection.requestWithouthBody(url, "DELETE");
         
@@ -96,7 +96,7 @@ public class CollaboratorImp {
             response = gson.fromJson(responseAPI.getContent(), MessageResponse.class);
         } else {
             response.setError(true);
-            response.setMessage("Error al eliminar colaborador. Código: " + responseAPI.getCode());
+            response.setMessage("Error al eliminar. Código: " + responseAPI.getCode());
         }
         return response;
     }

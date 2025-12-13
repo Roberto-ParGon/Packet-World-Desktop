@@ -12,6 +12,9 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Collaborator {
 
+    @SerializedName("idColaborador")
+    private Integer idCollaborator;
+
     @SerializedName("noPersonal")
     private String personalNumber;
 
@@ -41,17 +44,18 @@ public class Collaborator {
 
     @SerializedName("foto")
     private byte[] photo;
-    
+
     @SerializedName("fotoBase64")
     private String photo64;
-    
+
     @SerializedName("activo")
     private boolean active;
 
     public Collaborator() {
     }
 
-    public Collaborator(String personalNumber, String curp, String name, String lastname, String surname, String email, String role, String idStore, String license, byte[] photo, String photo64, boolean active) {
+    public Collaborator(Integer idCollaborator, String personalNumber, String curp, String name, String lastname, String surname, String email, String role, String idStore, String license, byte[] photo, String photo64, boolean active) {
+        this.idCollaborator = idCollaborator;
         this.personalNumber = personalNumber;
         this.curp = curp;
         this.name = name;
@@ -64,6 +68,14 @@ public class Collaborator {
         this.photo = photo;
         this.photo64 = photo64;
         this.active = active;
+    }
+
+    public Integer getIdCollaborator() {
+        return idCollaborator;
+    }
+
+    public void setIdCollaborator(Integer idCollaborator) {
+        this.idCollaborator = idCollaborator;
     }
 
     public String getPersonalNumber() {

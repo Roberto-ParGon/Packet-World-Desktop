@@ -19,6 +19,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
+import packetworld.domain.CollaboratorImp;
+import packetworld.dto.MessageResponse;
 import packetworld.pojo.Collaborator;
 import packetworld.utility.NotificationType;
 import packetworld.utility.Utility;
@@ -64,6 +66,7 @@ public class FXMLCollaboratorFormController implements Initializable {
     private boolean isEditMode = false;
     private boolean operationSuccess = false;
     private final ValidationSupport validationSupport = new ValidationSupport();
+    private Collaborator currentCollaborator;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -115,7 +118,7 @@ public class FXMLCollaboratorFormController implements Initializable {
 
     public void setCollaborator(Collaborator collaborator) {
         this.isEditMode = true;
-
+        this.currentCollaborator = collaborator;
         lblTitle.setText("Editar Colaborador");
         btnSave.setText("Actualizar Datos");
 
@@ -170,13 +173,34 @@ public class FXMLCollaboratorFormController implements Initializable {
     private void handleSave(ActionEvent event) {
         if (validateInputs()) {
 
-            if (isEditMode) {
-
-            } else {
-
+            Collaborator formCollaborator = new Collaborator();
+            formCollaborator.setPersonalNumber(tfPersonalNumber.getText());
+            formCollaborator.setName(tfName.getText());
+            formCollaborator.setLastname(tfLastname.getText());
+            formCollaborator.setSurname(tfSurname.getText());
+            formCollaborator.setCurp(tfCurp.getText());
+            formCollaborator.setEmail(tfEmail.getText());
+            formCollaborator.setRole(cbRole.getValue());
+            formCollaborator.setIdStore(cbStore.getValue());
+            if ("Conductor".equals(cbRole.getValue())) {
+                formCollaborator.setLicense(tfVin.getText());
             }
-            this.operationSuccess = true;
-            closeWindow();
+
+            MessageResponse response;
+
+            if (isEditMode) {
+                formCollaborator.setIdCollaborator(currentCollaborator.getIdCollaborator());
+                response = CollaboratorImp.edit(formCollaborator);
+            } else {
+                response = CollaboratorImp.register(formCollaborator);
+            }
+
+            if (!response.isError()) {
+                this.operationSuccess = true;
+                closeWindow();
+            } else {
+                Utility.createAlert("Error al guardar", response.getMessage(), NotificationType.FAILURE);
+            }
         }
     }
 
