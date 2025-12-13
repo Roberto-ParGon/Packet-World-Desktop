@@ -1,7 +1,11 @@
 package packetworld.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.util.Base64;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 import javafx.event.ActionEvent;
@@ -13,6 +17,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
@@ -50,7 +55,7 @@ public class FXMLCollaboratorFormController implements Initializable {
     @FXML
     private ComboBox<String> cbRole;
     @FXML
-    private ComboBox<String> cbStore;
+    private ComboBox<Integer> cbStore;
     @FXML
     private TextField tfVin;
     @FXML
@@ -62,27 +67,24 @@ public class FXMLCollaboratorFormController implements Initializable {
     @FXML
     private Label lblTitle;
 
-    private File selectedImageFile;
     private boolean isEditMode = false;
     private boolean operationSuccess = false;
     private final ValidationSupport validationSupport = new ValidationSupport();
     private Collaborator currentCollaborator;
+
+    private byte[] currentPhotoBytes;
+    private boolean photoChanged = false;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         initializeRoles();
         configureRoleListener();
         setupVisualValidation();
-
-        cbStore.getItems().addAll("Sucursal Central", "Sucursal Norte", "Sucursal Sur");
+        cbStore.getItems().addAll(1, 2, 3);
     }
 
     private void initializeRoles() {
-        cbRole.getItems().addAll(
-                "Administrador",
-                "Ejecutivo de Tienda",
-                "Conductor"
-        );
+        cbRole.getItems().addAll("Administrador", "Ejecutivo de Tienda", "Conductor");
     }
 
     public boolean isOperationSuccess() {
@@ -90,6 +92,7 @@ public class FXMLCollaboratorFormController implements Initializable {
     }
 
     private void setupVisualValidation() {
+
         validationSupport.registerValidator(tfPersonalNumber, Validator.createEmptyValidator("Número de personal requerido"));
         validationSupport.registerValidator(tfName, Validator.createEmptyValidator("Nombre requerido"));
         validationSupport.registerValidator(tfLastname, Validator.createEmptyValidator("Apellido paterno requerido"));
@@ -104,12 +107,11 @@ public class FXMLCollaboratorFormController implements Initializable {
     }
 
     private void configureRoleListener() {
-        cbRole.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                if (newValue.equals("Conductor")) {
-                    tfVin.setDisable(false);
-                } else {
-                    tfVin.setDisable(true);
+        cbRole.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                boolean isDriver = newVal.equals("Conductor");
+                tfVin.setDisable(!isDriver);
+                if (!isDriver) {
                     tfVin.clear();
                 }
             }
@@ -119,9 +121,9 @@ public class FXMLCollaboratorFormController implements Initializable {
     public void setCollaborator(Collaborator collaborator) {
         this.isEditMode = true;
         this.currentCollaborator = collaborator;
+
         lblTitle.setText("Editar Colaborador");
         btnSave.setText("Actualizar Datos");
-
         headerContainer.setStyle("-fx-background-color: #42A5F5;");
 
         tfPersonalNumber.setText(collaborator.getPersonalNumber());
@@ -139,28 +141,111 @@ public class FXMLCollaboratorFormController implements Initializable {
 
         tfPersonalNumber.setDisable(true);
         cbRole.setDisable(true);
-        tfVin.setEditable(cbRole.getValue().equals("Conductor"));
 
+        downloadCollaboratorPhoto(collaborator.getIdCollaborator());
+    }
+
+    private void downloadCollaboratorPhoto(int idCollaborator) {
+        new Thread(() -> {
+            try {
+                Collaborator photoData = CollaboratorImp.getCollaboratorPhoto(idCollaborator);
+                if (photoData != null && photoData.getPhoto64() != null && !photoData.getPhoto64().isEmpty()) {
+
+                    String cleanBase64 = photoData.getPhoto64().replaceAll("\\s", "");
+                    byte[] imgBytes = Base64.getDecoder().decode(cleanBase64);
+
+                    javafx.application.Platform.runLater(() -> {
+                        ByteArrayInputStream stream = new ByteArrayInputStream(imgBytes);
+                        ivCollaboratorPhoto.setImage(new Image(stream));
+                    });
+                }
+            } catch (Exception e) {
+                System.err.println("Error descargando foto: " + e.getMessage());
+            }
+        }).start();
     }
 
     @FXML
     private void handlePhotoSelection(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Seleccionar Fotografía de Perfil");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Imágenes", "*.jpg", "*.jpeg", "*.png")
-        );
+        fileChooser.setTitle("Seleccionar Foto");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Imágenes", "*.jpg", "*.jpeg", "*.png"));
 
-        Stage stage = (Stage) btnSelectPhoto.getScene().getWindow();
-        File file = fileChooser.showOpenDialog(stage);
+        File file = fileChooser.showOpenDialog(btnSelectPhoto.getScene().getWindow());
 
         if (file != null) {
-            selectedImageFile = file;
             try {
+                ivCollaboratorPhoto.setImage(new Image(file.toURI().toString()));
 
-            } catch (Exception e) {
-                Utility.createAlert("Error", "No se pudo cargar la imagen seleccionada.", NotificationType.FAILURE);
+                this.currentPhotoBytes = Files.readAllBytes(file.toPath());
+                this.photoChanged = true;
+
+            } catch (IOException e) {
+                Utility.createAlert("Error", "No se pudo procesar la imagen.", NotificationType.FAILURE);
             }
+        }
+    }
+
+    @FXML
+    private void handleSave(ActionEvent event) {
+        if (!validateInputs()) {
+            return;
+        }
+
+        if (!isEditMode && currentPhotoBytes == null) {
+            Utility.createAlert("Foto Requerida", "Debe seleccionar una fotografía.", NotificationType.FAILURE);
+            return;
+        }
+
+        Collaborator formCollaborator = new Collaborator();
+        formCollaborator.setPersonalNumber(tfPersonalNumber.getText());
+        formCollaborator.setName(tfName.getText());
+        formCollaborator.setLastname(tfLastname.getText());
+        formCollaborator.setSurname(tfSurname.getText());
+        formCollaborator.setCurp(tfCurp.getText());
+        formCollaborator.setEmail(tfEmail.getText());
+        formCollaborator.setRole(cbRole.getValue());
+        formCollaborator.setIdStore(cbStore.getValue());
+
+        if ("Conductor".equals(cbRole.getValue())) {
+            formCollaborator.setLicense(tfVin.getText());
+        }
+
+        MessageResponse response;
+
+        if (isEditMode) {
+            formCollaborator.setIdCollaborator(currentCollaborator.getIdCollaborator());
+
+            response = CollaboratorImp.edit(formCollaborator);
+
+            if (!response.isError() && photoChanged && currentPhotoBytes != null) {
+                MessageResponse photoResponse = CollaboratorImp.uploadPhoto(
+                        currentCollaborator.getIdCollaborator(),
+                        this.currentPhotoBytes
+                );
+
+                if (photoResponse.isError()) {
+                    Utility.createAlert("Advertencia", "Datos guardados, fallo foto: " + photoResponse.getMessage(), NotificationType.FAILURE);
+                }
+            }
+
+        } else {
+            formCollaborator.setPassword(pfPassword.getText());
+
+            if (this.currentPhotoBytes != null) {
+                String base64 = Base64.getEncoder().encodeToString(this.currentPhotoBytes);
+                formCollaborator.setPhoto64(base64);
+                formCollaborator.setPhoto(this.currentPhotoBytes);
+            }
+
+            response = CollaboratorImp.register(formCollaborator);
+        }
+
+        if (!response.isError()) {
+            this.operationSuccess = true;
+            closeWindow();
+        } else {
+            Utility.createAlert("Error", response.getMessage(), NotificationType.FAILURE);
         }
     }
 
@@ -169,42 +254,8 @@ public class FXMLCollaboratorFormController implements Initializable {
         closeWindow();
     }
 
-    @FXML
-    private void handleSave(ActionEvent event) {
-        if (validateInputs()) {
-
-            Collaborator formCollaborator = new Collaborator();
-            formCollaborator.setPersonalNumber(tfPersonalNumber.getText());
-            formCollaborator.setName(tfName.getText());
-            formCollaborator.setLastname(tfLastname.getText());
-            formCollaborator.setSurname(tfSurname.getText());
-            formCollaborator.setCurp(tfCurp.getText());
-            formCollaborator.setEmail(tfEmail.getText());
-            formCollaborator.setRole(cbRole.getValue());
-            formCollaborator.setIdStore(cbStore.getValue());
-            if ("Conductor".equals(cbRole.getValue())) {
-                formCollaborator.setLicense(tfVin.getText());
-            }
-
-            MessageResponse response;
-
-            if (isEditMode) {
-                formCollaborator.setIdCollaborator(currentCollaborator.getIdCollaborator());
-                response = CollaboratorImp.edit(formCollaborator);
-            } else {
-                response = CollaboratorImp.register(formCollaborator);
-            }
-
-            if (!response.isError()) {
-                this.operationSuccess = true;
-                closeWindow();
-            } else {
-                Utility.createAlert("Error al guardar", response.getMessage(), NotificationType.FAILURE);
-            }
-        }
-    }
-
     private boolean validateInputs() {
+
         if (tfPersonalNumber.getText().trim().isEmpty() || tfName.getText().trim().isEmpty()
                 || tfLastname.getText().trim().isEmpty() || tfSurname.getText().trim().isEmpty()
                 || tfEmail.getText().trim().isEmpty() || pfPassword.getText().isEmpty()

@@ -4,12 +4,16 @@
  */
 package packetworld.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  *
  * @author Lenovo
  */
 public class MessageResponse {
+
     private boolean error;
+    @SerializedName("mensaje")
     private String message;
 
     public MessageResponse() {

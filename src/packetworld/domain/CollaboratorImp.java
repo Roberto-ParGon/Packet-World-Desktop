@@ -26,13 +26,14 @@ public class CollaboratorImp {
     public static HashMap<String, Object> getAll() {
         HashMap<String, Object> responseMap = new LinkedHashMap<>();
         String url = Constants.URL_WS + "colaborador/obtener-todos";
-        
+
         ResponseHTTP responseAPI = Connection.requestGET(url);
-        
+
         if (responseAPI.getCode() == HttpURLConnection.HTTP_OK) {
             Gson gson = new Gson();
-            Type listType = new TypeToken<List<Collaborator>>() {}.getType();
-            
+            Type listType = new TypeToken<List<Collaborator>>() {
+            }.getType();
+
             try {
                 List<Collaborator> collaborators = gson.fromJson(responseAPI.getContent(), listType);
                 responseMap.put("error", false);
@@ -51,12 +52,12 @@ public class CollaboratorImp {
     public static MessageResponse register(Collaborator collaborator) {
         MessageResponse response = new MessageResponse();
         String url = Constants.URL_WS + "colaborador/registrar";
-        
+
         Gson gson = new Gson();
         String jsonParams = gson.toJson(collaborator);
-        
+
         ResponseHTTP responseAPI = Connection.requestWithBody(url, "POST", jsonParams, "application/json");
-        
+
         if (responseAPI.getCode() == HttpURLConnection.HTTP_OK) {
             response = gson.fromJson(responseAPI.getContent(), MessageResponse.class);
         } else {
@@ -66,16 +67,15 @@ public class CollaboratorImp {
         return response;
     }
 
- 
     public static MessageResponse edit(Collaborator collaborator) {
         MessageResponse response = new MessageResponse();
         String url = Constants.URL_WS + "colaborador/editar";
-        
+
         Gson gson = new Gson();
         String jsonParams = gson.toJson(collaborator);
-        
+
         ResponseHTTP responseAPI = Connection.requestWithBody(url, "PUT", jsonParams, "application/json");
-        
+
         if (responseAPI.getCode() == HttpURLConnection.HTTP_OK) {
             response = gson.fromJson(responseAPI.getContent(), MessageResponse.class);
         } else {
@@ -85,12 +85,45 @@ public class CollaboratorImp {
         return response;
     }
 
-public static MessageResponse delete(Integer idCollaborator) {
+    public static MessageResponse uploadPhoto(int idCollaborator, byte[] photoBytes) {
         MessageResponse response = new MessageResponse();
-        String url = Constants.URL_WS + "colaborador/eliminar/" + idCollaborator; 
-        
+        String url = Constants.URL_WS + "colaborador/subir-foto/" + idCollaborator;
+
+        ResponseHTTP responseAPI = Connection.requestWithByteBody(url, "PUT", photoBytes, "application/octet-stream");
+
+        if (responseAPI.getCode() == HttpURLConnection.HTTP_OK) {
+            Gson gson = new Gson();
+            response = gson.fromJson(responseAPI.getContent(), MessageResponse.class);
+        } else {
+            response.setError(true);
+            response.setMessage("Error al subir foto. Código: " + responseAPI.getCode());
+        }
+        return response;
+    }
+
+    public static Collaborator getCollaboratorPhoto(int idCollaborator) {
+        Collaborator collaborator = null;
+        String url = Constants.URL_WS + "colaborador/obtener-foto/" + idCollaborator;
+
+        ResponseHTTP responseAPI = Connection.requestGET(url);
+
+        if (responseAPI.getCode() == HttpURLConnection.HTTP_OK) {
+            Gson gson = new Gson();
+            try {
+                collaborator = gson.fromJson(responseAPI.getContent(), Collaborator.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return collaborator;
+    }
+
+    public static MessageResponse delete(Integer idCollaborator) {
+        MessageResponse response = new MessageResponse();
+        String url = Constants.URL_WS + "colaborador/eliminar/" + idCollaborator;
+
         ResponseHTTP responseAPI = Connection.requestWithouthBody(url, "DELETE");
-        
+
         if (responseAPI.getCode() == HttpURLConnection.HTTP_OK) {
             Gson gson = new Gson();
             response = gson.fromJson(responseAPI.getContent(), MessageResponse.class);

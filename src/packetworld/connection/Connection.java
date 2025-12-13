@@ -18,7 +18,8 @@ import packetworld.utility.Utility;
  * @author Lenovo
  */
 public class Connection {
-     public static ResponseHTTP requestGET(String URL) {
+
+    public static ResponseHTTP requestGET(String URL) {
         ResponseHTTP response = new ResponseHTTP();
         try {
             URL urlWS = new URL(URL);
@@ -55,6 +56,39 @@ public class Connection {
             if (code == HttpURLConnection.HTTP_OK) {
                 response.setContent(
                         Utility.streamToString(ConnectionHTTP.getInputStream()));
+            }
+            response.setCode(code);
+        } catch (MalformedURLException e) {
+            response.setCode(Constants.ERROR_MALFORMED_URL);
+            response.setContent(e.getMessage());
+        } catch (IOException ex) {
+            response.setCode(Constants.ERROR_REQUEST);
+            response.setContent(ex.getMessage());
+        }
+        return response;
+    }
+
+    public static ResponseHTTP requestWithByteBody(String URL, String methodHTTP, byte[] bodyBytes, String contentType) {
+        ResponseHTTP response = new ResponseHTTP();
+        try {
+            URL urlWS = new URL(URL);
+            HttpURLConnection connectionHTTP = (HttpURLConnection) urlWS.openConnection();
+            connectionHTTP.setRequestMethod(methodHTTP);
+            connectionHTTP.setRequestProperty("Content-Type", contentType);
+            connectionHTTP.setDoOutput(true);
+
+            try (OutputStream os = connectionHTTP.getOutputStream()) {
+                os.write(bodyBytes);
+                os.flush();
+            }
+
+            int code = connectionHTTP.getResponseCode();
+            if (code == HttpURLConnection.HTTP_OK) {
+                response.setContent(Utility.streamToString(connectionHTTP.getInputStream()));
+            } else {
+                if (connectionHTTP.getErrorStream() != null) {
+                    response.setContent(Utility.streamToString(connectionHTTP.getErrorStream()));
+                }
             }
             response.setCode(code);
         } catch (MalformedURLException e) {

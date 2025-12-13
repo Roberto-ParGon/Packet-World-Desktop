@@ -24,6 +24,9 @@ public class Collaborator {
     @SerializedName("nombre")
     private String name;
 
+    @SerializedName("contrasena")
+    private String password;
+
     @SerializedName("apellidoPaterno")
     private String lastname;
 
@@ -37,7 +40,7 @@ public class Collaborator {
     private String role;
 
     @SerializedName("idSucursal")
-    private String idStore;
+    private Integer idStore;
 
     @SerializedName("licencia")
     private String license;
@@ -54,11 +57,12 @@ public class Collaborator {
     public Collaborator() {
     }
 
-    public Collaborator(Integer idCollaborator, String personalNumber, String curp, String name, String lastname, String surname, String email, String role, String idStore, String license, byte[] photo, String photo64, boolean active) {
+    public Collaborator(Integer idCollaborator, String personalNumber, String curp, String name, String password, String lastname, String surname, String email, String role, Integer idStore, String license, byte[] photo, String photo64, boolean active) {
         this.idCollaborator = idCollaborator;
         this.personalNumber = personalNumber;
         this.curp = curp;
         this.name = name;
+        this.password = password;
         this.lastname = lastname;
         this.surname = surname;
         this.email = email;
@@ -102,6 +106,14 @@ public class Collaborator {
         this.name = name;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getLastname() {
         return lastname;
     }
@@ -134,11 +146,11 @@ public class Collaborator {
         this.role = role;
     }
 
-    public String getIdStore() {
+    public Integer getIdStore() {
         return idStore;
     }
 
-    public void setIdStore(String idStore) {
+    public void setIdStore(Integer idStore) {
         this.idStore = idStore;
     }
 
