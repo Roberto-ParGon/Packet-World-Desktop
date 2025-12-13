@@ -5,6 +5,8 @@
 package packetworld.controller;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,6 +25,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import packetworld.domain.CollaboratorImp;
 import packetworld.pojo.Collaborator;
 import packetworld.utility.NotificationType;
 import packetworld.utility.Utility;
@@ -95,23 +98,24 @@ public class FXMLCollaboratorsController implements Initializable {
         tvCollaborators.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
-    private void loadData() {
-        collaboratorsList = FXCollections.observableArrayList();
-
-        collaboratorsList.add(new Collaborator("2023001", "Marco", "Antonio", "Solis", "SAM900101HDFRRN010", "buki@gmail.com", "Administrador", "Sucursal Central", ""));
-        collaboratorsList.add(new Collaborator("2023002", "Juan", "Gabriel", "Tejano", "TGJ950202MSDFRRN02", "juanga@hotmail.com.com", "Conductor", "Sucursal Norte", "20180102"));
-        collaboratorsList.add(new Collaborator("2023003", "Pepe", "Pica", "Papas", "PPP900101HDFRRN010", "ppp@gmail.com", "Ejecutivo de tienda", "Sucursal Sur", ""));
-        collaboratorsList.add(new Collaborator("2023004", "Valentin", "Elizalde", "Fermín", "VLE950202MSDFRRN02", "elizalde@hotmail.com.com", "Conductor", "Sucursal Central", "30180201"));
-        collaboratorsList.add(new Collaborator("2023005", "Elizabeth Angela", "Ferro", "Valentín", "SAM900101HDFRRN010", "eli@gmail.com", "Administrador", "Sucursal Sur", ""));
-        collaboratorsList.add(new Collaborator("2023006", "Gabriel", "Montiel", "Ferro", "WRV950202MSDFRRN02", "wero@hotmail.com.com", "Conductor", "Surcusal Central", "6080100"));
-
-        filteredData = new FilteredList<>(collaboratorsList, p -> true);
-
-        SortedList<Collaborator> sortedData = new SortedList<>(filteredData);
-
-        sortedData.comparatorProperty().bind(tvCollaborators.comparatorProperty());
-
-        tvCollaborators.setItems(sortedData);
+private void loadData() {
+        new Thread(() -> {
+            HashMap<String, Object> response = CollaboratorImp.getAll();
+            
+            javafx.application.Platform.runLater(() -> {
+                if (!(boolean) response.get("error")) {
+                    List<Collaborator> list = (List<Collaborator>) response.get("collaborators");
+                    collaboratorsList = FXCollections.observableArrayList(list);
+                    
+                    filteredData = new FilteredList<>(collaboratorsList, p -> true);
+                    SortedList<Collaborator> sortedData = new SortedList<>(filteredData);
+                    sortedData.comparatorProperty().bind(tvCollaborators.comparatorProperty());
+                    tvCollaborators.setItems(sortedData);
+                } else {
+                    Utility.createAlert("Error", (String) response.get("message"), NotificationType.FAILURE);
+                }
+            });
+        }).start();
     }
 
     private void configureSearchFilter() {

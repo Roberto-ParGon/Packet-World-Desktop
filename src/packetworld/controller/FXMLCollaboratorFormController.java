@@ -128,7 +128,7 @@ public class FXMLCollaboratorFormController implements Initializable {
         tfSurname.setText(collaborator.getSurname());
         tfEmail.setText(collaborator.getEmail());
         cbRole.setValue(collaborator.getRole());
-        cbStore.setValue(collaborator.getStore());
+        cbStore.setValue(collaborator.getIdStore());
 
         if (collaborator.getLicense() != null) {
             tfVin.setText(collaborator.getLicense());

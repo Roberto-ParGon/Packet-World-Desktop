@@ -2,7 +2,10 @@ package packetworld.utility;
 
 import animatefx.animation.ZoomIn;
 import animatefx.animation.ZoomOut;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -158,6 +161,17 @@ public class Utility {
             ex.printStackTrace();
             System.err.println("Error al abrir modal (" + fxmlPath + "): " + ex.getMessage());
         }
+    }
+    
+        public static String streamToString(InputStream input) throws IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(input));
+        String inputLine;
+        StringBuffer inputResponse = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            inputResponse.append(inputLine);
+        }
+        in.close();
+        return inputResponse.toString();
     }
 
 }
