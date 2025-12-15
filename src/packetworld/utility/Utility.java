@@ -151,10 +151,11 @@ public class Utility {
             Stage stage = createTransparentModalStage(root);
             animateEntrance(root);
             stage.showAndWait();
-
             if (successChecker.test(controller)) {
                 String msg = messageProvider.apply(controller);
-                createNotification(msg, NotificationType.SUCCESS);
+                if (msg != null && !msg.isEmpty()) {
+                    createNotification(msg, NotificationType.SUCCESS);
+                }
             }
 
         } catch (IOException ex) {
@@ -162,8 +163,8 @@ public class Utility {
             System.err.println("Error al abrir modal (" + fxmlPath + "): " + ex.getMessage());
         }
     }
-    
-        public static String streamToString(InputStream input) throws IOException {
+
+    public static String streamToString(InputStream input) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(input));
         String inputLine;
         StringBuffer inputResponse = new StringBuffer();

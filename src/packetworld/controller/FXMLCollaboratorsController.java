@@ -93,7 +93,7 @@ public class FXMLCollaboratorsController implements Initializable {
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colpersonalNumber.setCellValueFactory(new PropertyValueFactory<>("personalNumber"));
         colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
-        colStore.setCellValueFactory(new PropertyValueFactory<>("store"));
+        colStore.setCellValueFactory(new PropertyValueFactory<>("storeName"));
         colLicense.setCellValueFactory(new PropertyValueFactory<>("license"));
 
         tvCollaborators.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -280,13 +280,13 @@ public class FXMLCollaboratorsController implements Initializable {
                         "/packetworld/view/FXMLAssignVehicle.fxml",
                         controller -> controller.initData(selected),
                         controller -> controller.isOperationSuccess(),
-                        controller -> "Vehículo asignado exitosamente"
+                        controller -> controller.getOnSuccessMessage()
                 );
             } else {
-                Utility.createAlert("Rol Incorrecto", "Solo se pueden asignar vehículos a colaboradores con el rol de 'Conductor'.", NotificationType.FAILURE);
+                Utility.createAlert("Rol Incorrecto", "Solo conductores pueden tener vehículo.", NotificationType.FAILURE);
             }
         } else {
-            Utility.createAlert("Selección Requerida", "Selecciona un conductor de la lista.", NotificationType.FAILURE);
+            Utility.createAlert("Selección Requerida", "Selecciona un conductor.", NotificationType.INFORMATION);
         }
     }
 

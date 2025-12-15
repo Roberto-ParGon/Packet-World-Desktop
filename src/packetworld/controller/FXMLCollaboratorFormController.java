@@ -6,8 +6,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.Base64;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -25,8 +28,10 @@ import javafx.stage.Stage;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import packetworld.domain.CollaboratorImp;
+import packetworld.domain.StoreImp;
 import packetworld.dto.MessageResponse;
 import packetworld.pojo.Collaborator;
+import packetworld.pojo.Store;
 import packetworld.utility.NotificationType;
 import packetworld.utility.Utility;
 
@@ -55,7 +60,7 @@ public class FXMLCollaboratorFormController implements Initializable {
     @FXML
     private ComboBox<String> cbRole;
     @FXML
-    private ComboBox<Integer> cbStore;
+    private ComboBox<Store> cbStore;
     @FXML
     private TextField tfVin;
     @FXML
@@ -80,11 +85,11 @@ public class FXMLCollaboratorFormController implements Initializable {
         initializeRoles();
         configureRoleListener();
         setupVisualValidation();
-        cbStore.getItems().addAll(1, 2, 3);
+        loadStores();
     }
 
     private void initializeRoles() {
-        cbRole.getItems().addAll("Administrador", "Ejecutivo de Tienda", "Conductor");
+        cbRole.getItems().addAll("Administrador", "Ejecutivo de tienda", "Conductor");
     }
 
     public boolean isOperationSuccess() {
@@ -118,6 +123,38 @@ public class FXMLCollaboratorFormController implements Initializable {
         });
     }
 
+    private void loadStores() {
+        new Thread(() -> {
+            List<Store> stores = StoreImp.getAll();
+
+            Platform.runLater(() -> {
+                if (stores != null) {
+                    List<Store> activeStores = stores.stream()
+                            .filter(Store::isActiva)
+                            .collect(Collectors.toList());
+
+                    cbStore.getItems().setAll(activeStores);
+
+                    if (isEditMode && currentCollaborator != null) {
+                        selectCurrentStore();
+                    }
+                }
+            });
+        }).start();
+    }
+
+    private void selectCurrentStore() {
+        Integer targetId = currentCollaborator.getIdStore();
+        if (targetId != null) {
+            for (Store s : cbStore.getItems()) {
+                if (s.getIdStore().equals(targetId)) {
+                    cbStore.setValue(s);
+                    break;
+                }
+            }
+        }
+    }
+
     public void setCollaborator(Collaborator collaborator) {
         this.isEditMode = true;
         this.currentCollaborator = collaborator;
@@ -133,7 +170,11 @@ public class FXMLCollaboratorFormController implements Initializable {
         tfSurname.setText(collaborator.getSurname());
         tfEmail.setText(collaborator.getEmail());
         cbRole.setValue(collaborator.getRole());
-        cbStore.setValue(collaborator.getIdStore());
+        selectStoreById(collaborator.getIdStore());
+
+        if (!cbStore.getItems().isEmpty()) {
+            selectCurrentStore();
+        }
 
         if (collaborator.getLicense() != null) {
             tfVin.setText(collaborator.getLicense());
@@ -205,10 +246,16 @@ public class FXMLCollaboratorFormController implements Initializable {
         formCollaborator.setCurp(tfCurp.getText());
         formCollaborator.setEmail(tfEmail.getText());
         formCollaborator.setRole(cbRole.getValue());
-        formCollaborator.setIdStore(cbStore.getValue());
+        if (cbStore.getValue() != null) {
+            formCollaborator.setIdStore(cbStore.getValue().getIdStore());
+        }
 
         if ("Conductor".equals(cbRole.getValue())) {
             formCollaborator.setLicense(tfVin.getText());
+        }
+
+        if (cbStore.getValue() != null) {
+            formCollaborator.setIdStore(cbStore.getValue().getIdStore());
         }
 
         MessageResponse response;
@@ -252,6 +299,17 @@ public class FXMLCollaboratorFormController implements Initializable {
     @FXML
     private void handleCancel(ActionEvent event) {
         closeWindow();
+    }
+
+    private void selectStoreById(Integer targetId) {
+        if (targetId != null && cbStore.getItems() != null) {
+            for (Store store : cbStore.getItems()) {
+                if (store.getIdStore().equals(targetId)) {
+                    cbStore.setValue(store);
+                    break;
+                }
+            }
+        }
     }
 
     private boolean validateInputs() {

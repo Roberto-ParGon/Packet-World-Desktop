@@ -42,6 +42,9 @@ public class Collaborator {
     @SerializedName("idSucursal")
     private Integer idStore;
 
+    @SerializedName("sucursal")
+    private String storeName;
+
     @SerializedName("licencia")
     private String license;
 
@@ -57,7 +60,7 @@ public class Collaborator {
     public Collaborator() {
     }
 
-    public Collaborator(Integer idCollaborator, String personalNumber, String curp, String name, String password, String lastname, String surname, String email, String role, Integer idStore, String license, byte[] photo, String photo64, boolean active) {
+    public Collaborator(Integer idCollaborator, String personalNumber, String curp, String name, String password, String lastname, String surname, String email, String role, Integer idStore, String storeName, String license, byte[] photo, String photo64, boolean active) {
         this.idCollaborator = idCollaborator;
         this.personalNumber = personalNumber;
         this.curp = curp;
@@ -68,6 +71,7 @@ public class Collaborator {
         this.email = email;
         this.role = role;
         this.idStore = idStore;
+        this.storeName = storeName;
         this.license = license;
         this.photo = photo;
         this.photo64 = photo64;
@@ -152,6 +156,14 @@ public class Collaborator {
 
     public void setIdStore(Integer idStore) {
         this.idStore = idStore;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 
     public String getLicense() {

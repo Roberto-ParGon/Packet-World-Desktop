@@ -38,8 +38,6 @@
                 <TableColumn fx:id="colAddress" text="Dirección" />
                 <TableColumn fx:id="colCity" text="Ciudad" />
                 <TableColumn fx:id="colZipCode" text="Código Postal" />
-                <TableColumn fx:id="colPhone" text="Teléfono" />
-                <TableColumn fx:id="colManager" text="Encargado" />
                 <TableColumn fx:id="colStatus" text="Estado" prefWidth="80.0" />
             </columns>
         </TableView>

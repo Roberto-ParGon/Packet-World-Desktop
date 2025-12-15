@@ -17,7 +17,10 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
+import packetworld.domain.StoreImp;
+import packetworld.dto.MessageResponse;
 import packetworld.pojo.Store;
+import packetworld.utility.NotificationType;
 import packetworld.utility.Utility;
 
 /**
@@ -67,6 +70,9 @@ public class FXMLStoreFormController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         setupValidation();
+        btnDelete.setVisible(false);
+        btnDelete.setManaged(false);
+        lblStatus.setVisible(false);
     }
 
     public boolean isOperationSuccess() {
@@ -87,6 +93,21 @@ public class FXMLStoreFormController implements Initializable {
 
     @FXML
     private void handleDelete(ActionEvent event) {
+        boolean confirm = Utility.createAlert("Dar de Baja",
+                "¿Está seguro de dar de baja la sucursal " + currentStore.getName() + "?\nEsta acción no se puede deshacer.",
+                NotificationType.DELETE);
+
+        if (confirm) {
+            MessageResponse response = StoreImp.changeStatus(currentStore.getIdStore(), "Inactiva");
+
+            if (!response.isError()) {
+                this.operationSuccess = true;
+                Utility.createNotification("Sucursal dada de baja correctamente", NotificationType.SUCCESS);
+                closeWindow();
+            } else {
+                Utility.createAlert("Error", response.getMessage(), NotificationType.FAILURE);
+            }
+        }
     }
 
     @FXML
@@ -96,6 +117,46 @@ public class FXMLStoreFormController implements Initializable {
 
     @FXML
     private void handleSave(ActionEvent event) {
+
+        if (tfCode.getText().isEmpty() || tfName.getText().isEmpty() || tfStreet.getText().isEmpty()
+                || tfNumber.getText().isEmpty() || tfColony.getText().isEmpty() || tfZipCode.getText().isEmpty()
+                || tfCity.getText().isEmpty() || tfState.getText().isEmpty()) {
+
+            Utility.createAlert("Campos Vacíos", "Por favor, llene todos los campos obligatorios.", NotificationType.FAILURE);
+            return;
+        }
+
+        Store store = new Store();
+        store.setCode(tfCode.getText());
+        store.setName(tfName.getText());
+        store.setStreet(tfStreet.getText());
+        store.setNumber(tfNumber.getText());
+        store.setColony(tfColony.getText());
+        store.setZipCode(tfZipCode.getText());
+        store.setCity(tfCity.getText());
+        store.setState(tfState.getText());
+
+        if (!isEditMode) {
+            store.setStatus("Activa");
+        }
+
+        MessageResponse response;
+
+        if (isEditMode) {
+            store.setIdStore(currentStore.getIdStore());
+            store.setCode(currentStore.getCode());
+
+            response = StoreImp.edit(store);
+        } else {
+            response = StoreImp.register(store);
+        }
+
+        if (!response.isError()) {
+            this.operationSuccess = true;
+            closeWindow();
+        } else {
+            Utility.createAlert("Error al guardar", response.getMessage(), NotificationType.FAILURE);
+        }
     }
 
     public void setStore(Store store) {
@@ -117,14 +178,23 @@ public class FXMLStoreFormController implements Initializable {
 
         lblStatus.setVisible(true);
         lblStatus.setText("Estatus: " + store.getStatus());
+
         if ("Inactiva".equalsIgnoreCase(store.getStatus())) {
+            // Si ya está inactiva, estilo rojo y OCULTAMOS el botón
             lblStatus.setStyle("-fx-font-weight: bold; -fx-text-fill: #EF5350; -fx-font-size: 14px;");
+            btnDelete.setVisible(false);
+            btnDelete.setManaged(false);
+
+        } else {
+
+            lblStatus.setStyle("-fx-font-weight: bold; -fx-text-fill: #4CAF50; -fx-font-size: 14px;"); // Verde para activa
+            btnDelete.setText("Dar de Baja");
+            btnDelete.setStyle("-fx-background-color: #EF5350; -fx-text-fill: white;");
+            btnDelete.setVisible(true);
+            btnDelete.setManaged(true);
         }
 
         tfCode.setDisable(true);
-
-        btnDelete.setVisible(true);
-        btnDelete.setManaged(true);
     }
 
     private void closeWindow() {

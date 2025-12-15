@@ -1,25 +1,44 @@
 package packetworld.pojo;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Store {
 
+    @SerializedName("idSucursal")
+    private Integer idStore;
+
+    @SerializedName("codigoUnico")
     private String code;
+
+    @SerializedName("nombre")
     private String name;
+
+    @SerializedName("estatus")
     private String status;
+
+    @SerializedName("calle")
     private String street;
+
+    @SerializedName("numero")
     private String number;
+
+    @SerializedName("colonia")
     private String colony;
+
+    @SerializedName("codigoPostal")
     private String zipCode;
+
+    @SerializedName("ciudad")
     private String city;
+
+    @SerializedName("estado")
     private String state;
-    private String phone;
-    private String manager;
 
     public Store() {
     }
 
-    public Store(String code, String name, String status, String street, String number,
-            String colony, String zipCode, String city, String state,
-            String phone, String manager) {
+    public Store(Integer idStore, String code, String name, String status, String street, String number, String colony, String zipCode, String city, String state) {
+        this.idStore = idStore;
         this.code = code;
         this.name = name;
         this.status = status;
@@ -29,24 +48,14 @@ public class Store {
         this.zipCode = zipCode;
         this.city = city;
         this.state = state;
-        this.phone = phone;
-        this.manager = manager;
     }
 
-    public String getPhone() {
-        return phone;
+    public Integer getIdStore() {
+        return idStore;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getManager() {
-        return manager;
-    }
-
-    public void setManager(String manager) {
-        this.manager = manager;
+    public void setIdStore(Integer idStore) {
+        this.idStore = idStore;
     }
 
     public String getCode() {
@@ -122,6 +131,18 @@ public class Store {
     }
 
     public String getFullAddress() {
-        return String.format("%s #%s, Col. %s, %s, %s, %s", street, number, colony, city, state, zipCode);
+        return String.format("%s #%s, Col. %s",
+                (street != null ? street : "S/C"),
+                (number != null ? number : ""),
+                (colony != null ? colony : ""));
+    }
+
+    public boolean isActiva() {
+        return "Activa".equalsIgnoreCase(this.status);
+    }
+
+    @Override
+    public String toString() {
+        return (code != null ? code : "S/C") + ": " + name;
     }
 }
