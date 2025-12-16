@@ -17,11 +17,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import packetworld.domain.DriverAssignmentImp;
-import packetworld.domain.VehicleImp;
+import packetworld.domain.UnitImp;
 import packetworld.dto.MessageResponse;
 import packetworld.pojo.Collaborator;
 import packetworld.pojo.DriverAssignment;
-import packetworld.pojo.Vehicle;
+import packetworld.pojo.Unit;
 import packetworld.utility.NotificationType;
 import packetworld.utility.Utility;
 
@@ -30,7 +30,7 @@ public class FXMLAssignVehicleController implements Initializable {
     @FXML
     private Label lblMessage;
     @FXML
-    private ComboBox<Vehicle> cbVehicles;
+    private ComboBox<Unit> cbVehicles;
     @FXML
     private Button btnCancel;
     @FXML
@@ -72,14 +72,14 @@ public class FXMLAssignVehicleController implements Initializable {
 
     private void loadData() {
         new Thread(() -> {
-            HashMap<String, Object> availableResponse = VehicleImp.getAvailable();
+            HashMap<String, Object> availableResponse = UnitImp.getAvailable();
 
-            List<Vehicle> finalVehicleList = new ArrayList<>();
-            Vehicle vehicleToSelect = null;
+            List<Unit> finalVehicleList = new ArrayList<>();
+            Unit vehicleToSelect = null;
             String errorMessage = null;
 
             if (!(boolean) availableResponse.get("error")) {
-                List<Vehicle> available = (List<Vehicle>) availableResponse.get("data");
+                List<Unit> available = (List<Unit>) availableResponse.get("data");
                 finalVehicleList.addAll(available);
 
                 DriverAssignment assignment = DriverAssignmentImp.getAssignment(currentDriver.getIdCollaborator());
@@ -88,12 +88,12 @@ public class FXMLAssignVehicleController implements Initializable {
                     int assignedId = assignment.getVehicleId();
 
                     vehicleToSelect = finalVehicleList.stream()
-                            .filter(v -> v.getId() == assignedId)
+                            .filter(v -> v.getIdUnit() == assignedId)
                             .findFirst()
                             .orElse(null);
 
                     if (vehicleToSelect == null) {
-                        Vehicle assignedVehicle = VehicleImp.getById(assignedId);
+                        Unit assignedVehicle = UnitImp.getById(assignedId);
                         if (assignedVehicle != null) {
                             vehicleToSelect = assignedVehicle;
                         }
@@ -104,7 +104,7 @@ public class FXMLAssignVehicleController implements Initializable {
             }
 
             final String msg = errorMessage;
-            final Vehicle current = vehicleToSelect;
+            final Unit current = vehicleToSelect;
 
             Platform.runLater(() -> {
                 if (msg == null) {
@@ -127,7 +127,7 @@ public class FXMLAssignVehicleController implements Initializable {
 
     @FXML
     private void handleAssign(ActionEvent event) {
-        Vehicle selectedVehicle = cbVehicles.getValue();
+        Unit selectedVehicle = cbVehicles.getValue();
 
         if (selectedVehicle == null) {
             Utility.createAlert("Selección requerida", "Seleccione un vehículo de la lista.", NotificationType.INFORMATION);
@@ -136,7 +136,7 @@ public class FXMLAssignVehicleController implements Initializable {
 
         MessageResponse response = DriverAssignmentImp.assignVehicle(
                 currentDriver.getIdCollaborator(),
-                selectedVehicle.getId()
+                selectedVehicle.getIdUnit()
         );
 
         if (!response.isError()) {

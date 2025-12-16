@@ -107,7 +107,7 @@
                     </VBox>
 
                     <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="7">
-                        <Label text="VIN (Solo Conductores)" styleClass="field-label"/>
+                        <Label text="No. licencia (Solo Conductores)" styleClass="field-label"/>
                         <TextField fx:id="tfVin" promptText="Identificación Vehicular" styleClass="modal-textfield" disable="true"/>
                     </VBox>
 
