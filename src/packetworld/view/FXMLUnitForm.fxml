@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="packetworld.controller.FXMLUnitFormController"
+            prefHeight="500.0" prefWidth="800.0" styleClass="modal-root">
+
+    <children>
+        <HBox fx:id="headerContainer" alignment="CENTER_LEFT" prefHeight="70.0" styleClass="modal-header"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets left="30.0" />
+            </padding>
+            <children>
+                <Label fx:id="lblTitle" text="Registrar Unidad" styleClass="modal-title" />
+            </children>
+        </HBox>
+
+        <GridPane hgap="20.0" vgap="15.0" AnchorPane.topAnchor="100.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="50" />
+                <ColumnConstraints percentWidth="50" />
+            </columnConstraints>
+
+            <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <Label text="Marca" styleClass="field-label"/>
+                <TextField fx:id="tfBrand" promptText="Ej. Nissan" styleClass="modal-textfield"/>
+            </VBox>
+            <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <Label text="Modelo" styleClass="field-label"/>
+                <TextField fx:id="tfModel" promptText="Ej. Versa" styleClass="modal-textfield"/>
+            </VBox>
+
+            <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                <Label text="Año" styleClass="field-label"/>
+                <TextField fx:id="tfYear" promptText="Ej. 2023" styleClass="modal-textfield"/>
+            </VBox>
+            <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <Label text="Tipo de Unidad" styleClass="field-label"/>
+                <ComboBox fx:id="cbType" promptText="Seleccione el tipo" maxWidth="Infinity" styleClass="modal-combo"/>
+            </VBox>
+
+            <Separator GridPane.columnSpan="2" GridPane.rowIndex="2" />
+
+            <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                <Label text="Número de Identificación Vehicular (VIN)" styleClass="field-label"/>
+                <TextField fx:id="tfVin" promptText="Ingrese los 17 dígitos del VIN" styleClass="modal-textfield"/>
+            </VBox>
+            <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                <Label text="NII (Identificador Interno)" styleClass="field-label"/>
+                <TextField fx:id="tfNii" promptText="Se generará automáticamente" styleClass="modal-textfield" disable="true"/>
+            </VBox>
+
+        </GridPane>
+
+        <HBox spacing="20.0" alignment="CENTER_RIGHT" prefHeight="70.0"
+              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <padding>
+                <Insets right="40.0" bottom="20.0" />
+            </padding>
+            <children>
+                <Button fx:id="btnCancel" text="Cancelar" onAction="#handleCancel" styleClass="button-cancel" />
+                <Button fx:id="btnSave" text="Guardar Unidad" onAction="#handleSave" styleClass="button-save" />
+            </children>
+        </HBox>
+    </children>
+
+    <stylesheets>
+        <URL value="@../resources/styles/collaboratorform.css"/>
+    </stylesheets>
+</AnchorPane>
