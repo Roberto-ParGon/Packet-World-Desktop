@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="packetworld.controller.FXMLAssignDriverToEnvioController"
+            prefWidth="520" prefHeight="260" styleClass="modal-root">
+    <children>
+        <VBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.bottomAnchor="10">
+            <children>
+                <Label fx:id="lblTitle" text="Asignar conductor al envío" styleClass="modal-title"/>
+                <GridPane hgap="8" vgap="8">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="30"/>
+                        <ColumnConstraints percentWidth="70"/>
+                    </columnConstraints>
+                    <children>
+                        <Label text="Guía:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <Label fx:id="lblGuia" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                        <Label text="Destinatario:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <Label fx:id="lblDestinatario" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                        <Label text="Conductor:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                        <ComboBox fx:id="cbDrivers" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                    </children>
+                </GridPane>
+
+                <HBox spacing="8" alignment="CENTER_RIGHT">
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="btnCancel" text="Cancelar" onAction="#handleCancel" styleClass="button-cancel"/>
+                    <Button fx:id="btnAssign" text="Asignar" onAction="#handleAssign" styleClass="button-save"/>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

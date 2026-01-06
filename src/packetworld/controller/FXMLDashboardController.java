@@ -74,19 +74,19 @@ public class FXMLDashboardController implements Initializable {
     @FXML
     private void handleCustomersMenu(ActionEvent event) {
         setActiveMenuButton(btnCustomers);
-        // loadView("/packetworld/view/FXMLCustomers.fxml");
+         loadView("/packetworld/view/FXMLClients.fxml");
     }
 
     @FXML
     private void handleDeliveriesMenu(ActionEvent event) {
         setActiveMenuButton(btnDeliveries);
-        // loadView("/packetworld/view/FXMLDeliveries.fxml");
+         loadView("/packetworld/view/FXMLEnvios.fxml");
     }
 
     @FXML
     private void handlePackpagesMenu(ActionEvent event) {
         setActiveMenuButton(btnPackages);
-        // loadView("/packetworld/view/FXMLPackages.fxml");
+         loadView("/packetworld/view/FXMLPackages.fxml");
     }
 
     @FXML

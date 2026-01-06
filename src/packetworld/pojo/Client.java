@@ -2,165 +2,154 @@ package packetworld.pojo;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * POJO para Cliente. Incluye getters/setters en español y métodos de compatibilidad
+ * con nombres antiguos en inglés (getFirstName, getLastName, getStreet, etc.)
+ */
 public class Client {
 
     @SerializedName("id")
     private Integer id;
 
     @SerializedName("nombre")
-    private String firstName;
+    private String nombre;
 
     @SerializedName("apellido")
-    private String lastName;
+    private String apellido;
 
     @SerializedName("calle")
-    private String street;
+    private String calle;
 
     @SerializedName("num_ext")
-    private String number;
+    private String numExt;
 
     @SerializedName("colonia")
-    private String colony;
+    private String colonia;
 
     @SerializedName("cp")
-    private String zipCode;
+    private String cp;
 
-    // Algunos endpoints pueden no devolver ciudad/estado; los mantenemos opcionales
     @SerializedName("ciudad")
-    private String city;
-
-    @SerializedName("estado")
-    private String state;
-
-    @SerializedName("telefono")
-    private String phone;
+    private String ciudad; // opcional si existe
 
     @SerializedName("correo")
-    private String email;
+    private String correo;
 
-    // Si tu API no devuelve estatus no pasa nada, lo dejamos por compatibilidad
-    @SerializedName("estatus")
-    private String status;
+    @SerializedName("telefono")
+    private String telefono;
 
-    public Client() {
-    }
+    public Client() {}
 
-    public Integer getId() {
-        return id;
-    }
+    // --- Getters/Setters "nativos" (español) ---
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
 
-    public String getFirstName() {
-        return firstName;
-    }
+    public String getApellido() { return apellido; }
+    public void setApellido(String apellido) { this.apellido = apellido; }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+    public String getCalle() { return calle; }
+    public void setCalle(String calle) { this.calle = calle; }
 
-    public String getLastName() {
-        return lastName;
-    }
+    public String getNumExt() { return numExt; }
+    public void setNumExt(String numExt) { this.numExt = numExt; }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+    public String getColonia() { return colonia; }
+    public void setColonia(String colonia) { this.colonia = colonia; }
 
-    public String getStreet() {
-        return street;
-    }
+    public String getCp() { return cp; }
+    public void setCp(String cp) { this.cp = cp; }
 
-    public void setStreet(String street) {
-        this.street = street;
-    }
+    public String getCiudad() { return ciudad; }
+    public void setCiudad(String ciudad) { this.ciudad = ciudad; }
 
-    public String getNumber() {
-        return number;
-    }
+    public String getCorreo() { return correo; }
+    public void setCorreo(String correo) { this.correo = correo; }
 
-    public void setNumber(String number) {
-        this.number = number;
-    }
+    public String getTelefono() { return telefono; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
 
-    public String getColony() {
-        return colony;
-    }
-
-    public void setColony(String colony) {
-        this.colony = colony;
-    }
-
-    public String getZipCode() {
-        return zipCode;
-    }
-
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    // Utilitarios para la tabla
+    // --- Métodos helper (mantengo los que ya creaste) ---
     public String getFullName() {
-        String fn = (firstName == null ? "" : firstName);
-        String ln = (lastName == null ? "" : lastName);
-        String sep = (fn.isEmpty() || ln.isEmpty()) ? "" : " ";
-        return (fn + sep + ln).trim();
+        String n = nombre == null ? "" : nombre;
+        String a = apellido == null ? "" : apellido;
+        String full = (n + " " + a).trim();
+        return full.isEmpty() ? "Cliente " + (id == null ? "" : id) : full;
     }
 
     public String getFullAddress() {
+        String c = calle == null ? "" : calle;
+        String n = numExt == null ? "" : numExt;
+        String col = colonia == null ? "" : colonia;
+        String cpv = cp == null ? "" : cp;
+        String ciudadS = ciudad == null ? "" : ciudad;
         StringBuilder sb = new StringBuilder();
-        if (street != null && !street.isEmpty()) {
-            sb.append(street);
-        }
-        if (number != null && !number.isEmpty()) {
-            sb.append(" #").append(number);
-        }
-        if (colony != null && !colony.isEmpty()) {
-            if (sb.length() > 0) sb.append(", ");
-            sb.append("Col. ").append(colony);
-        }
-        return sb.toString();
+        if (!c.isEmpty()) sb.append(c);
+        if (!n.isEmpty()) sb.append(" ").append(n);
+        if (!col.isEmpty()) sb.append(", ").append(col);
+        if (!ciudadS.isEmpty()) sb.append(", ").append(ciudadS);
+        if (!cpv.isEmpty()) sb.append(" CP ").append(cpv);
+        String res = sb.toString().trim();
+        return res.isEmpty() ? "" : res;
     }
+
+    // ----------------------------
+    // Métodos de compatibilidad (nombres antiguos en inglés)
+    // Estos delegan a los getters/setters en español para no tocar controladores.
+    // ----------------------------
+
+    // firstName / lastName
+    public String getFirstName() { return getNombre(); }
+    public void setFirstName(String firstName) { setNombre(firstName); }
+
+    public String getLastName() { return getApellido(); }
+    public void setLastName(String lastName) { setApellido(lastName); }
+
+    // street / number
+    public String getStreet() { return getCalle(); }
+    public void setStreet(String street) { setCalle(street); }
+
+    public String getNumber() { return getNumExt(); }
+    public void setNumber(String number) { setNumExt(number); }
+
+    // colony / zipCode
+    public String getColony() { return getColonia(); }
+    public void setColony(String colony) { setColonia(colony); }
+
+    public String getZipCode() { return getCp(); }
+    public void setZipCode(String zip) { setCp(zip); }
+
+    // phone / email
+    public String getPhone() { return getTelefono(); }
+    public void setPhone(String phone) { setTelefono(phone); }
+
+    public String getEmail() { return getCorreo(); }
+    public void setEmail(String email) { setCorreo(email); }
+
+    // Si controladores esperan métodos con otros nombres, dímelos y los agrego aquí.
+
+  public Object getStatus() {
+    return null;
+}
+public void setStatus(String activo) {
+    // no-op
+}
+    // Compatibilidad: nombres en español usados en controladores antiguos
+public String getNombreCompleto() {
+    return getFullName();
+}
+
+/**
+ * Setter de compatibilidad. Recibe el nombre completo y lo asigna al campo 'nombre'.
+ * No intentamos dividir en apellido paterno/materno aquí; si necesitas eso puedes
+ * implementar un parser más sofisticado.
+ */
+public void setNombreCompleto(String nombreCompleto) {
+    if (nombreCompleto != null) {
+        // Simplemente guardamos todo en 'nombre' para mantener compatibilidad con controladores
+        setNombre(nombreCompleto);
+    }
+}
 }

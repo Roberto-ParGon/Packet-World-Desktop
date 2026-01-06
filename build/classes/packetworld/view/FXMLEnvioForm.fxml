@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="packetworld.controller.FXMLEnviosFormController"
+            prefWidth="900.0" prefHeight="780.0" styleClass="modal-root">
+
+    <children>
+        <!-- Header (styled like collaborators form) -->
+        <HBox fx:id="headerContainer"
+              alignment="CENTER_LEFT"
+              prefHeight="70.0"
+              styleClass="modal-header"
+              AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets left="30.0"/>
+            </padding>
+            <children>
+                <Label fx:id="lblTitle" text="Envío" styleClass="modal-title"/>
+            </children>
+        </HBox>
+
+        <!-- Main body: left spacer (no photo) + right form area -->
+        <HBox spacing="40.0"
+              AnchorPane.topAnchor="90.0"
+              AnchorPane.bottomAnchor="80.0"
+              AnchorPane.leftAnchor="40.0"
+              AnchorPane.rightAnchor="40.0">
+            <children>
+
+                <!-- Left column: (we leave it mostly empty to mirror layout without photo) -->
+                <VBox spacing="15.0" prefWidth="250.0">
+                    <!-- Intentionally left blank to keep similar layout spacing as collaborators form -->
+                </VBox>
+
+                <!-- Right: form grid (two columns) -->
+                <GridPane hgap="20.0" vgap="12.0" HBox.hgrow="ALWAYS">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="50.0"/>
+                        <ColumnConstraints percentWidth="50.0"/>
+                    </columnConstraints>
+
+                    <!-- Row 0: Cliente (left) | Fecha (right) -->
+                    <children>
+                        <Label text="Cliente" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                        <Label text="Fecha" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                        <ComboBox fx:id="cbCliente" GridPane.columnIndex="0" GridPane.rowIndex="1" maxWidth="Infinity" />
+                        <TextField fx:id="tfFecha" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                        <!-- Row 2: Tracking | Costo -->
+                        <Label text="Tracking #" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                        <Label text="Costo" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                        <TextField fx:id="tfTracking" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                        <TextField fx:id="tfCosto" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+                        <!-- Row 4: Sucursal origen | Dirección destino -->
+                        <Label text="Sucursal origen" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                        <Label text="Dirección destino" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+                        <ComboBox fx:id="cbSucursal" GridPane.columnIndex="0" GridPane.rowIndex="5" maxWidth="Infinity"/>
+                        <TextField fx:id="tfDestino" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+
+                        <!-- Row 6: Destinatario | Teléfono destinatario -->
+                        <Label text="Destinatario (Nombre)" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                        <Label text="Teléfono destinatario" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+
+                        <TextField fx:id="tfDestinatarioNombre" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                        <TextField fx:id="tfDestinatarioTelefono" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+
+                        <!-- Row 8: Ciudad destino | Estado destino -->
+                        <Label text="Ciudad destino" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                        <Label text="Estado destino" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+
+                        <TextField fx:id="tfCiudadDestino" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
+                        <TextField fx:id="tfEstadoDestino" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+
+                        <!-- Row 10: Peso | Estado (BD) -->
+                        <Label text="Peso (kg)" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
+                        <Label text="Estado (BD)" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+
+                        <TextField fx:id="tfPeso" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
+                        <ComboBox fx:id="cbEstado" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+
+                        <!-- Assigned driver section spans two columns -->
+                        <VBox spacing="8.0" styleClass="assigned-driver-section" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="12">
+                            <padding>
+                                <Insets top="12.0" right="0.0" bottom="0.0" left="0.0"/>
+                            </padding>
+                            <children>
+                                <Label text="Conductor asignado" style="-fx-font-weight:bold;"/>
+                                <HBox spacing="10.0" alignment="CENTER_LEFT">
+                                    <children>
+                                        <Label fx:id="lblAssignedDriver" text="—" />
+                                        <Button fx:id="btnUnassignDriver" text="Desasignar conductor" onAction="#handleUnassignDriver" styleClass="btn-red" visible="false" managed="false"/>
+                                    </children>
+                                </HBox>
+                                <Label fx:id="lblAssignedInfo" text="" style="-fx-font-size:11px; -fx-text-fill:gray;"/>
+                            </children>
+                        </VBox>
+
+                    </children>
+                </GridPane>
+            </children>
+        </HBox>
+
+        <!-- Footer buttons (aligned right) -->
+        <HBox spacing="35.0" alignment="CENTER_RIGHT"
+              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <padding>
+                <Insets right="40.0" bottom="40.0"/>
+            </padding>
+            <children>
+                <Button fx:id="btnCancel" text="Cancelar" onAction="#handleCancel" styleClass="button-cancel" />
+                <Button fx:id="btnSave" text="Guardar" onAction="#handleSave" styleClass="button-save" />
+            </children>
+        </HBox>
+    </children>
+
+    <stylesheets>
+        <URL value="@../resources/styles/collaboratorform.css"/>
+    </stylesheets>
+</AnchorPane>

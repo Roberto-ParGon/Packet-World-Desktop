@@ -1,9 +1,12 @@
 package packetworld.controller;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -16,14 +19,21 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.control.cell.PropertyValueFactory;
 import packetworld.domain.ClientImp;
 import packetworld.dto.MessageResponse;
 import packetworld.pojo.Client;
 import packetworld.utility.NotificationType;
 import packetworld.utility.Utility;
 
+/**
+ * Controlador de Clientes corregido y robusto.
+ * - evita NullPointer al poblar listas cuando la respuesta del servicio es null
+ * - inicializa y reusa una ObservableList global (clientsList)
+ * - prepara FilteredList / SortedList y los bindea a la tabla
+ * - usa la clave "data" devuelta por ClientImp.getAll()
+ */
 public class FXMLClientsController implements Initializable {
 
     @FXML private TextField searchField;
@@ -43,12 +53,20 @@ public class FXMLClientsController implements Initializable {
     @FXML private Button btnEdit;
     @FXML private Button btnDelete;
 
-    private ObservableList<Client> clientsList;
+    // Lista observable global reutilizada
+    private ObservableList<Client> clientsList = FXCollections.observableArrayList();
     private FilteredList<Client> filteredData;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         configureTableColumns();
+
+        // Preparar filtered + sorted y bindear a la tabla
+        filteredData = new FilteredList<>(clientsList, p -> true);
+        SortedList<Client> sorted = new SortedList<>(filteredData);
+        sorted.comparatorProperty().bind(tvClients.comparatorProperty());
+        tvClients.setItems(sorted);
+
         loadData();
         configureTableSelection();
         configureSearch();
@@ -56,6 +74,7 @@ public class FXMLClientsController implements Initializable {
     }
 
     private void configureTableColumns() {
+        // PropertyValueFactory usa los nombres de propiedad: "firstName" -> getFirstName()
         colFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         colLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         colStreet.setCellValueFactory(new PropertyValueFactory<>("street"));
@@ -66,26 +85,42 @@ public class FXMLClientsController implements Initializable {
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
     }
 
+    /**
+     * Carga los clientes desde el backend de forma segura.
+     * Usa la clave "data" que devuelve ClientImp.getAll() y garantiza nunca pasar null a FXCollections.
+     */
     private void loadData() {
         new Thread(() -> {
-            HashMap<String, Object> response = ClientImp.getAll();
-            javafx.application.Platform.runLater(() -> {
-                if (!(boolean) response.get("error")) {
-                    List<Client> list = (List<Client>) response.get("clients");
-                    clientsList = FXCollections.observableArrayList(list);
-                    filteredData = new FilteredList<>(clientsList, p -> true);
-                    SortedList<Client> sorted = new SortedList<>(filteredData);
-                    sorted.comparatorProperty().bind(tvClients.comparatorProperty());
-                    tvClients.setItems(sorted);
-
-                    String currentSearch = searchField.getText();
-                    if (currentSearch != null && !currentSearch.isEmpty()) {
-                        searchField.setText("");
-                        searchField.setText(currentSearch);
-                    }
-                } else {
-                    Utility.createAlert("Error", (String) response.get("message"), NotificationType.FAILURE);
+            HashMap<String, Object> response = null;
+            try {
+                response = ClientImp.getAll();
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+            }
+            final HashMap<String, Object> finalResp = response;
+            Platform.runLater(() -> {
+                if (finalResp == null) {
+                    clientsList.clear();
+                    Utility.createAlert("Error", "Respuesta nula del servidor al cargar clientes", NotificationType.FAILURE);
+                    return;
                 }
+
+                Object err = finalResp.get("error");
+                boolean isError = (err instanceof Boolean) ? (Boolean) err : true;
+                if (isError) {
+                    String msg = finalResp.get("message") == null ? "Error al cargar clientes" : String.valueOf(finalResp.get("message"));
+                    clientsList.clear();
+                    Utility.createAlert("Error", msg, NotificationType.FAILURE);
+                    return;
+                }
+
+                // El servicio devuelve la lista bajo la clave "data"
+                @SuppressWarnings("unchecked")
+                List<Client> list = (List<Client>) finalResp.get("data");
+                if (list == null) list = Collections.emptyList();
+
+                // Actualizamos la ObservableList existente (no reemplazarla) para mantener bindings
+                clientsList.setAll(list);
             });
         }).start();
     }
@@ -94,16 +129,21 @@ public class FXMLClientsController implements Initializable {
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (filteredData == null) return;
             String q = newVal == null ? "" : newVal.trim().toLowerCase();
-            filteredData.setPredicate(c ->
-                (c.getFirstName() != null && c.getFirstName().toLowerCase().contains(q)) ||
-                (c.getLastName() != null && c.getLastName().toLowerCase().contains(q)) ||
-                (c.getStreet() != null && c.getStreet().toLowerCase().contains(q)) ||
-                (c.getNumber() != null && c.getNumber().toLowerCase().contains(q)) ||
-                (c.getColony() != null && c.getColony().toLowerCase().contains(q)) ||
-                (c.getZipCode() != null && c.getZipCode().toLowerCase().contains(q)) ||
-                (c.getPhone() != null && c.getPhone().toLowerCase().contains(q)) ||
-                (c.getEmail() != null && c.getEmail().toLowerCase().contains(q))
-            );
+            filteredData.setPredicate(c -> {
+                if (c == null) return false;
+                // Usar getters de compatibilidad (getFirstName/getLastName/getPhone/getEmail etc.)
+                boolean match = false;
+                String v;
+                v = c.getFirstName(); if (v != null && v.toLowerCase().contains(q)) match = true;
+                v = c.getLastName(); if (v != null && v.toLowerCase().contains(q)) match = true;
+                v = c.getStreet(); if (v != null && v.toLowerCase().contains(q)) match = true;
+                v = c.getNumber(); if (v != null && v.toLowerCase().contains(q)) match = true;
+                v = c.getColony(); if (v != null && v.toLowerCase().contains(q)) match = true;
+                v = c.getZipCode(); if (v != null && v.toLowerCase().contains(q)) match = true;
+                v = c.getPhone(); if (v != null && v.toLowerCase().contains(q)) match = true;
+                v = c.getEmail(); if (v != null && v.toLowerCase().contains(q)) match = true;
+                return match;
+            });
         });
     }
 
@@ -125,6 +165,7 @@ public class FXMLClientsController implements Initializable {
                 controller -> controller.isOperationSuccess(),
                 controller -> "Cliente registrado exitosamente"
         );
+        // recargar datos después de cerrar modal
         loadData();
     }
 
@@ -160,11 +201,12 @@ public class FXMLClientsController implements Initializable {
         if (!confirm) return;
 
         MessageResponse resp = ClientImp.delete(selected.getId());
-        if (!resp.isError()) {
+        if (resp != null && !resp.isError()) {
             Utility.createNotification(resp.getMessage() == null ? "Cliente eliminado" : resp.getMessage(), NotificationType.DELETE);
             loadData();
         } else {
-            Utility.createAlert("Error", resp.getMessage(), NotificationType.FAILURE);
+            String msg = resp == null ? "No hay respuesta del servidor" : resp.getMessage();
+            Utility.createAlert("Error", msg, NotificationType.FAILURE);
         }
     }
 

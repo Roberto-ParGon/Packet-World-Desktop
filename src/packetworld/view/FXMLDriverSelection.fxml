@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="packetworld.controller.DriverSelectionController"
+            prefWidth="450.0" prefHeight="400.0" style="-fx-background-color: white;">
+    <children>
+        <VBox spacing="8.0" AnchorPane.topAnchor="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.bottomAnchor="8.0" >
+            <children>
+                <Label text="Selecciona un conductor disponible" style="-fx-font-size:16px; -fx-padding:6 0 6 0;"/>
+                <Label fx:id="lblStatus" text="Cargando conductores..." />
+                <TableView fx:id="tvDrivers" prefHeight="260.0">
+                    <columns>
+                        <TableColumn fx:id="colDriverId" text="ID" prefWidth="80"/>
+                        <TableColumn fx:id="colDriverName" text="Nombre" prefWidth="320"/>
+                    </columns>
+                </TableView>
+                <HBox spacing="10" alignment="CENTER_RIGHT">
+                    <children>
+                        <Button fx:id="btnOk" text="Aceptar" onAction="#onOk" disable="true" minWidth="80"/>
+                        <Button fx:id="btnCancel" text="Cancelar" onAction="#onCancel" minWidth="80"/>
+                    </children>
+                </HBox>
+            </children>
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+        </VBox>
+    </children>
+</AnchorPane>

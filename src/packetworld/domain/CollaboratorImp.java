@@ -14,6 +14,8 @@ import packetworld.pojo.ResponseHTTP;
 import packetworld.pojo.Collaborator;
 import packetworld.utility.Constants;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import packetworld.dto.MessageResponse;
 
@@ -132,5 +134,54 @@ public class CollaboratorImp {
             response.setMessage("Error al eliminar. Código: " + responseAPI.getCode());
         }
         return response;
+    }
+    public static List<Collaborator> getAvailableDrivers() {
+        try {
+            String url = Constants.URL_WS + "colaborador/obtener-todos";
+            System.out.println("CollaboratorImp.getAvailableDrivers -> URL: " + url);
+
+            ResponseHTTP resp = Connection.requestGET(url);
+
+            if (resp == null) {
+                System.err.println("CollaboratorImp.getAvailableDrivers -> resp == null");
+                return Collections.emptyList();
+            }
+
+            System.out.println("CollaboratorImp.getAvailableDrivers -> HTTP " + resp.getCode() + " body: " + resp.getContent());
+
+            if (resp.getCode() != java.net.HttpURLConnection.HTTP_OK) {
+                // Si no es 200, devolvemos vacío y se imprime el body para depuración
+                return Collections.emptyList();
+            }
+
+            String body = resp.getContent();
+            if (body == null || body.trim().isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            Gson g = new Gson();
+            Type listType = new TypeToken<List<Collaborator>>() {}.getType();
+            List<Collaborator> all = g.fromJson(body, listType);
+            if (all == null || all.isEmpty()) return Collections.emptyList();
+
+            // Filtrar por rol que indique "conductor" (ignora mayúsculas/minúsculas) y opcionalmente activo = true
+            List<Collaborator> drivers = new ArrayList<>();
+for (Collaborator c : all) {
+    if (c == null) continue;
+    String role = c.getRole();
+    if (role == null) continue;
+    String rl = role.trim().toLowerCase();
+    if (rl.contains("conduc") || rl.contains("driver") || rl.equals("conductor") || rl.equals("chofer")) {
+        drivers.add(c);
+    }
+}
+
+            System.out.println("CollaboratorImp.getAvailableDrivers -> found drivers: " + drivers.size());
+            return drivers;
+
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 }

@@ -16,26 +16,35 @@ import packetworld.dto.MessageResponse;
 public class ClientImp {
 
     public static HashMap<String, Object> getAll() {
-        HashMap<String, Object> responseMap = new LinkedHashMap<>();
+        HashMap<String,Object> responseMap = new LinkedHashMap<>();
         String url = Constants.URL_WS + "cliente/obtener-todos";
+        System.out.println("DEBUG ClientImp.getAll -> URL: " + url);
 
-        ResponseHTTP responseAPI = Connection.requestGET(url);
+        ResponseHTTP apiResp = Connection.requestGET(url);
 
-        if (responseAPI.getCode() == HttpURLConnection.HTTP_OK) {
-            Gson gson = new Gson();
-            Type listType = new TypeToken<List<Client>>() {}.getType();
+        if (apiResp == null) {
+            responseMap.put("error", true);
+            responseMap.put("message", "Respuesta nula del servidor (ClientImp)");
+            return responseMap;
+        }
 
+        System.out.println("DEBUG ClientImp.getAll -> HTTP code: " + apiResp.getCode());
+        System.out.println("DEBUG ClientImp.getAll -> body: " + apiResp.getContent());
+
+        if (apiResp.getCode() == HttpURLConnection.HTTP_OK) {
             try {
-                List<Client> clients = gson.fromJson(responseAPI.getContent(), listType);
+                Type listType = new TypeToken<List<Client>>(){}.getType();
+                List<Client> list = new Gson().fromJson(apiResp.getContent(), listType);
                 responseMap.put("error", false);
-                responseMap.put("clients", clients);
+                responseMap.put("data", list == null ? java.util.Collections.emptyList() : list);
             } catch (Exception e) {
+                e.printStackTrace();
                 responseMap.put("error", true);
-                responseMap.put("message", "Error al procesar los datos del servidor.");
+                responseMap.put("message", "Error al procesar JSON de clientes: " + e.getMessage());
             }
         } else {
             responseMap.put("error", true);
-            responseMap.put("message", "No se pudo obtener la información. Código: " + responseAPI.getCode());
+            responseMap.put("message", "Error de conexión: " + apiResp.getCode());
         }
         return responseMap;
     }
