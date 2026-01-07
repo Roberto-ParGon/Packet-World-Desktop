@@ -18,12 +18,37 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import packetworld.dto.MessageResponse;
+import packetworld.dto.LoginResponse;
 
 /**
  *
  * @author Lenovo
  */
 public class CollaboratorImp {
+    
+    public static LoginResponse login(String personalNumber, String password) {
+        LoginResponse response;
+        String url = Constants.URL_WS + "colaborador/login";
+        
+        Collaborator loginData = new Collaborator();
+        loginData.setPersonalNumber(personalNumber);
+        loginData.setPassword(password);
+        
+        Gson gson = new Gson();
+        String jsonParams = gson.toJson(loginData);
+        
+        ResponseHTTP responseAPI = Connection.requestWithBody(url, "POST", jsonParams, "application/json");
+        
+        if (responseAPI.getCode() == HttpURLConnection.HTTP_OK) {
+            response = gson.fromJson(responseAPI.getContent(), LoginResponse.class);
+        } else {
+            response = new LoginResponse();
+            response.setError(true);
+            response.setMensaje("Error al conectar con el servidor. Código: " + responseAPI.getCode());
+        }
+        
+        return response;
+    }
 
     public static HashMap<String, Object> getAll() {
         HashMap<String, Object> responseMap = new LinkedHashMap<>();
