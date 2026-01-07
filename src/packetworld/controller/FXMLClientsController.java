@@ -14,11 +14,15 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import packetworld.domain.ClientImp;
@@ -27,17 +31,11 @@ import packetworld.pojo.Client;
 import packetworld.utility.NotificationType;
 import packetworld.utility.Utility;
 
-/**
- * Controlador de Clientes corregido y robusto.
- * - evita NullPointer al poblar listas cuando la respuesta del servicio es null
- * - inicializa y reusa una ObservableList global (clientsList)
- * - prepara FilteredList / SortedList y los bindea a la tabla
- * - usa la clave "data" devuelta por ClientImp.getAll()
- */
 public class FXMLClientsController implements Initializable {
 
     @FXML private TextField searchField;
     @FXML private Label lblFilter;
+    @FXML private Label lblSearch;
 
     @FXML private TableColumn<Client, String> colFirstName;
     @FXML private TableColumn<Client, String> colLastName;
@@ -53,15 +51,18 @@ public class FXMLClientsController implements Initializable {
     @FXML private Button btnEdit;
     @FXML private Button btnDelete;
 
-    // Lista observable global reutilizada
     private ObservableList<Client> clientsList = FXCollections.observableArrayList();
     private FilteredList<Client> filteredData;
+    
+    private String filterType = "General";
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        if (lblFilter != null) lblFilter.setCursor(Cursor.HAND);
+        if (lblSearch != null) lblSearch.setCursor(Cursor.HAND);
+
         configureTableColumns();
 
-        // Preparar filtered + sorted y bindear a la tabla
         filteredData = new FilteredList<>(clientsList, p -> true);
         SortedList<Client> sorted = new SortedList<>(filteredData);
         sorted.comparatorProperty().bind(tvClients.comparatorProperty());
@@ -69,12 +70,11 @@ public class FXMLClientsController implements Initializable {
 
         loadData();
         configureTableSelection();
-        configureSearch();
+        configureSearchFilter();
         tvClients.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     private void configureTableColumns() {
-        // PropertyValueFactory usa los nombres de propiedad: "firstName" -> getFirstName()
         colFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         colLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         colStreet.setCellValueFactory(new PropertyValueFactory<>("street"));
@@ -85,10 +85,6 @@ public class FXMLClientsController implements Initializable {
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
     }
 
-    /**
-     * Carga los clientes desde el backend de forma segura.
-     * Usa la clave "data" que devuelve ClientImp.getAll() y garantiza nunca pasar null a FXCollections.
-     */
     private void loadData() {
         new Thread(() -> {
             HashMap<String, Object> response = null;
@@ -101,7 +97,7 @@ public class FXMLClientsController implements Initializable {
             Platform.runLater(() -> {
                 if (finalResp == null) {
                     clientsList.clear();
-                    Utility.createAlert("Error", "Respuesta nula del servidor al cargar clientes", NotificationType.FAILURE);
+                    Utility.createAlert("Error", "Respuesta nula del servidor", NotificationType.FAILURE);
                     return;
                 }
 
@@ -114,37 +110,96 @@ public class FXMLClientsController implements Initializable {
                     return;
                 }
 
-                // El servicio devuelve la lista bajo la clave "data"
                 @SuppressWarnings("unchecked")
                 List<Client> list = (List<Client>) finalResp.get("data");
                 if (list == null) list = Collections.emptyList();
 
-                // Actualizamos la ObservableList existente (no reemplazarla) para mantener bindings
                 clientsList.setAll(list);
+                
+                if (!searchField.getText().isEmpty()) {
+                    String current = searchField.getText();
+                    searchField.setText("");
+                    searchField.setText(current);
+                }
             });
         }).start();
     }
 
-    private void configureSearch() {
+    private void configureSearchFilter() {
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (filteredData == null) return;
-            String q = newVal == null ? "" : newVal.trim().toLowerCase();
-            filteredData.setPredicate(c -> {
-                if (c == null) return false;
-                // Usar getters de compatibilidad (getFirstName/getLastName/getPhone/getEmail etc.)
-                boolean match = false;
-                String v;
-                v = c.getFirstName(); if (v != null && v.toLowerCase().contains(q)) match = true;
-                v = c.getLastName(); if (v != null && v.toLowerCase().contains(q)) match = true;
-                v = c.getStreet(); if (v != null && v.toLowerCase().contains(q)) match = true;
-                v = c.getNumber(); if (v != null && v.toLowerCase().contains(q)) match = true;
-                v = c.getColony(); if (v != null && v.toLowerCase().contains(q)) match = true;
-                v = c.getZipCode(); if (v != null && v.toLowerCase().contains(q)) match = true;
-                v = c.getPhone(); if (v != null && v.toLowerCase().contains(q)) match = true;
-                v = c.getEmail(); if (v != null && v.toLowerCase().contains(q)) match = true;
-                return match;
+            
+            filteredData.setPredicate(client -> {
+                if (newVal == null || newVal.isEmpty()) return true;
+                
+                String lowerVal = newVal.trim().toLowerCase();
+                
+                String firstName = (client.getFirstName() != null) ? client.getFirstName().toLowerCase() : "";
+                String lastName = (client.getLastName() != null) ? client.getLastName().toLowerCase() : "";
+                String phone = (client.getPhone() != null) ? client.getPhone().toLowerCase() : "";
+                String email = (client.getEmail() != null) ? client.getEmail().toLowerCase() : "";
+                String street = (client.getStreet() != null) ? client.getStreet().toLowerCase() : "";
+
+                switch (filterType) {
+                    case "Nombre":
+                        return firstName.contains(lowerVal);
+                    case "Apellidos":
+                        return lastName.contains(lowerVal);
+                    case "Teléfono":
+                        return phone.contains(lowerVal);
+                    case "Correo":
+                        return email.contains(lowerVal);
+                    case "General":
+                    default:
+                        return firstName.contains(lowerVal) || 
+                               lastName.contains(lowerVal) || 
+                               phone.contains(lowerVal) || 
+                               email.contains(lowerVal) ||
+                               street.contains(lowerVal);
+                }
             });
         });
+    }
+
+    @FXML
+    private void handleFilterIconClick(MouseEvent event) {
+        ContextMenu contextMenu = new ContextMenu();
+        ToggleGroup group = new ToggleGroup();
+
+        RadioMenuItem itemGeneral = createFilterOption("General (Todos los campos)", group, true);
+        RadioMenuItem itemNombre = createFilterOption("Nombre", group, false);
+        RadioMenuItem itemApellidos = createFilterOption("Apellidos", group, false);
+        RadioMenuItem itemTelefono = createFilterOption("Teléfono", group, false);
+        RadioMenuItem itemCorreo = createFilterOption("Correo", group, false);
+
+        contextMenu.getItems().addAll(itemGeneral, itemNombre, itemApellidos, itemTelefono, itemCorreo);
+        contextMenu.show(lblFilter, event.getScreenX(), event.getScreenY());
+    }
+
+    private RadioMenuItem createFilterOption(String text, ToggleGroup group, boolean isSelected) {
+        String key = text.contains("General") ? "General" : text;
+        
+        RadioMenuItem item = new RadioMenuItem(text);
+        item.setToggleGroup(group);
+        item.setSelected(filterType.equals(key));
+
+        item.setOnAction(e -> {
+            filterType = key;
+            
+            String currentSearch = searchField.getText();
+            searchField.setText("");
+            searchField.setText(currentSearch);
+            
+            searchField.setPromptText("Buscar por: " + filterType);
+        });
+
+        return item;
+    }
+
+    @FXML
+    private void handleClearSearch(MouseEvent event) {
+        searchField.setText("");
+        searchField.requestFocus();
     }
 
     private void configureTableSelection() {
@@ -165,7 +220,6 @@ public class FXMLClientsController implements Initializable {
                 controller -> controller.isOperationSuccess(),
                 controller -> "Cliente registrado exitosamente"
         );
-        // recargar datos después de cerrar modal
         loadData();
     }
 
@@ -173,11 +227,6 @@ public class FXMLClientsController implements Initializable {
     private void handleEditClient(ActionEvent event) {
         Client selected = tvClients.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            System.out.println("EDIT -> Selected client (debug): id=" + selected.getId()
-                + " nombre=" + selected.getFirstName() + " apellido=" + selected.getLastName()
-                + " calle=" + selected.getStreet() + " num_ext=" + selected.getNumber()
-                + " colonia=" + selected.getColony() + " cp=" + selected.getZipCode()
-                + " telefono=" + selected.getPhone() + " email=" + selected.getEmail());
             Utility.<FXMLClientFormController>openAnimatedModal(
                     "/packetworld/view/FXMLClientForm.fxml",
                     controller -> controller.setClient(selected),
@@ -197,7 +246,7 @@ public class FXMLClientsController implements Initializable {
             Utility.createAlert("Selección requerida", "Selecciona un cliente.", NotificationType.INFORMATION);
             return;
         }
-        boolean confirm = Utility.createAlert("Eliminar cliente", "¿Desea eliminar este cliente?", NotificationType.DELETE);
+        boolean confirm = Utility.createAlert("Eliminar cliente", "¿Desea eliminar a " + selected.getFirstName() + " " + selected.getLastName() + "?", NotificationType.DELETE);
         if (!confirm) return;
 
         MessageResponse resp = ClientImp.delete(selected.getId());
@@ -208,11 +257,5 @@ public class FXMLClientsController implements Initializable {
             String msg = resp == null ? "No hay respuesta del servidor" : resp.getMessage();
             Utility.createAlert("Error", msg, NotificationType.FAILURE);
         }
-    }
-
-    @FXML
-    private void handleClearSearch(MouseEvent event) {
-        searchField.setText("");
-        searchField.requestFocus();
     }
 }

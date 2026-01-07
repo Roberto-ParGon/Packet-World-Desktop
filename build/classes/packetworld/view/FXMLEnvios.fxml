@@ -5,15 +5,13 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.collections.FXCollections?>
+
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="packetworld.controller.FXMLEnviosController"
             style="-fx-background-color: #F4F6F9;" prefHeight="800.0" prefWidth="1200.0">
 
     <children>
-        <!-- Header banner -->
         <HBox alignment="CENTER_LEFT" prefHeight="120" styleClass="header-banner"
               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <padding>
@@ -24,58 +22,50 @@
             </children>
         </HBox>
 
-        <!-- Toolbar: búsqueda y botones -->
         <HBox spacing="15.0" alignment="CENTER_LEFT"
               AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="150.0">
             <children>
                 <HBox alignment="CENTER_LEFT" styleClass="search-box" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                     <children>
-                        <Label fx:id="lblFilter" text="≡" styleClass="search-icon-filter"/>
-                        <!-- Cambiado a tfSearch para que coincida con el controlador -->
-                        <TextField fx:id="tfSearch" promptText="Buscar envío (guía, destinatario, destino)"
+                        <Label fx:id="lblFilter" text="≡" styleClass="search-icon-filter" 
+                               onMouseClicked="#handleFilterIconClick"/>
+                        
+                        <TextField fx:id="tfSearch" promptText="Buscar envío (ID, ID Cliente o Guía)"
                                    styleClass="transparent-textfield" HBox.hgrow="ALWAYS"/>
-                        <Label fx:id="lblSearchClear" text="×" styleClass="search-icon" onMouseClicked="#handleClearSearch"/>
+                        
+                        <Label fx:id="lblSearchClear" text="×" styleClass="search-icon" 
+                               onMouseClicked="#handleClearSearch"/>
                     </children>
                 </HBox>
 
-                <!-- IDs de botones cambiados para coincidir con el controlador -->
-                <Button fx:id="btnNuevo" text="Nuevo" onAction="#handleAdd" styleClass="action-button btn-green" minWidth="110.0"/>
-                <Button fx:id="btnEditar" text="Editar" onAction="#handleEdit" styleClass="action-button btn-blue" disable="true" minWidth="110.0"/>
-
-                <!-- Reemplazamos Paquetes y Cambiar estatus por Asignar y Eliminar -->
-                <Button fx:id="btnAsignar" text="Asignar conductor" onAction="#handleAssign" styleClass="action-button btn-blue" disable="true" minWidth="140.0"/>
-                <Button fx:id="btnEliminar" text="Eliminar" onAction="#handleDelete" styleClass="action-button btn-red" disable="true" minWidth="100.0"/>
+                <Button fx:id="btnNuevo" text="Nuevo" onAction="#handleAdd" styleClass="action-button, btn-green" minWidth="110.0"/>
+                <Button fx:id="btnEditar" text="Editar" onAction="#handleEdit" styleClass="action-button, btn-blue" disable="true" minWidth="110.0"/>
+                <Button fx:id="btnAsignar" text="Asignar conductor" onAction="#handleAssign" styleClass="action-button, btn-blue" disable="true" minWidth="140.0"/>
+                <Button fx:id="btnEliminar" text="Eliminar" onAction="#handleDelete" styleClass="action-button, btn-red" disable="true" minWidth="100.0"/>
             </children>
         </HBox>
 
-        <!-- Tabla principal -->
         <TableView fx:id="tvEnvios" styleClass="custom-table"
-           AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0"
-           AnchorPane.topAnchor="220.0" AnchorPane.bottomAnchor="30.0">
-    <columns>
-        <TableColumn fx:id="colId" text="ID" prefWidth="60" />
-        <!-- renombrada a colIdCliente para coincidir con el controlador -->
-        <TableColumn fx:id="colIdCliente" text="ID Cliente" prefWidth="80" />
-        <TableColumn fx:id="colGuia" text="Guía" prefWidth="120" />
-        <!-- renombrada a colDestinatario -->
-        <TableColumn fx:id="colDestinatario" text="Destinatario" prefWidth="200" />
-        <!-- renombrada a colTelefono -->
-        <TableColumn fx:id="colTelefono" text="Tel. Destinatario" prefWidth="140" />
-        <!-- renombrada a colDireccion -->
-        <TableColumn fx:id="colDireccion" text="Dirección destino" prefWidth="300" />
-        <!-- renombrada a colCiudad -->
-        <TableColumn fx:id="colCiudad" text="Ciudad" prefWidth="140" />
-        <TableColumn fx:id="colEstadoDestino" text="Estado (destino)" prefWidth="140" />
-        <TableColumn fx:id="colSucursalOrigen" text="Sucursal Origen" prefWidth="140" />
-        <TableColumn fx:id="colCosto" text="Costo" prefWidth="100" />
-        <TableColumn fx:id="colPeso" text="Peso (kg)" prefWidth="100" />
-        <TableColumn fx:id="colEstatus" text="Estatus" prefWidth="120" />
-        <TableColumn fx:id="colFechaCreacion" text="Fecha creación" prefWidth="180" />
-        <TableColumn fx:id="colFechaActualizacion" text="Fecha actualización" prefWidth="180" />
-        <!-- renombrada a colColaborador para coincidir con el controlador -->
-        <TableColumn fx:id="colColaborador" text="Colaborador actualizó (ID)" prefWidth="160" />
-    </columns>
-</TableView>
+                   AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0"
+                   AnchorPane.topAnchor="220.0" AnchorPane.bottomAnchor="30.0">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="60" />
+                <TableColumn fx:id="colIdCliente" text="ID Cliente" prefWidth="80" />
+                <TableColumn fx:id="colGuia" text="Guía" prefWidth="120" />
+                <TableColumn fx:id="colDestinatario" text="Destinatario" prefWidth="200" />
+                <TableColumn fx:id="colTelefono" text="Tel. Destinatario" prefWidth="140" />
+                <TableColumn fx:id="colDireccion" text="Dirección destino" prefWidth="300" />
+                <TableColumn fx:id="colCiudad" text="Ciudad" prefWidth="140" />
+                <TableColumn fx:id="colEstadoDestino" text="Estado (destino)" prefWidth="140" />
+                <TableColumn fx:id="colSucursalOrigen" text="Sucursal Origen" prefWidth="140" />
+                <TableColumn fx:id="colCosto" text="Costo" prefWidth="100" />
+                <TableColumn fx:id="colPeso" text="Peso (kg)" prefWidth="100" />
+                <TableColumn fx:id="colEstatus" text="Estatus" prefWidth="120" />
+                <TableColumn fx:id="colFechaCreacion" text="Fecha creación" prefWidth="180" />
+                <TableColumn fx:id="colFechaActualizacion" text="Fecha actualización" prefWidth="180" />
+                <TableColumn fx:id="colColaborador" text="Colaborador actualizó (ID)" prefWidth="160" />
+            </columns>
+        </TableView>
     </children>
 
     <stylesheets>
