@@ -13,7 +13,6 @@
             prefWidth="900.0" prefHeight="780.0" styleClass="modal-root">
 
     <children>
-        <!-- Header (styled like collaborators form) -->
         <HBox fx:id="headerContainer"
               alignment="CENTER_LEFT"
               prefHeight="70.0"
@@ -25,11 +24,10 @@
                 <Insets left="30.0"/>
             </padding>
             <children>
-                <Label fx:id="lblTitle" text="Envío" styleClass="modal-title"/>
+                <Label fx:id="lblTitle" text="Gestión de Envío" styleClass="modal-title"/>
             </children>
         </HBox>
 
-        <!-- Main body: left spacer (no photo) + right form area -->
         <HBox spacing="40.0"
               AnchorPane.topAnchor="90.0"
               AnchorPane.bottomAnchor="80.0"
@@ -37,72 +35,75 @@
               AnchorPane.rightAnchor="40.0">
             <children>
 
-                <!-- Left column: (we leave it mostly empty to mirror layout without photo) -->
-                <VBox spacing="15.0" prefWidth="250.0">
-                    <!-- Intentionally left blank to keep similar layout spacing as collaborators form -->
+                <VBox spacing="15.0" prefWidth="50.0">
                 </VBox>
 
-                <!-- Right: form grid (two columns) -->
                 <GridPane hgap="20.0" vgap="12.0" HBox.hgrow="ALWAYS">
                     <columnConstraints>
                         <ColumnConstraints percentWidth="50.0"/>
                         <ColumnConstraints percentWidth="50.0"/>
                     </columnConstraints>
 
-                    <!-- Row 0: Cliente (left) | Fecha (right) -->
                     <children>
                         <Label text="Cliente" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                        <Label text="Fecha" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        <Label text="Fecha Creación" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
-                        <ComboBox fx:id="cbCliente" GridPane.columnIndex="0" GridPane.rowIndex="1" maxWidth="Infinity" />
-                        <TextField fx:id="tfFecha" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <ComboBox fx:id="cbCliente" maxWidth="Infinity" 
+                                  GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                        
+                        <TextField fx:id="tfFecha" editable="false" style="-fx-opacity: 0.8;" 
+                                   GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-                        <!-- Row 2: Tracking | Costo -->
-                        <Label text="Tracking #" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                        <Label text="Costo" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                        <Label text="Tracking # (Generado)" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                        <Label text="Costo (Calculado Automáticamente)" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
-                        <TextField fx:id="tfTracking" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                        <TextField fx:id="tfCosto" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                        <TextField fx:id="tfTracking" editable="false" promptText="Pendiente..." style="-fx-background-color: #f0f0f0;"
+                                   GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                        <TextField fx:id="tfCosto" editable="false" promptText="Se calculará al guardar" style="-fx-background-color: #f0f0f0;"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
-                        <!-- Row 4: Sucursal origen | Dirección destino -->
-                        <Label text="Sucursal origen" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                        <Label text="Dirección destino" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                        <Label text="Sucursal Origen" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                        <Label text="Dirección Destino" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
 
-                        <ComboBox fx:id="cbSucursal" GridPane.columnIndex="0" GridPane.rowIndex="5" maxWidth="Infinity"/>
-                        <TextField fx:id="tfDestino" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                        <ComboBox fx:id="cbSucursal" maxWidth="Infinity" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                        <TextField fx:id="tfDestino" promptText="Calle, Número, Colonia, CP..." GridPane.columnIndex="1" GridPane.rowIndex="5"/>
 
-                        <!-- Row 6: Destinatario | Teléfono destinatario -->
                         <Label text="Destinatario (Nombre)" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <Label text="Teléfono destinatario" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                        <Label text="Teléfono Destinatario" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
 
-                        <TextField fx:id="tfDestinatarioNombre" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                        <TextField fx:id="tfDestinatarioTelefono" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                        <TextField fx:id="tfDestinatarioNombre" promptText="Nombre de quien recibe" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                        <TextField fx:id="tfDestinatarioTelefono" promptText="10 dígitos" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
-                        <!-- Row 8: Ciudad destino | Estado destino -->
-                        <Label text="Ciudad destino" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
-                        <Label text="Estado destino" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                        <Label text="Ciudad Destino" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                        <Label text="Estado Destino" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
 
                         <TextField fx:id="tfCiudadDestino" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                         <TextField fx:id="tfEstadoDestino" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
 
-                        <!-- Row 10: Peso | Estado (BD) -->
-                        <Label text="Peso (kg)" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
-                        <Label text="Estado (BD)" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                        <Label text="Peso del Paquete (kg)" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
+                        <Label text="Estatus Actual" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
 
-                        <TextField fx:id="tfPeso" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
-                        <ComboBox fx:id="cbEstado" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+                        <TextField fx:id="tfPeso" promptText="Ej. 1.5" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
+                        <ComboBox fx:id="cbEstado" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
 
-                        <!-- Assigned driver section spans two columns -->
-                        <VBox spacing="8.0" styleClass="assigned-driver-section" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="12">
+                        <VBox spacing="8.0" styleClass="assigned-driver-section" 
+                              GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="12">
                             <padding>
-                                <Insets top="12.0" right="0.0" bottom="0.0" left="0.0"/>
+                                <Insets top="15.0" right="0.0" bottom="0.0" left="0.0"/>
                             </padding>
                             <children>
-                                <Label text="Conductor asignado" style="-fx-font-weight:bold;"/>
-                                <HBox spacing="10.0" alignment="CENTER_LEFT">
+                                <Separator />
+                                <Label text="Información de Conductor" style="-fx-font-weight:bold; -fx-text-fill: #555;"/>
+                                <HBox spacing="15.0" alignment="CENTER_LEFT">
                                     <children>
-                                        <Label fx:id="lblAssignedDriver" text="—" />
-                                        <Button fx:id="btnUnassignDriver" text="Desasignar conductor" onAction="#handleUnassignDriver" styleClass="btn-red" visible="false" managed="false"/>
+                                        <Label text="Conductor Asignado:" />
+                                        <Label fx:id="lblAssignedDriver" text="—" style="-fx-font-weight: bold;"/>
+                                        
+                                        <Pane HBox.hgrow="ALWAYS" />
+                                        
+                                        <Button fx:id="btnUnassignDriver" text="Desasignar Conductor" 
+                                                onAction="#handleUnassignDriver" styleClass="action-button, btn-red" 
+                                                visible="false" managed="false"/>
                                     </children>
                                 </HBox>
                                 <Label fx:id="lblAssignedInfo" text="" style="-fx-font-size:11px; -fx-text-fill:gray;"/>
@@ -114,15 +115,14 @@
             </children>
         </HBox>
 
-        <!-- Footer buttons (aligned right) -->
-        <HBox spacing="35.0" alignment="CENTER_RIGHT"
+        <HBox spacing="20.0" alignment="CENTER_RIGHT"
               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <padding>
-                <Insets right="40.0" bottom="40.0"/>
+                <Insets right="40.0" bottom="30.0"/>
             </padding>
             <children>
-                <Button fx:id="btnCancel" text="Cancelar" onAction="#handleCancel" styleClass="button-cancel" />
-                <Button fx:id="btnSave" text="Guardar" onAction="#handleSave" styleClass="button-save" />
+                <Button fx:id="btnCancel" text="Cancelar" onAction="#handleCancel" styleClass="action-button, btn-cancel" minWidth="120.0"/>
+                <Button fx:id="btnSave" text="Guardar Envío" onAction="#handleSave" styleClass="action-button, btn-save" minWidth="150.0"/>
             </children>
         </HBox>
     </children>

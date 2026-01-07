@@ -152,4 +152,9 @@ public void setNombreCompleto(String nombreCompleto) {
         setNombre(nombreCompleto);
     }
 }
+
+@Override
+    public String toString() {
+        return getFullName();
+    }
 }
