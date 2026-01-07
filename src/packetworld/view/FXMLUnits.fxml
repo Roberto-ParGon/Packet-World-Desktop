@@ -26,20 +26,25 @@
         <HBox spacing="15.0" alignment="CENTER_LEFT" 
               AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="150.0">
             <children>
-                <HBox alignment="CENTER_LEFT" styleClass="search-box" HBox.hgrow="ALWAYS" maxWidth="450.0">
+                <HBox alignment="CENTER_LEFT" styleClass="search-box" HBox.hgrow="ALWAYS" maxWidth="Infinity">
                     <children>
-                        <Label text="≡" styleClass="search-icon-filter"/>
+                        <Label fx:id="lblFilter" text="≡" styleClass="search-icon-filter" onMouseClicked="#handleFilterIconClick"/>
+                        
                         <TextField fx:id="searchField" promptText="Buscar Unidad (VIN, Marca, o NII)" 
                                    styleClass="transparent-textfield" HBox.hgrow="ALWAYS"/>
-                        <Label text="🔍" styleClass="search-icon"/>
+                        
+                        <Label fx:id="lblSearch" text="×" styleClass="search-icon" onMouseClicked="#handleDeleteSearch"/>
                     </children>
                 </HBox>
                 
-                <Pane HBox.hgrow="SOMETIMES" maxWidth="20.0"/>
-
-                <Button text="Añadir Unidades  🚛+" onAction="#handleAddUnit" styleClass="action-button, btn-green" />
-                <Button text="Editar Unidad  ✎" onAction="#handleEditUnit" styleClass="action-button, btn-blue" disable="true" />
-                <Button text="Eliminar Unidad  🗑" onAction="#handleDeleteUnit" styleClass="action-button, btn-red" disable="true" />
+                <Button text="Añadir Unidades  🚛+" onAction="#handleAddUnit" 
+                        styleClass="action-button, btn-green" minWidth="160.0"/>
+                
+                <Button fx:id="btnEdit" text="Editar Unidad  ✎" onAction="#handleEditUnit" 
+                        styleClass="action-button, btn-blue" disable="true" minWidth="160.0"/>
+                
+                <Button fx:id="btnDelete" text="Eliminar Unidad  🗑" onAction="#handleDeleteUnit" 
+                        styleClass="action-button, btn-red" disable="true" minWidth="160.0"/>
             </children>
         </HBox>
 
@@ -54,7 +59,6 @@
                 <TableColumn fx:id="colType" text="Tipo" />
                 <TableColumn fx:id="colNII" text="NII" />
             </columns>
-
         </TableView>
     </children>
 
