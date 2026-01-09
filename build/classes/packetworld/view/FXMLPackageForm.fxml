@@ -6,8 +6,7 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="packetworld.controller.FXMLPackageFormController"
-            prefWidth="500.0" prefHeight="550.0" style="-fx-background-color: #f4f4f4;">
-    <children>
+            prefWidth="500.0" prefHeight="500.0" style="-fx-background-color: #f4f4f4;"> <children>
         <VBox spacing="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <HBox alignment="CENTER_LEFT" prefHeight="60.0" style="-fx-background-color: #e67e22;">
                 <padding>
@@ -49,10 +48,7 @@
 
                     <Label text="Cantidad" style="-fx-font-weight: bold;" GridPane.rowIndex="4"/>
                     <Spinner fx:id="spCantidad" editable="true" maxWidth="100" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-
-                    <Label text="Valor Declarado ($)" style="-fx-font-weight: bold;" GridPane.rowIndex="5"/>
-                    <TextField fx:id="tfValor" promptText="0.00" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
-                </children>
+                    </children>
             </GridPane>
 
             <Region VBox.vgrow="ALWAYS"/>

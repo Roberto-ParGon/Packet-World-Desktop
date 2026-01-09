@@ -118,22 +118,58 @@
 
                         <TitledPane text="Detalle del Envío" collapsible="false" animated="false">
                             <content>
-                                <GridPane hgap="15.0" vgap="15.0">
-                                    <columnConstraints>
-                                        <ColumnConstraints percentWidth="50" />
-                                        <ColumnConstraints percentWidth="50" />
-                                    </columnConstraints>
+                                <VBox spacing="15.0">
                                     <children>
-                                        <VBox spacing="5.0" GridPane.columnIndex="0">
-                                            <Label text="Peso Inicial (Paquete 1) [kg]" style="-fx-font-weight: bold;"/>
-                                            <TextField fx:id="tfPeso" promptText="Ej. 1.0"/>
-                                        </VBox>
-                                        <VBox spacing="5.0" GridPane.columnIndex="1">
-                                            <Label text="Costo Total Estimado ($)" style="-fx-font-weight: bold;"/>
-                                            <TextField fx:id="tfCosto" editable="false" promptText="Calculado al guardar" style="-fx-background-color: #e9ecef; -fx-font-weight: bold;"/>
+                                        <GridPane hgap="15.0" vgap="15.0">
+                                            <columnConstraints>
+                                                <ColumnConstraints percentWidth="50" />
+                                                <ColumnConstraints percentWidth="50" />
+                                            </columnConstraints>
+                                            <children>
+                                                <VBox spacing="5.0" GridPane.columnIndex="0">
+                                                    <Label text="Peso Total / Inicial [kg]" style="-fx-font-weight: bold;"/>
+                                                    <TextField fx:id="tfPeso" promptText="Ej. 1.0"/>
+                                                </VBox>
+                                                <VBox spacing="5.0" GridPane.columnIndex="1">
+                                                    <Label text="Costo Total Estimado ($)" style="-fx-font-weight: bold;"/>
+                                                    <TextField fx:id="tfCosto" editable="false" promptText="Calculado al guardar" style="-fx-background-color: #e9ecef; -fx-font-weight: bold;"/>
+                                                </VBox>
+                                            </children>
+                                        </GridPane>
+
+                                        <VBox fx:id="boxDetallesPaquete" spacing="10.0" style="-fx-background-color: #e8f6f3; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #d1f2eb; -fx-border-radius: 5;">
+                                            <children>
+                                                <Label text="Detalles del Paquete Inicial" style="-fx-font-weight: bold; -fx-text-fill: #16a085;"/>
+                                                <GridPane hgap="15.0" vgap="10.0">
+                                                    <columnConstraints>
+                                                        <ColumnConstraints percentWidth="33" />
+                                                        <ColumnConstraints percentWidth="33" />
+                                                        <ColumnConstraints percentWidth="34" />
+                                                    </columnConstraints>
+                                                    <children>
+                                                        <VBox spacing="2.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                                            <Label text="Alto (cm)"/>
+                                                            <TextField fx:id="tfAlto" promptText="0.0"/>
+                                                        </VBox>
+                                                        <VBox spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                                            <Label text="Ancho (cm)"/>
+                                                            <TextField fx:id="tfAncho" promptText="0.0"/>
+                                                        </VBox>
+                                                        <VBox spacing="2.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                                            <Label text="Profundidad (cm)"/>
+                                                            <TextField fx:id="tfProfundidad" promptText="0.0"/>
+                                                        </VBox>
+                                                        
+                                                        <VBox spacing="2.0" GridPane.columnSpan="3" GridPane.rowIndex="1">
+                                                            <Label text="Descripción del contenido"/>
+                                                            <TextField fx:id="tfDescripcionPaquete" promptText="Ej. Documentos, Ropa, Electrónicos..."/>
+                                                        </VBox>
+                                                    </children>
+                                                </GridPane>
+                                            </children>
                                         </VBox>
                                     </children>
-                                </GridPane>
+                                </VBox>
                             </content>
                         </TitledPane>
                         

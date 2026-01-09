@@ -17,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import packetworld.domain.ClientImp;
 import packetworld.domain.EnvioImp;
 import packetworld.domain.StoreImp;
@@ -68,6 +69,16 @@ public class FXMLEnviosFormController implements Initializable {
     private Label lblAssignedDriver;
     @FXML
     private Button btnUnassignDriver;
+    @FXML
+    private VBox boxDetallesPaquete;
+    @FXML
+    private TextField tfAlto;
+    @FXML
+    private TextField tfAncho;
+    @FXML
+    private TextField tfProfundidad;
+    @FXML
+    private TextField tfDescripcionPaquete;
 
     private boolean editMode = false;
     private Envio editingEnvio = null;
@@ -139,6 +150,7 @@ public class FXMLEnviosFormController implements Initializable {
         System.out.println("DEBUG FORM: setEditMode invocado. Edit=" + edit);
 
         if (edit && envio != null) {
+
             tfTracking.setText(envio.getNumGuia());
             tfFecha.setText(envio.getFechaCreacion());
             tfDestino.setText(envio.getDireccionDestino());
@@ -171,45 +183,56 @@ public class FXMLEnviosFormController implements Initializable {
             }
 
             System.out.println("DEBUG FORM: ------------------------------------------------");
-            System.out.println("DEBUG FORM: Intentando seleccionar sucursal...");
-            System.out.println("DEBUG FORM: ID Sucursal en el objeto Envio: " + envio.getIdSucursalOrigen());
-            System.out.println("DEBUG FORM: ¿La lista 'sucursales' del combo tiene datos? Tamaño: " + sucursales.size());
-
-            for (Store s : sucursales) {
-                System.out.println("DEBUG FORM:    Combo Item -> ID: " + s.getIdStore() + " - " + s.getName());
-            }
-
             if (envio.getIdSucursalOrigen() != null) {
                 Store match = findSucursalById(envio.getIdSucursalOrigen());
-
                 if (match != null) {
-                    System.out.println("DEBUG FORM: ¡MATCH ENCONTRADO! Objeto: " + match.getName());
                     cbSucursal.getSelectionModel().select(match);
-
-                    Store selected = cbSucursal.getSelectionModel().getSelectedItem();
-                    System.out.println("DEBUG FORM: Selección final del Combo: " + (selected != null ? selected.getName() : "NADA"));
                 } else {
-                    System.out.println("DEBUG FORM: No se encontró coincidencia inmediata. Guardando en desiredSucursalId.");
                     desiredSucursalId = envio.getIdSucursalOrigen();
                 }
             } else {
                 System.err.println("DEBUG FORM: ERROR FATAL -> envio.getIdSucursalOrigen() es NULL.");
-                System.err.println("            Causa probable: El Mapper de la API no tiene <result property=\"idSucursalOrigen\"...>");
             }
             System.out.println("DEBUG FORM: ------------------------------------------------");
 
             if (cbCliente != null) {
                 cbCliente.setDisable(false);
             }
+
+            // --- NUEVO: OCULTAR SECCIÓN DE PAQUETE EN EDICIÓN ---
+            if (boxDetallesPaquete != null) {
+                boxDetallesPaquete.setVisible(false);
+                boxDetallesPaquete.setManaged(false);
+            }
+
         } else {
+
             tfTracking.setText("Generado automáticamente...");
             tfFecha.setText(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
             if (cbCliente != null) {
                 cbCliente.getSelectionModel().clearSelection();
                 cbCliente.setDisable(false);
             }
             if (cbSucursal != null) {
                 cbSucursal.getSelectionModel().clearSelection();
+            }
+
+            if (boxDetallesPaquete != null) {
+                boxDetallesPaquete.setVisible(true);
+                boxDetallesPaquete.setManaged(true);
+            }
+            if (tfAlto != null) {
+                tfAlto.clear();
+            }
+            if (tfAncho != null) {
+                tfAncho.clear();
+            }
+            if (tfProfundidad != null) {
+                tfProfundidad.clear();
+            }
+            if (tfDescripcionPaquete != null) {
+                tfDescripcionPaquete.clear();
             }
         }
 
@@ -417,8 +440,6 @@ public class FXMLEnviosFormController implements Initializable {
         if (editMode && editingEnvio != null) {
             req.setId(editingEnvio.getId());
             req.setNumGuia(editingEnvio.getNumGuia());
-
-            // Mantenemos el conductor existente (o nulo si se desasignó)
             req.setIdConductor(editingEnvio.getIdConductor());
         }
 
@@ -432,13 +453,10 @@ public class FXMLEnviosFormController implements Initializable {
         req.setEstatus(cbEstado.getValue() != null ? cbEstado.getValue() : "recibido");
         req.setFechaCreacion(tfFecha.getText());
 
-        // --- CORRECCIÓN AQUÍ: Asignar auditor SIEMPRE (Creación o Edición) ---
         Integer loggedUser = getLoggedCollaboratorId();
         if (loggedUser != null) {
-            // Esto registra quién está haciendo la acción (tú)
             req.setIdColaboradorActualizo(loggedUser);
         }
-        // ---------------------------------------------------------------------
 
         Double pesoVal = 1.0;
         try {
@@ -461,13 +479,30 @@ public class FXMLEnviosFormController implements Initializable {
 
             List<Paquete> paquetes = new ArrayList<>();
             Paquete p = new Paquete();
-            p.setDescripcion("Paquete Inicial");
+
+            try {
+                double alto = (tfAlto.getText().isEmpty()) ? 10.0 : Double.parseDouble(tfAlto.getText().trim());
+                double ancho = (tfAncho.getText().isEmpty()) ? 10.0 : Double.parseDouble(tfAncho.getText().trim());
+                double prof = (tfProfundidad.getText().isEmpty()) ? 10.0 : Double.parseDouble(tfProfundidad.getText().trim());
+
+                if (alto <= 0 || ancho <= 0 || prof <= 0) {
+                    throw new NumberFormatException();
+                }
+
+                p.setAlto(alto);
+                p.setAncho(ancho);
+                p.setProfundidad(prof);
+            } catch (NumberFormatException e) {
+                Utility.createAlert("Validación", "Las dimensiones deben ser números válidos mayores a 0", NotificationType.INFORMATION);
+                return;
+            }
+
+            String desc = tfDescripcionPaquete.getText().trim();
+            p.setDescripcion(desc.isEmpty() ? "Paquete Inicial" : desc);
             p.setPeso(pesoVal);
             p.setCantidad(1);
-            p.setAlto(10.0);
-            p.setAncho(10.0);
-            p.setProfundidad(10.0);
             p.setValor(0.0);
+
             paquetes.add(p);
 
             resp = EnvioImp.register(req, paquetes);

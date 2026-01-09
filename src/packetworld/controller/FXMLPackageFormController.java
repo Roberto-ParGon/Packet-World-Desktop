@@ -35,8 +35,7 @@ public class FXMLPackageFormController implements Initializable {
     private TextField tfProfundidad;
     @FXML
     private Spinner<Integer> spCantidad;
-    @FXML
-    private TextField tfValor;
+
     @FXML
     private Button btnCancel;
     @FXML
@@ -129,9 +128,6 @@ public class FXMLPackageFormController implements Initializable {
             if (tfProfundidad != null) {
                 tfProfundidad.setText(String.valueOf(paquete.getProfundidad()));
             }
-            if (tfValor != null) {
-                tfValor.setText(String.valueOf(paquete.getValor()));
-            }
 
             if (spCantidad != null && paquete.getCantidad() != null) {
                 spCantidad.getValueFactory().setValue(paquete.getCantidad());
@@ -175,16 +171,13 @@ public class FXMLPackageFormController implements Initializable {
             if (tfProfundidad != null) {
                 p.setProfundidad(parseDouble(tfProfundidad.getText()));
             }
-            if (tfValor != null) {
-                p.setValor(parseDouble(tfValor.getText()));
-            }
 
             if (spCantidad != null) {
                 p.setCantidad(spCantidad.getValue());
             } else {
                 p.setCantidad(1);
             }
-
+            p.setValor(0.0);
             MessageResponse mr;
             if (editMode) {
                 mr = PaqueteImp.editPackage(p);
