@@ -174,5 +174,52 @@ public class Utility {
         in.close();
         return inputResponse.toString();
     }
+    /**
+ * Muestra un diálogo de confirmación con botones "Sí" / "No".
+ * Devuelve true si el usuario confirma (Sí).
+ */
+public static boolean showConfirmation(String title, String message) {
+    ButtonType yesBtn = new ButtonType("Sí", ButtonBar.ButtonData.YES);
+    ButtonType noBtn = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
+    Alert alert = new Alert(Alert.AlertType.NONE, message, yesBtn, noBtn);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+
+    // aplicar estilos si están disponibles (igual que en configureAlert)
+    try {
+        alert.getDialogPane().getStylesheets().add(Utility.class.getResource(STYLESHEET).toExternalForm());
+    } catch (Exception e) {
+        System.err.println("No se pudieron cargar estilos para el diálogo de confirmación: " + e.getMessage());
+    }
+
+    // Establecer ícono/estilo según tipo genérico (puedes quitar esto si no quieres icono)
+    // Aquí uso null por simplicidad; si quieres icono, usa NotificationType INFORMATION/DELETE etc.
+    // alert.setGraphic(new ImageView(...));
+
+    java.util.Optional<ButtonType> result = alert.showAndWait();
+    return result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.YES;
+}
+
+/**
+ * Cierra el modal que contiene el nodo dado, usando la animación de salida si es posible.
+ * node: cualquier nodo dentro del modal (por ejemplo btnSave o btnCancel)
+ */
+public static void closeModal(Node nodeInModal) {
+    if (nodeInModal == null) return;
+    try {
+        Stage stage = (Stage) nodeInModal.getScene().getWindow();
+        Node root = nodeInModal.getScene().getRoot();
+        // Si animateExit lanza algo, lo capturamos y forzamos close
+        try {
+            animateExit(root, stage);
+        } catch (Throwable ex) {
+            // Si algo falla con la animación, cerramos directamente
+            stage.close();
+        }
+    } catch (Throwable ex) {
+        // fallback: nada que hacer
+        System.err.println("No se pudo cerrar modal: " + ex.getMessage());
+    }
+}
 
 }

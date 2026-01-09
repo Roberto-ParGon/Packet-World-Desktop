@@ -262,7 +262,7 @@ public class FXMLCollaboratorFormController implements Initializable {
 
         if (isEditMode) {
             formCollaborator.setIdCollaborator(currentCollaborator.getIdCollaborator());
-
+            formCollaborator.setActive(currentCollaborator.isActive());
             response = CollaboratorImp.edit(formCollaborator);
 
             if (!response.isError() && photoChanged && currentPhotoBytes != null) {
@@ -278,7 +278,7 @@ public class FXMLCollaboratorFormController implements Initializable {
 
         } else {
             formCollaborator.setPassword(pfPassword.getText());
-
+            formCollaborator.setActive(true);
             if (this.currentPhotoBytes != null) {
                 String base64 = Base64.getEncoder().encodeToString(this.currentPhotoBytes);
                 formCollaborator.setPhoto64(base64);

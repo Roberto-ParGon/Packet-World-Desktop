@@ -1,6 +1,7 @@
 package packetworld.pojo;
 
 import com.google.gson.annotations.SerializedName;
+import java.util.Objects;
 
 public class Store {
 
@@ -144,5 +145,22 @@ public class Store {
     @Override
     public String toString() {
         return (code != null ? code : "S/C") + ": " + name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Store other = (Store) obj;
+        return Objects.equals(this.idStore, other.idStore);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idStore);
     }
 }
