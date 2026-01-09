@@ -50,7 +50,6 @@
                    AnchorPane.topAnchor="220.0" AnchorPane.bottomAnchor="30.0">
             <columns>
                 <TableColumn fx:id="colId" text="ID" prefWidth="60" />
-                <TableColumn fx:id="colIdCliente" text="ID Cliente" prefWidth="80" />
                 <TableColumn fx:id="colGuia" text="Guía" prefWidth="120" />
                 <TableColumn fx:id="colDestinatario" text="Destinatario" prefWidth="200" />
                 <TableColumn fx:id="colTelefono" text="Tel. Destinatario" prefWidth="140" />

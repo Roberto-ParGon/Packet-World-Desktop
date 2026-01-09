@@ -38,9 +38,6 @@ public class FXMLPackagesController implements Initializable {
     private TableColumn<Paquete, String> colDimensiones;
     @FXML
     private TableColumn<Paquete, String> colCantidad;
-    @FXML
-    private TableColumn<Paquete, String> colValor;
-    // @FXML private TableColumn<Paquete, String> colFecha;
 
     @FXML
     private TextField searchField;
@@ -90,7 +87,6 @@ public class FXMLPackagesController implements Initializable {
         });
 
         colCantidad.setCellValueFactory(cell -> new SimpleStringProperty(String.valueOf(cell.getValue().getCantidad())));
-        colValor.setCellValueFactory(cell -> new SimpleStringProperty("$" + cell.getValue().getValor()));
         tvPaquetes.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 

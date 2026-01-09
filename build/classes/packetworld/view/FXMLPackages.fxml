@@ -53,8 +53,6 @@
                 <TableColumn fx:id="colPeso" text="Peso (kg)" />
                 <TableColumn fx:id="colDimensiones" text="Dimensiones (A×An×P cm)" />
                 <TableColumn fx:id="colCantidad" text="Cant." />
-                <TableColumn fx:id="colValor" text="Valor" />
-                <TableColumn fx:id="colFecha" text="Fecha" />
             </columns>
         </TableView>
     </children>

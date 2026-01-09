@@ -37,8 +37,6 @@ public class FXMLEnviosController implements Initializable {
     @FXML
     private TableColumn<Envio, String> colId;
     @FXML
-    private TableColumn<Envio, String> colIdCliente;
-    @FXML
     private TableColumn<Envio, String> colGuia;
     @FXML
     private TableColumn<Envio, String> colDestinatario;
@@ -121,19 +119,16 @@ public class FXMLEnviosController implements Initializable {
 
                 String lowerFilter = newValue.toLowerCase().trim();
                 String id = (envio.getId() != null) ? String.valueOf(envio.getId()) : "";
-                String idCliente = (envio.getIdCliente() != null) ? String.valueOf(envio.getIdCliente()) : "";
                 String guia = (envio.getNumGuia() != null) ? envio.getNumGuia().toLowerCase() : "";
 
                 switch (filterType) {
                     case "ID":
                         return id.contains(lowerFilter);
-                    case "ID Cliente":
-                        return idCliente.contains(lowerFilter);
                     case "Guía":
                         return guia.contains(lowerFilter);
                     case "General":
                     default:
-                        return id.contains(lowerFilter) || idCliente.contains(lowerFilter) || guia.contains(lowerFilter);
+                        return id.contains(lowerFilter) || guia.contains(lowerFilter);
                 }
             });
         });
@@ -147,7 +142,6 @@ public class FXMLEnviosController implements Initializable {
         contextMenu.getItems().addAll(
                 createFilterOption("General", group, true),
                 createFilterOption("ID", group, false),
-                createFilterOption("ID Cliente", group, false),
                 createFilterOption("Guía", group, false)
         );
         contextMenu.show(lblFilter, event.getScreenX(), event.getScreenY());
@@ -211,7 +205,6 @@ public class FXMLEnviosController implements Initializable {
 
     private void configureTable() {
         colId.setCellValueFactory(nullSafeValue(e -> e.getId()));
-        colIdCliente.setCellValueFactory(nullSafeValue(e -> e.getIdCliente()));
         colGuia.setCellValueFactory(nullSafeValue(Envio::getNumGuia));
         colDestinatario.setCellValueFactory(nullSafeValue(Envio::getDestinatarioNombre));
         applyWrappingCellFactory(colDestinatario);
