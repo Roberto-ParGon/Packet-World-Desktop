@@ -23,8 +23,6 @@ import packetworld.dto.MessageResponse;
 import packetworld.pojo.Envio;
 import packetworld.utility.NotificationType;
 import packetworld.utility.Utility;
-
-import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -32,32 +30,52 @@ import java.util.ResourceBundle;
 
 public class FXMLEnviosController implements Initializable {
 
-    @FXML private TableView<Envio> tvEnvios;
+    @FXML
+    private TableView<Envio> tvEnvios;
 
-    @FXML private TableColumn<Envio, String> colId;
-    @FXML private TableColumn<Envio, String> colIdCliente;
-    @FXML private TableColumn<Envio, String> colGuia;
-    @FXML private TableColumn<Envio, String> colDestinatario;
-    @FXML private TableColumn<Envio, String> colTelefono;
-    @FXML private TableColumn<Envio, String> colDireccion;
-    @FXML private TableColumn<Envio, String> colCiudad;
-    @FXML private TableColumn<Envio, String> colEstadoDestino;
-    @FXML private TableColumn<Envio, String> colSucursalOrigen;
-    @FXML private TableColumn<Envio, String> colCosto;
-    @FXML private TableColumn<Envio, String> colPeso;
-    @FXML private TableColumn<Envio, String> colEstatus;
-    @FXML private TableColumn<Envio, String> colFechaCreacion;
-    @FXML private TableColumn<Envio, String> colFechaActualizacion;
-    @FXML private TableColumn<Envio, String> colColaborador;
+    @FXML
+    private TableColumn<Envio, String> colId;
+    @FXML
+    private TableColumn<Envio, String> colIdCliente;
+    @FXML
+    private TableColumn<Envio, String> colGuia;
+    @FXML
+    private TableColumn<Envio, String> colDestinatario;
+    @FXML
+    private TableColumn<Envio, String> colTelefono;
+    @FXML
+    private TableColumn<Envio, String> colDireccion;
+    @FXML
+    private TableColumn<Envio, String> colCiudad;
+    @FXML
+    private TableColumn<Envio, String> colEstadoDestino;
+    @FXML
+    private TableColumn<Envio, String> colSucursalOrigen;
+    @FXML
+    private TableColumn<Envio, String> colCosto;
+    @FXML
+    private TableColumn<Envio, String> colPeso;
+    @FXML
+    private TableColumn<Envio, String> colEstatus;
+    @FXML
+    private TableColumn<Envio, String> colFechaCreacion;
+    @FXML
+    private TableColumn<Envio, String> colFechaActualizacion;
+    @FXML
+    private TableColumn<Envio, String> colColaborador;
 
-    @FXML private TextField tfSearch;
-    @FXML private Label lblFilter;
-    @FXML private Label lblSearchClear;
-    
-    @FXML private Button btnNuevo;
-    @FXML private Button btnEditar;
-    @FXML private Button btnAsignar;
-    @FXML private Button btnEliminar;
+    @FXML
+    private TextField tfSearch;
+    @FXML
+    private Label lblFilter;
+    @FXML
+    private Label lblSearchClear;
+    @FXML
+    private Button btnEditar;
+    @FXML
+    private Button btnAsignar;
+    @FXML
+    private Button btnEliminar;
 
     private ObservableList<Envio> enviosList = FXCollections.observableArrayList();
     private FilteredList<Envio> filteredData;
@@ -65,8 +83,12 @@ public class FXMLEnviosController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        if (lblFilter != null) lblFilter.setCursor(Cursor.HAND);
-        if (lblSearchClear != null) lblSearchClear.setCursor(Cursor.HAND);
+        if (lblFilter != null) {
+            lblFilter.setCursor(Cursor.HAND);
+        }
+        if (lblSearchClear != null) {
+            lblSearchClear.setCursor(Cursor.HAND);
+        }
 
         configureTable();
 
@@ -97,11 +119,11 @@ public class FXMLEnviosController implements Initializable {
                 }
 
                 String lowerFilter = newValue.toLowerCase().trim();
-                
+
                 String id = (envio.getId() != null) ? String.valueOf(envio.getId()) : "";
                 String idCliente = (envio.getIdCliente() != null) ? String.valueOf(envio.getIdCliente()) : "";
                 String guia = (envio.getNumGuia() != null) ? envio.getNumGuia().toLowerCase() : "";
-                
+
                 switch (filterType) {
                     case "ID":
                         return id.equals(lowerFilter) || id.contains(lowerFilter);
@@ -111,9 +133,9 @@ public class FXMLEnviosController implements Initializable {
                         return guia.contains(lowerFilter);
                     case "General":
                     default:
-                        return id.contains(lowerFilter) || 
-                               idCliente.contains(lowerFilter) || 
-                               guia.contains(lowerFilter);
+                        return id.contains(lowerFilter)
+                                || idCliente.contains(lowerFilter)
+                                || guia.contains(lowerFilter);
                 }
             });
         });
@@ -140,11 +162,11 @@ public class FXMLEnviosController implements Initializable {
 
         item.setOnAction(e -> {
             filterType = text;
-            
+
             String currentSearch = tfSearch.getText();
             tfSearch.setText("");
             tfSearch.setText(currentSearch);
-            
+
             if ("General".equals(text)) {
                 tfSearch.setPromptText("Buscar envío (ID, ID Cliente o Guía)");
             } else {
@@ -235,15 +257,17 @@ public class FXMLEnviosController implements Initializable {
     }
 
     private void applyWrappingCellFactory(TableColumn<Envio, String> col) {
-        col.setCellFactory(new Callback<TableColumn<Envio,String>, TableCell<Envio,String>>() {
+        col.setCellFactory(new Callback<TableColumn<Envio, String>, TableCell<Envio, String>>() {
             @Override
             public TableCell<Envio, String> call(TableColumn<Envio, String> tc) {
                 return new TableCell<Envio, String>() {
                     private final Text text = new Text();
+
                     {
                         text.wrappingWidthProperty().bind(tc.widthProperty().subtract(10));
                         setGraphic(text);
                     }
+
                     @Override
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
@@ -260,26 +284,13 @@ public class FXMLEnviosController implements Initializable {
 
     @FXML
     private void handleAdd() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/packetworld/view/FXMLEnvioForm.fxml"));
-            Parent root = loader.load();
-            Object controller = loader.getController();
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Nuevo Envío");
-            stage.setScene(new Scene(root));
-            if (controller instanceof packetworld.controller.FXMLEnviosFormController) {
-                ((packetworld.controller.FXMLEnviosFormController) controller).setEditMode(false, null);
-            }
-            stage.showAndWait();
-            if (controller instanceof packetworld.controller.FXMLEnviosFormController) {
-                boolean ok = ((packetworld.controller.FXMLEnviosFormController) controller).isOperationSuccess();
-                if (ok) loadData();
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            Utility.createAlert("Error", "No se pudo abrir el formulario de envío", NotificationType.FAILURE);
-        }
+        Utility.<FXMLEnviosFormController>openAnimatedModal(
+                "/packetworld/view/FXMLEnvioForm.fxml",
+                controller -> controller.setEditMode(false, null),
+                controller -> controller.isOperationSuccess(),
+                controller -> null
+        );
+        loadData();
     }
 
     @FXML
@@ -289,26 +300,13 @@ public class FXMLEnviosController implements Initializable {
             Utility.createAlert("Validación", "Selecciona un envío para editar", NotificationType.INFORMATION);
             return;
         }
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/packetworld/view/FXMLEnvioForm.fxml"));
-            Parent root = loader.load();
-            Object controller = loader.getController();
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Editar Envío");
-            stage.setScene(new Scene(root));
-            if (controller instanceof packetworld.controller.FXMLEnviosFormController) {
-                ((packetworld.controller.FXMLEnviosFormController) controller).setEnvio(sel);
-            }
-            stage.showAndWait();
-            if (controller instanceof packetworld.controller.FXMLEnviosFormController) {
-                boolean ok = ((packetworld.controller.FXMLEnviosFormController) controller).isOperationSuccess();
-                if (ok) loadData();
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            Utility.createAlert("Error", "No se pudo abrir el formulario de edición", NotificationType.FAILURE);
-        }
+        Utility.<FXMLEnviosFormController>openAnimatedModal(
+                "/packetworld/view/FXMLEnvioForm.fxml",
+                controller -> controller.setEditMode(true, sel),
+                controller -> controller.isOperationSuccess(),
+                controller -> null
+        );
+        loadData();
     }
 
     @FXML
@@ -319,13 +317,15 @@ public class FXMLEnviosController implements Initializable {
             return;
         }
         boolean confirm = Utility.showConfirmation("Eliminar envío", "¿Eliminar envío id " + sel.getId() + " ?");
-        if (!confirm) return;
+        if (!confirm) {
+            return;
+        }
 
         new Thread(() -> {
             MessageResponse mr = EnvioImp.delete(sel.getId());
             Platform.runLater(() -> {
                 if (mr != null && !mr.isError()) {
-                    Utility.createNotification("Envío eliminado", NotificationType.SUCCESS);
+                    Utility.createNotification("Envío eliminado", NotificationType.DELETE);
                     loadData();
                 } else {
                     String msg = mr == null ? "Respuesta nula del servidor" : mr.getMessage();

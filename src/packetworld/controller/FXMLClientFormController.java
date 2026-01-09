@@ -11,32 +11,34 @@ import packetworld.domain.ClientImp;
 import packetworld.dto.MessageResponse;
 import packetworld.utility.NotificationType;
 import packetworld.utility.Utility;
-
 import java.net.URL;
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.collections.ObservableList;
 
-/**
- * Formulario de Cliente adaptado para usar la API mediante ClientImp.
- * Ha sido simplificado: NO contiene ciudad, estado ni fotografía.
- */
 public class FXMLClientFormController implements Initializable {
 
-    @FXML private TextField tfFirstName;
-    @FXML private TextField tfLastName;
-    @FXML private TextField tfStreet;
-    @FXML private TextField tfNumber;
-    @FXML private TextField tfColony;
-    @FXML private TextField tfZipCode;
-    @FXML private TextField tfPhone;
-    @FXML private TextField tfEmail;
-
-    @FXML private Button btnSave;
-    @FXML private Button btnCancel;
-    @FXML private Button btnDelete;
+    @FXML
+    private TextField tfFirstName;
+    @FXML
+    private TextField tfLastName;
+    @FXML
+    private TextField tfStreet;
+    @FXML
+    private TextField tfNumber;
+    @FXML
+    private TextField tfColony;
+    @FXML
+    private TextField tfZipCode;
+    @FXML
+    private TextField tfPhone;
+    @FXML
+    private TextField tfEmail;
+    @FXML
+    private Button btnCancel;
+    @FXML
+    private Button btnDelete;
 
     private final ValidationSupport validationSupport = new ValidationSupport();
 
@@ -59,22 +61,23 @@ public class FXMLClientFormController implements Initializable {
         validationSupport.registerValidator(tfLastName, Validator.createEmptyValidator("Apellido requerido"));
         validationSupport.registerValidator(tfEmail, Validator.createRegexValidator("Correo inválido",
                 "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", null));
-        // No validamos ciudad/estado/foto (ya no existen)
     }
 
     public void setTargetList(ObservableList<Client> list) {
         this.targetList = list;
         if (list != null && !list.isEmpty()) {
             list.stream()
-                .map(Client::getId)
-                .filter(id -> id != null && id > 0)
-                .max(Comparator.naturalOrder())
-                .ifPresent(max -> ID_GEN.set(Math.max(ID_GEN.get(), max + 1)));
+                    .map(Client::getId)
+                    .filter(id -> id != null && id > 0)
+                    .max(Comparator.naturalOrder())
+                    .ifPresent(max -> ID_GEN.set(Math.max(ID_GEN.get(), max + 1)));
         }
     }
 
     public void setClient(Client c) {
-        if (c == null) return;
+        if (c == null) {
+            return;
+        }
         this.currentClient = c;
         this.isEditMode = true;
         populateFields(c);
@@ -102,8 +105,9 @@ public class FXMLClientFormController implements Initializable {
         c.setZipCode(tfZipCode.getText());
         c.setPhone(tfPhone.getText());
         c.setEmail(tfEmail.getText());
-        if (c.getStatus() == null) c.setStatus("Activo");
-        // No guardamos ciudad/estado/foto aquí.
+        if (c.getStatus() == null) {
+            c.setStatus("Activo");
+        }
     }
 
     public boolean isOperationSuccess() {
@@ -142,9 +146,13 @@ public class FXMLClientFormController implements Initializable {
 
     @FXML
     private void handleDelete() {
-        if (!isEditMode || currentClient == null) return;
+        if (!isEditMode || currentClient == null) {
+            return;
+        }
         boolean confirm = Utility.createAlert("Eliminar cliente", "¿Eliminar este cliente?", NotificationType.DELETE);
-        if (!confirm) return;
+        if (!confirm) {
+            return;
+        }
 
         new Thread(() -> {
             MessageResponse resp = ClientImp.delete(currentClient.getId());

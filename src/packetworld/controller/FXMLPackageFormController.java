@@ -1,236 +1,223 @@
 package packetworld.controller;
 
-import com.google.gson.reflect.TypeToken;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
+import javafx.util.Callback;
 import packetworld.domain.EnvioImp;
-import packetworld.domain.PaqueteImp; // asume que existe
+import packetworld.domain.PaqueteImp;
 import packetworld.dto.MessageResponse;
 import packetworld.pojo.Envio;
 import packetworld.pojo.Paquete;
-import packetworld.pojo.ResponseHTTP;
-import packetworld.utility.Utility;
 import packetworld.utility.NotificationType;
+import packetworld.utility.Utility;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.ResourceBundle;
-
-/**
- * Controller del formulario de Paquete.
- */
 public class FXMLPackageFormController implements Initializable {
 
-    @FXML private ComboBox<Envio> cbEnvio;
-    @FXML private TextField tfDescripcion;
-    @FXML private TextField tfPeso;
-    @FXML private TextField tfAlto;
-    @FXML private TextField tfAncho;
-    @FXML private TextField tfProfundidad;
-    @FXML private TextField tfCantidad;
-    @FXML private TextField tfValor;
+    @FXML
+    private ComboBox<Envio> cbEnvio;
+    @FXML
+    private TextArea tfDescripcion;
+    @FXML
+    private TextField tfPeso;
+    @FXML
+    private TextField tfAlto;
+    @FXML
+    private TextField tfAncho;
+    @FXML
+    private TextField tfProfundidad;
+    @FXML
+    private Spinner<Integer> spCantidad;
+    @FXML
+    private TextField tfValor;
+    @FXML
+    private Button btnCancel;
+    @FXML
+    private Button btnSave;
 
     private boolean editMode = false;
     private Paquete editingPaquete = null;
+    private boolean operationSuccess = false;
     private ObservableList<Envio> enviosList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Configurar ComboBox para mostrar label y manejar selección
-        cbEnvio.setItems(enviosList);
-
-cbEnvio.setCellFactory(listView -> new javafx.scene.control.ListCell<packetworld.pojo.Envio>() {
-    @Override
-    protected void updateItem(packetworld.pojo.Envio item, boolean empty) {
-        super.updateItem(item, empty);
-        if (empty || item == null) {
-            setText(null);
-        } else {
-            String id = item.getId() == null ? "?" : item.getId().toString();
-            String dir = item.getDireccionDestino() == null ? "" : item.getDireccionDestino();
-            setText(id + (dir.isEmpty() ? "" : " - " + dir));
+        setupEnvioComboBox();
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 1);
+        if (spCantidad != null) {
+            spCantidad.setValueFactory(valueFactory);
         }
-    }
-});
-
-// la celda que se muestra cuando el ComboBox está cerrado
-cbEnvio.setButtonCell(new javafx.scene.control.ListCell<packetworld.pojo.Envio>() {
-    @Override
-    protected void updateItem(packetworld.pojo.Envio item, boolean empty) {
-        super.updateItem(item, empty);
-        if (empty || item == null) {
-            setText(null);
-        } else {
-            String id = item.getId() == null ? "?" : item.getId().toString();
-            String dir = item.getDireccionDestino() == null ? "" : item.getDireccionDestino();
-            setText(id + (dir.isEmpty() ? "" : " - " + dir));
-        }
-    }
-});
 
         loadEnvios();
     }
-    private boolean operationSuccess = false;
 
-/** Devuelto al caller para saber si hay que mostrar la notificación de éxito. */
-public boolean isOperationSuccess() {
-    return operationSuccess;
-}
+    private void setupEnvioComboBox() {
+        if (cbEnvio == null) {
+            return;
+        }
+
+        cbEnvio.setItems(enviosList);
+        Callback<ListView<Envio>, ListCell<Envio>> factory = lv -> new ListCell<Envio>() {
+            @Override
+            protected void updateItem(Envio item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    String guia = item.getNumGuia() != null ? item.getNumGuia() : "Sin Guía";
+                    String dest = item.getDireccionDestino() != null ? item.getDireccionDestino() : "";
+                    setText(guia + " - " + dest);
+                }
+            }
+        };
+        cbEnvio.setCellFactory(factory);
+        cbEnvio.setButtonCell(factory.call(null));
+    }
 
     private void loadEnvios() {
-        // Reusar EnvioImp.getAll() — devuelve HashMap con clave "data" lista de Envios
-        try {
-            java.util.HashMap<String,Object> resp = EnvioImp.getAll();
-            if (resp != null && resp.containsKey("error") && Boolean.FALSE.equals(resp.get("error"))) {
-                @SuppressWarnings("unchecked")
-                List<Envio> list = (List<Envio>) resp.get("data");
-                enviosList.setAll(list);
-            } else {
-                System.err.println("No se pudo cargar envios: " + resp);
-            }
-        } catch (Throwable ex) {
-            ex.printStackTrace();
-        }
+        new Thread(() -> {
+            HashMap<String, Object> resp = EnvioImp.getAll();
+            Platform.runLater(() -> {
+                if (resp != null && !(boolean) resp.get("error")) {
+                    List<Envio> list = (List<Envio>) resp.get("data");
+                    if (list != null) {
+                        enviosList.setAll(list);
+                        if (editMode && editingPaquete != null && cbEnvio != null) {
+                            for (Envio e : enviosList) {
+                                if (e.getId().equals(editingPaquete.getEnvioId())) {
+                                    cbEnvio.setValue(e);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    System.err.println("No se pudieron cargar los envíos.");
+                }
+            });
+        }).start();
     }
 
     public void setEditMode(boolean editMode, Paquete paquete) {
         this.editMode = editMode;
         this.editingPaquete = paquete;
+
+        if (cbEnvio != null) {
+            cbEnvio.setDisable(editMode);
+        }
+
         if (editMode && paquete != null) {
-            // seleccionar envío en el combo por id si está presente
-            if (paquete.getEnvioId() != null) {
-                for (Envio e : enviosList) {
-                    if (e != null && e.getId() != null && e.getId().equals(paquete.getEnvioId())) {
-                        cbEnvio.getSelectionModel().select(e);
-                        break;
-                    }
-                }
+            if (tfDescripcion != null) {
+                tfDescripcion.setText(paquete.getDescripcion());
             }
-            tfDescripcion.setText(paquete.getDescripcion());
-            tfPeso.setText(paquete.getPeso() == null ? "" : paquete.getPeso().toString());
-            tfAlto.setText(paquete.getAlto() == null ? "" : paquete.getAlto().toString());
-            tfAncho.setText(paquete.getAncho() == null ? "" : paquete.getAncho().toString());
-            tfProfundidad.setText(paquete.getProfundidad() == null ? "" : paquete.getProfundidad().toString());
-            tfCantidad.setText(paquete.getCantidad() == null ? "" : paquete.getCantidad().toString());
-            tfValor.setText(paquete.getValor() == null ? "" : paquete.getValor().toString());
+            if (tfPeso != null) {
+                tfPeso.setText(String.valueOf(paquete.getPeso()));
+            }
+            if (tfAlto != null) {
+                tfAlto.setText(String.valueOf(paquete.getAlto()));
+            }
+            if (tfAncho != null) {
+                tfAncho.setText(String.valueOf(paquete.getAncho()));
+            }
+            if (tfProfundidad != null) {
+                tfProfundidad.setText(String.valueOf(paquete.getProfundidad()));
+            }
+            if (tfValor != null) {
+                tfValor.setText(String.valueOf(paquete.getValor()));
+            }
+
+            if (spCantidad != null && paquete.getCantidad() != null) {
+                spCantidad.getValueFactory().setValue(paquete.getCantidad());
+            }
+        }
+    }
+
+    public void setPaquete(Paquete p) {
+        setEditMode(true, p);
+    }
+
+    @FXML
+    private void handleSave() {
+        if (cbEnvio != null && cbEnvio.getValue() == null) {
+            Utility.createAlert("Validación", "Seleccione un envío.", NotificationType.FAILURE);
+            return;
+        }
+        if (tfDescripcion != null && tfDescripcion.getText().trim().isEmpty()) {
+            Utility.createAlert("Validación", "Ingrese una descripción.", NotificationType.FAILURE);
+            return;
+        }
+
+        try {
+            Paquete p = (editMode && editingPaquete != null) ? editingPaquete : new Paquete();
+
+            if (cbEnvio != null) {
+                p.setEnvioId(cbEnvio.getValue().getId());
+            }
+            if (tfDescripcion != null) {
+                p.setDescripcion(tfDescripcion.getText());
+            }
+            if (tfPeso != null) {
+                p.setPeso(parseDouble(tfPeso.getText()));
+            }
+            if (tfAlto != null) {
+                p.setAlto(parseDouble(tfAlto.getText()));
+            }
+            if (tfAncho != null) {
+                p.setAncho(parseDouble(tfAncho.getText()));
+            }
+            if (tfProfundidad != null) {
+                p.setProfundidad(parseDouble(tfProfundidad.getText()));
+            }
+            if (tfValor != null) {
+                p.setValor(parseDouble(tfValor.getText()));
+            }
+
+            if (spCantidad != null) {
+                p.setCantidad(spCantidad.getValue());
+            } else {
+                p.setCantidad(1);
+            }
+
+            MessageResponse mr;
+            if (editMode) {
+                mr = PaqueteImp.editPackage(p);
+            } else {
+                mr = PaqueteImp.addPackage(p);
+            }
+
+            if (mr != null && !mr.isError()) {
+                operationSuccess = true;
+                Utility.createNotification("Paquete guardado", NotificationType.SUCCESS);
+                Utility.closeModal(btnSave);
+            } else {
+                Utility.createAlert("Error", mr != null ? mr.getMessage() : "Error de red", NotificationType.FAILURE);
+            }
+
+        } catch (NumberFormatException e) {
+            Utility.createAlert("Error", "Verifique que los campos numéricos sean correctos.", NotificationType.FAILURE);
         }
     }
 
     @FXML
     private void handleCancel() {
-        Stage stage = (Stage) tfDescripcion.getScene().getWindow();
-        stage.close();
+        Utility.closeModal(btnCancel);
     }
 
-    @FXML
-    private void handleSave() {
-        // Validaciones básicas
-        Envio selectedEnvio = cbEnvio.getSelectionModel().getSelectedItem();
-        if (selectedEnvio == null) {
-            Utility.createAlert("Validación", "Selecciona un envío del listado.", NotificationType.INFORMATION);
-            return;
+    private Double parseDouble(String s) {
+        if (s == null || s.trim().isEmpty()) {
+            return 0.0;
         }
-
-        Paquete p = editMode && editingPaquete != null ? editingPaquete : new Paquete();
-        p.setEnvioId(selectedEnvio.getId());
-        p.setDescripcion(tfDescripcion.getText());
-        p.setPeso(parseDoubleOrNull(tfPeso.getText()));
-        p.setAlto(parseDoubleOrNull(tfAlto.getText()));
-        p.setAncho(parseDoubleOrNull(tfAncho.getText()));
-        p.setProfundidad(parseDoubleOrNull(tfProfundidad.getText()));
-        p.setCantidad(parseIntegerOrNull(tfCantidad.getText()));
-        p.setValor(parseDoubleOrNull(tfValor.getText()));
-
-        // Llamada al backend (PaqueteImp.registrar o editar)
-        MessageResponse mr;
-        if (editMode) {
-            mr = PaqueteImp.editPackage(p);
-        } else {
-            mr = PaqueteImp.addPackage(p);
-        }
-
-        if (mr != null && !mr.isError()) {
-            Utility.createNotification(mr.getMessage() == null ? "Guardado" : mr.getMessage(), NotificationType.SUCCESS);
-            // cerrar modal y forzar recarga en la vista padre (si corresponde)
-            Stage stage = (Stage) tfDescripcion.getScene().getWindow();
-            stage.close();
-        } else {
-            String msg = mr == null ? "Respuesta nula del servidor" : mr.getMessage();
-            Utility.createAlert("Error al guardar paquete", msg, NotificationType.FAILURE);
-        }
+        return Double.parseDouble(s.trim());
     }
 
-    private Double parseDoubleOrNull(String s) {
-        try { return s == null || s.trim().isEmpty() ? null : Double.valueOf(s.trim()); }
-        catch (Exception e) { return null; }
+    public boolean isOperationSuccess() {
+        return operationSuccess;
     }
-
-    private Integer parseIntegerOrNull(String s) {
-        try { return s == null || s.trim().isEmpty() ? null : Integer.valueOf(s.trim()); }
-        catch (Exception e) { return null; }
-    }
-    // añade estos métodos a FXMLPackageFormController (dentro de la clase)
-
-
-/**
- * Compatibilidad: método que espera el caller (sin paquete).
- * Llama a tu setEditMode existente pasando null para el paquete.
- */
-public void setEditMode(boolean editMode) {
-    // si ya tienes setEditMode(boolean, Paquete), llámalo:
-    try {
-        // si existe el overload de dos parámetros:
-        this.setEditMode(editMode, null);
-    } catch (NoSuchMethodError e) {
-        // si no existe, aplica la lógica mínima:
-        this.editMode = editMode;
-        this.editingPaquete = null;
-        // opcional: actualizar campos de UI
-    }
-}
-
-/**
- * Compatibilidad: el caller quiere pasar el paquete por separado.
- * Marcaremos el formulario en modo edición y seleccionamos el paquete.
- */public void setPaquete(packetworld.pojo.Paquete paquete) {
-    // Si ya existe setEditMode(boolean, Paquete), reutilízalo
-    try {
-        this.setEditMode(true, paquete);
-        return; // ya hizo todo
-    } catch (NoSuchMethodError e) {
-        // si no existe, continúa y aplica manualmente
-    }
-
-    // fallback manual
-    this.editMode = true;
-    this.editingPaquete = paquete;
-
-    // si envios ya cargó (o recargar envios luego), seleccionar en combo si corresponde:
-    if (paquete != null && enviosList != null && !enviosList.isEmpty()) {
-        for (Envio envio : enviosList) {                       // <-- variable renombrada a 'envio'
-            if (envio != null && envio.getId() != null
-                    && envio.getId().equals(paquete.getIdEnvio())) {
-                cbEnvio.getSelectionModel().select(envio);
-                break;
-            }
-        }
-    }
-
-    // y setear campos del formulario (descripcion, peso, etc.)
-    if (paquete != null) {
-        tfDescripcion.setText(paquete.getDescripcion());
-        tfPeso.setText(paquete.getPeso() == null ? "" : paquete.getPeso().toString());
-        tfAlto.setText(paquete.getAlto() == null ? "" : paquete.getAlto().toString());
-        tfAncho.setText(paquete.getAncho() == null ? "" : paquete.getAncho().toString());
-        tfProfundidad.setText(paquete.getProfundidad() == null ? "" : paquete.getProfundidad().toString());
-        tfCantidad.setText(paquete.getCantidad() == null ? "" : paquete.getCantidad().toString());
-        tfValor.setText(paquete.getValor() == null ? "" : paquete.getValor().toString());
-    }
-}
 }

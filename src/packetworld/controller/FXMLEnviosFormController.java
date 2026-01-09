@@ -16,6 +16,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import packetworld.domain.ClientImp;
 import packetworld.domain.EnvioImp;
 import packetworld.domain.StoreImp;
@@ -30,27 +31,42 @@ import packetworld.pojo.DriverAssignmentSession;
 
 public class FXMLEnviosFormController implements Initializable {
 
-    @FXML private ComboBox<Client> cbCliente;
-    @FXML private TextField tfTracking;
-    @FXML private TextField tfFecha;
-    @FXML private TextField tfDestino;
-    @FXML private TextField tfPeso;
-    @FXML private ComboBox<String> cbEstado;
-    @FXML private Button btnCancel;
-    @FXML private Button btnSave;
-    @FXML private ComboBox<Store> cbSucursal;
-    @FXML private TextField tfOrigen;
-    @FXML private TextField tfCosto;
-    @FXML private TextField tfDestinatarioNombre;
-    @FXML private TextField tfDestinatarioTelefono;
-    @FXML private TextField tfCiudadDestino;
-    @FXML private TextField tfEstadoDestino;
-    
-    // Controles de asignación
-    @FXML private Label lblAssignedDriver;
-    @FXML private Button btnUnassignDriver;
-    @FXML private Label lblAssignedInfo;
-    @FXML private Button btnNewClient; // Aunque lo quitamos de la vista, lo mantenemos por si decides reusarlo
+    @FXML
+    private ComboBox<Client> cbCliente;
+    @FXML
+    private TextField tfTracking;
+    @FXML
+    private TextField tfFecha;
+    @FXML
+    private TextField tfDestino;
+    @FXML
+    private TextField tfPeso;
+    @FXML
+    private ComboBox<String> cbEstado;
+    @FXML
+    private Button btnCancel;
+    @FXML
+    private Button btnSave;
+    @FXML
+    private ComboBox<Store> cbSucursal;
+    @FXML
+    private TextField tfOrigen;
+    @FXML
+    private TextField tfCosto;
+    @FXML
+    private TextField tfDestinatarioNombre;
+    @FXML
+    private TextField tfDestinatarioTelefono;
+    @FXML
+    private TextField tfCiudadDestino;
+    @FXML
+    private TextField tfEstadoDestino;
+    @FXML
+    private HBox driverBox;
+    @FXML
+    private Label lblAssignedDriver;
+    @FXML
+    private Button btnUnassignDriver;
 
     private boolean editMode = false;
     private Envio editingEnvio = null;
@@ -65,15 +81,17 @@ public class FXMLEnviosFormController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setupClientComboBox();
         setupSucursalComboBox();
-        
-        if (tfTracking != null) tfTracking.setEditable(false);
+
+        if (tfTracking != null) {
+            tfTracking.setEditable(false);
+        }
         if (cbEstado != null) {
             cbEstado.setItems(FXCollections.observableArrayList(
                     "recibido", "procesado", "en_transito", "entregado", "cancelado"
             ));
             cbEstado.getSelectionModel().select("recibido");
         }
-        
+
         setDefaultFechaNowIfEmpty();
         loadClients();
         loadSucursales();
@@ -82,21 +100,39 @@ public class FXMLEnviosFormController implements Initializable {
             cbCliente.valueProperty().addListener((obs, oldV, newV) -> {
                 if (newV != null) {
                     try {
-                        if (tfDestino != null) tfDestino.setText(newV.getFullAddress() == null ? "" : newV.getFullAddress());
-                        if (tfDestinatarioTelefono != null && (tfDestinatarioTelefono.getText() == null || tfDestinatarioTelefono.getText().isEmpty())) {
-                            tfDestinatarioTelefono.setText(newV.getTelefono());
+                        boolean shouldUpdate = !editMode;
+
+                        if (editMode && editingEnvio != null) {
+                            if (!newV.getId().equals(editingEnvio.getIdCliente())) {
+                                shouldUpdate = true;
+                            }
                         }
-                        if (tfDestinatarioNombre != null && (tfDestinatarioNombre.getText() == null || tfDestinatarioNombre.getText().isEmpty())) {
-                            tfDestinatarioNombre.setText(newV.getFullName());
+
+                        if (shouldUpdate) {
+                            if (tfDestino != null) {
+                                tfDestino.setText(newV.getFullAddress() == null ? "" : newV.getFullAddress());
+                            }
+
+                            if (tfDestinatarioTelefono != null) {
+                                tfDestinatarioTelefono.setText(newV.getPhone() == null ? "" : newV.getPhone());
+                            }
+
+                            if (tfDestinatarioNombre != null) {
+                                tfDestinatarioNombre.setText(newV.getFullName() == null ? "" : newV.getFullName());
+                            }
                         }
-                    } catch (Throwable ex) { ex.printStackTrace(); }
+                    } catch (Throwable ex) {
+                        ex.printStackTrace();
+                    }
                 }
             });
         }
     }
 
     private void setDefaultFechaNowIfEmpty() {
-        if (tfFecha == null) return;
+        if (tfFecha == null) {
+            return;
+        }
         if (tfFecha.getText() == null || tfFecha.getText().trim().isEmpty()) {
             tfFecha.setText(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         }
@@ -111,68 +147,109 @@ public class FXMLEnviosFormController implements Initializable {
             tfFecha.setText(envio.getFechaCreacion() != null ? envio.getFechaCreacion() : LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             tfDestino.setText(envio.getDireccionDestino() != null ? envio.getDireccionDestino() : "");
             tfPeso.setText(envio.getPeso() != null ? String.valueOf(envio.getPeso()) : "");
-            tfCosto.setText(envio.getCosto() != null ? String.valueOf(envio.getCosto()) : "");
-            
-            if (cbEstado != null) cbEstado.getSelectionModel().select(envio.getEstatus() != null ? envio.getEstatus() : "recibido");
-            if (tfDestinatarioNombre != null) tfDestinatarioNombre.setText(envio.getDestinatarioNombre());
-            if (tfDestinatarioTelefono != null) tfDestinatarioTelefono.setText(envio.getDestinatarioTelefono());
-            if (tfCiudadDestino != null) tfCiudadDestino.setText(envio.getCiudadDestino());
-            if (tfEstadoDestino != null) tfEstadoDestino.setText(envio.getEstadoDestino());
+
+            tfCosto.setText(envio.getCosto() != null ? String.format("%.2f", envio.getCosto()) : "");
+
+            if (cbEstado != null) {
+                cbEstado.getSelectionModel().select(envio.getEstatus() != null ? envio.getEstatus() : "recibido");
+            }
+            if (tfDestinatarioNombre != null) {
+                tfDestinatarioNombre.setText(envio.getDestinatarioNombre());
+            }
+            if (tfDestinatarioTelefono != null) {
+                tfDestinatarioTelefono.setText(envio.getDestinatarioTelefono());
+            }
+            if (tfCiudadDestino != null) {
+                tfCiudadDestino.setText(envio.getCiudadDestino());
+            }
+            if (tfEstadoDestino != null) {
+                tfEstadoDestino.setText(envio.getEstadoDestino());
+            }
 
             if (envio.getIdCliente() != null) {
                 Client match = findClientById(envio.getIdCliente());
-                if (match != null) cbCliente.getSelectionModel().select(match);
-                else desiredClientId = envio.getIdCliente();
+                if (match != null) {
+                    cbCliente.getSelectionModel().select(match);
+                } else {
+                    desiredClientId = envio.getIdCliente();
+                }
             }
             if (envio.getIdSucursalOrigen() != null) {
                 Store match = findSucursalById(envio.getIdSucursalOrigen());
-                if (match != null) cbSucursal.getSelectionModel().select(match);
-                else desiredSucursalId = envio.getIdSucursalOrigen();
+                if (match != null) {
+                    cbSucursal.getSelectionModel().select(match);
+                } else {
+                    desiredSucursalId = envio.getIdSucursalOrigen();
+                }
             }
-            if (cbCliente != null) cbCliente.setDisable(true);
+
+            if (cbCliente != null) {
+                cbCliente.setDisable(false);
+            }
+
         } else {
             tfTracking.setText("Generado automáticamente...");
             tfFecha.setText(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             tfDestino.setText("");
             tfPeso.setText("");
             tfCosto.setText("");
-            if (cbEstado != null) cbEstado.getSelectionModel().select("recibido");
+            if (cbEstado != null) {
+                cbEstado.getSelectionModel().select("recibido");
+            }
             if (cbCliente != null) {
                 cbCliente.getSelectionModel().clearSelection();
                 cbCliente.setDisable(false);
             }
-            if (cbSucursal != null) cbSucursal.getSelectionModel().clearSelection();
+            if (cbSucursal != null) {
+                cbSucursal.getSelectionModel().clearSelection();
+            }
         }
-        
-        if (tfTracking != null) tfTracking.setDisable(true);
-        
+
+        if (tfTracking != null) {
+            tfTracking.setDisable(true);
+        }
+
         updateAssignedDriverSection();
     }
 
     private void updateAssignedDriverSection() {
-        if (lblAssignedDriver == null || btnUnassignDriver == null) return;
+        if (lblAssignedDriver == null || btnUnassignDriver == null) {
+            return;
+        }
 
         if (editingEnvio == null || editingEnvio.getIdColaboradorActualizo() == null) {
             lblAssignedDriver.setText("—");
-            
             btnUnassignDriver.setVisible(false);
             btnUnassignDriver.setManaged(false);
+            if (driverBox != null) {
+                driverBox.setVisible(false);
+                driverBox.setManaged(false);
+            }
         } else {
             lblAssignedDriver.setText("ID: " + editingEnvio.getIdColaboradorActualizo());
-            
             btnUnassignDriver.setVisible(true);
             btnUnassignDriver.setManaged(true);
+            if (driverBox != null) {
+                driverBox.setVisible(true);
+                driverBox.setManaged(true);
+            }
         }
     }
 
     @FXML
     public void handleUnassignDriver(ActionEvent event) {
-        if (!editMode || editingEnvio == null) return;
+        if (!editMode || editingEnvio == null) {
+            return;
+        }
         Integer envioId = editingEnvio.getId();
-        if (envioId == null) return;
+        if (envioId == null) {
+            return;
+        }
 
         boolean confirm = Utility.showConfirmation("Desasignar conductor", "¿Deseas desasignar el conductor del envío " + envioId + " ?");
-        if (!confirm) return;
+        if (!confirm) {
+            return;
+        }
 
         new Thread(() -> {
             MessageResponse mr = EnvioImp.unassignDriver(envioId);
@@ -190,7 +267,6 @@ public class FXMLEnviosFormController implements Initializable {
         }).start();
     }
 
-    
     private Client findClientById(Integer id) {
         return clientes.stream().filter(c -> c.getId().equals(id)).findFirst().orElse(null);
     }
@@ -200,12 +276,16 @@ public class FXMLEnviosFormController implements Initializable {
     }
 
     private void setupClientComboBox() {
-        if (cbCliente == null) return;
+        if (cbCliente == null) {
+            return;
+        }
         cbCliente.setItems(clientes);
     }
 
     private void setupSucursalComboBox() {
-        if (cbSucursal == null) return;
+        if (cbSucursal == null) {
+            return;
+        }
         cbSucursal.setItems(sucursales);
     }
 
@@ -215,10 +295,15 @@ public class FXMLEnviosFormController implements Initializable {
             Platform.runLater(() -> {
                 if (resp != null && !(boolean) resp.get("error")) {
                     List<Client> list = (List<Client>) resp.get("data");
-                    if (list != null) clientes.setAll(list);
+                    if (list != null) {
+                        clientes.setAll(list);
+                    }
                     if (desiredClientId != null) {
                         Client match = findClientById(desiredClientId);
-                        if (match != null) { cbCliente.getSelectionModel().select(match); desiredClientId = null; }
+                        if (match != null) {
+                            cbCliente.getSelectionModel().select(match);
+                            desiredClientId = null;
+                        }
                     }
                 }
             });
@@ -231,22 +316,38 @@ public class FXMLEnviosFormController implements Initializable {
             Platform.runLater(() -> {
                 if (list != null) {
                     List<Store> active = new ArrayList<>();
-                    for (Store s : list) if (s.isActiva()) active.add(s);
+                    for (Store s : list) {
+                        if (s.isActiva()) {
+                            active.add(s);
+                        }
+                    }
                     sucursales.setAll(active);
                     if (desiredSucursalId != null) {
                         Store match = findSucursalById(desiredSucursalId);
-                        if (match != null) { cbSucursal.getSelectionModel().select(match); desiredSucursalId = null; }
+                        if (match != null) {
+                            cbSucursal.getSelectionModel().select(match);
+                            desiredSucursalId = null;
+                        }
                     }
                 }
             });
         }).start();
     }
 
-    public boolean isOperationSuccess() { return operationSuccess; }
-    public void setEnvio(Envio envio) { setEditMode(true, envio); }
+    public boolean isOperationSuccess() {
+        return operationSuccess;
+    }
+
+    public void setEnvio(Envio envio) {
+        setEditMode(true, envio);
+    }
 
     private Integer getLoggedCollaboratorId() {
-        try { return DriverAssignmentSession.getCurrentDriverId(); } catch (Exception e) { return null; }
+        try {
+            return DriverAssignmentSession.getCurrentDriverId();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private String generateTrackingNumber(Store origin, Envio envio) {
@@ -288,16 +389,20 @@ public class FXMLEnviosFormController implements Initializable {
         req.setFechaCreacion(tfFecha.getText());
 
         Integer driverId = getLoggedCollaboratorId();
-        if (driverId != null) req.setIdColaboradorActualizo(driverId);
+        if (driverId != null) {
+            req.setIdColaboradorActualizo(driverId);
+        }
 
-        double pesoVal = 0.0;
+        Double pesoVal = 1.0;
         try {
             if (tfPeso.getText() != null && !tfPeso.getText().isEmpty()) {
                 pesoVal = Double.parseDouble(tfPeso.getText().trim());
                 req.setPeso(pesoVal);
+            } else {
+                req.setPeso(1.0);
             }
         } catch (NumberFormatException e) {
-            Utility.createAlert("Validación", "Peso inválido", NotificationType.INFORMATION);
+            Utility.createAlert("Validación", "Peso inválido. Use punto decimal.", NotificationType.INFORMATION);
             return;
         }
 
@@ -309,8 +414,8 @@ public class FXMLEnviosFormController implements Initializable {
 
             List<Paquete> paquetes = new ArrayList<>();
             Paquete p = new Paquete();
-            p.setDescripcion("Paquete Estándar");
-            p.setPeso(pesoVal > 0 ? pesoVal : 1.0);
+            p.setDescripcion("Paquete Inicial");
+            p.setPeso(pesoVal);
             p.setCantidad(1);
             p.setAlto(10.0);
             p.setAncho(10.0);
@@ -322,7 +427,7 @@ public class FXMLEnviosFormController implements Initializable {
 
             if (resp != null && !resp.isError()) {
                 this.operationSuccess = true;
-                Utility.createNotification( "Envío registrado.\nGuía: " + autoGuia + "\n", NotificationType.SUCCESS);
+                Utility.createNotification("Envío registrado.\nGuía: " + autoGuia + "\n", NotificationType.SUCCESS);
                 Utility.closeModal(btnSave);
             } else {
                 Utility.createAlert("Error al registrar", resp != null ? resp.getMessage() : "Sin respuesta", NotificationType.FAILURE);

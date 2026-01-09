@@ -31,20 +31,30 @@ import packetworld.utility.Utility;
 
 public class FXMLUnitsController implements Initializable {
 
-    @FXML private TextField searchField;
-    @FXML private Label lblFilter;
-    @FXML private Label lblSearch;
-    
-    @FXML private TableView<Unit> tvUnits;
-    @FXML private TableColumn<Unit, String> colBrand;
-    @FXML private TableColumn<Unit, String> colModel;
-    @FXML private TableColumn<Unit, Integer> colYear;
-    @FXML private TableColumn<Unit, String> colVIN;
-    @FXML private TableColumn<Unit, String> colType;
-    @FXML private TableColumn<Unit, String> colNII;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private Label lblFilter;
 
-    @FXML private Button btnEdit;
-    @FXML private Button btnDelete;
+    @FXML
+    private TableView<Unit> tvUnits;
+    @FXML
+    private TableColumn<Unit, String> colBrand;
+    @FXML
+    private TableColumn<Unit, String> colModel;
+    @FXML
+    private TableColumn<Unit, Integer> colYear;
+    @FXML
+    private TableColumn<Unit, String> colVIN;
+    @FXML
+    private TableColumn<Unit, String> colType;
+    @FXML
+    private TableColumn<Unit, String> colNII;
+
+    @FXML
+    private Button btnEdit;
+    @FXML
+    private Button btnDelete;
 
     private ObservableList<Unit> unitsList;
     private FilteredList<Unit> filteredData;
@@ -57,7 +67,7 @@ public class FXMLUnitsController implements Initializable {
         loadData();
         configureSearchFilter();
         tvUnits.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-    }    
+    }
 
     private void configureTableColumns() {
         colBrand.setCellValueFactory(new PropertyValueFactory<>("brand"));
@@ -67,15 +77,23 @@ public class FXMLUnitsController implements Initializable {
         colType.setCellValueFactory(new PropertyValueFactory<>("type"));
         colNII.setCellValueFactory(new PropertyValueFactory<>("nii"));
     }
-    
+
     private void configureTableSelection() {
-        if(btnEdit != null) btnEdit.setDisable(true);
-        if(btnDelete != null) btnDelete.setDisable(true);
+        if (btnEdit != null) {
+            btnEdit.setDisable(true);
+        }
+        if (btnDelete != null) {
+            btnDelete.setDisable(true);
+        }
 
         tvUnits.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             boolean isSelected = (newVal != null);
-            if(btnEdit != null) btnEdit.setDisable(!isSelected);
-            if(btnDelete != null) btnDelete.setDisable(!isSelected);
+            if (btnEdit != null) {
+                btnEdit.setDisable(!isSelected);
+            }
+            if (btnDelete != null) {
+                btnDelete.setDisable(!isSelected);
+            }
         });
     }
 
@@ -86,12 +104,12 @@ public class FXMLUnitsController implements Initializable {
                 if (!(boolean) response.get("error")) {
                     List<Unit> list = (List<Unit>) response.get("data");
                     unitsList = FXCollections.observableArrayList(list);
-                    
+
                     filteredData = new FilteredList<>(unitsList, p -> true);
                     SortedList<Unit> sortedData = new SortedList<>(filteredData);
                     sortedData.comparatorProperty().bind(tvUnits.comparatorProperty());
                     tvUnits.setItems(sortedData);
-                    
+
                     String currentSearch = searchField.getText();
                     if (!currentSearch.isEmpty()) {
                         searchField.setText("");
@@ -107,11 +125,12 @@ public class FXMLUnitsController implements Initializable {
     private void configureSearchFilter() {
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(unit -> {
-                if (newValue == null || newValue.isEmpty()) return true;
-                
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+
                 String lowerFilter = newValue.toLowerCase().trim();
-                
-                // Obtenemos valores seguros (evitando NullPointer)
+
                 String brand = (unit.getBrand() != null) ? unit.getBrand().toLowerCase() : "";
                 String model = (unit.getModel() != null) ? unit.getModel().toLowerCase() : "";
                 String vin = (unit.getVin() != null) ? unit.getVin().toLowerCase() : "";
@@ -120,19 +139,25 @@ public class FXMLUnitsController implements Initializable {
                 String year = (unit.getYear() != null) ? unit.getYear().toString() : "";
 
                 switch (filterType) {
-                    case "Marca": return brand.contains(lowerFilter);
-                    case "Modelo": return model.contains(lowerFilter);
-                    case "Año": return year.contains(lowerFilter);
-                    case "VIN": return vin.contains(lowerFilter);
-                    case "Tipo": return type.contains(lowerFilter);
-                    case "NII": return nii.contains(lowerFilter);
+                    case "Marca":
+                        return brand.contains(lowerFilter);
+                    case "Modelo":
+                        return model.contains(lowerFilter);
+                    case "Año":
+                        return year.contains(lowerFilter);
+                    case "VIN":
+                        return vin.contains(lowerFilter);
+                    case "Tipo":
+                        return type.contains(lowerFilter);
+                    case "NII":
+                        return nii.contains(lowerFilter);
                     case "General":
                     default:
 
-                        return brand.contains(lowerFilter) || 
-                               model.contains(lowerFilter) || 
-                               vin.contains(lowerFilter) || 
-                               nii.contains(lowerFilter);
+                        return brand.contains(lowerFilter)
+                                || model.contains(lowerFilter)
+                                || vin.contains(lowerFilter)
+                                || nii.contains(lowerFilter);
                 }
             });
         });
@@ -157,7 +182,7 @@ public class FXMLUnitsController implements Initializable {
 
     private RadioMenuItem createFilterOption(String text, ToggleGroup group, boolean isSelected) {
         String key = text.contains("General") ? "General" : text;
-        
+
         RadioMenuItem item = new RadioMenuItem(text);
         item.setToggleGroup(group);
         item.setSelected(filterType.equals(key));
@@ -168,7 +193,7 @@ public class FXMLUnitsController implements Initializable {
             String currentSearch = searchField.getText();
             searchField.setText("");
             searchField.setText(currentSearch);
-            
+
             searchField.setPromptText("Buscar por: " + filterType);
         });
 
@@ -184,10 +209,10 @@ public class FXMLUnitsController implements Initializable {
     @FXML
     private void handleAddUnit(ActionEvent event) {
         Utility.<FXMLUnitFormController>openAnimatedModal(
-            "/packetworld/view/FXMLUnitForm.fxml",
-            null,
-            controller -> controller.isOperationSuccess(),
-            controller -> "Unidad registrada correctamente"
+                "/packetworld/view/FXMLUnitForm.fxml",
+                null,
+                controller -> controller.isOperationSuccess(),
+                controller -> "Unidad registrada correctamente"
         );
         loadData();
     }
@@ -197,10 +222,10 @@ public class FXMLUnitsController implements Initializable {
         Unit selected = tvUnits.getSelectionModel().getSelectedItem();
         if (selected != null) {
             Utility.<FXMLUnitFormController>openAnimatedModal(
-                "/packetworld/view/FXMLUnitForm.fxml",
-                controller -> controller.setUnit(selected),
-                controller -> controller.isOperationSuccess(),
-                controller -> "Unidad actualizada correctamente"
+                    "/packetworld/view/FXMLUnitForm.fxml",
+                    controller -> controller.setUnit(selected),
+                    controller -> controller.isOperationSuccess(),
+                    controller -> "Unidad actualizada correctamente"
             );
             loadData();
         } else {
@@ -219,7 +244,7 @@ public class FXMLUnitsController implements Initializable {
             dialog.setContentText("Por favor ingrese el motivo de la baja:");
 
             Optional<String> result = dialog.showAndWait();
-            
+
             result.ifPresent(reason -> {
                 if (reason.trim().isEmpty()) {
                     Utility.createAlert("Aviso", "El motivo es obligatorio para continuar.", NotificationType.INFORMATION);
@@ -229,7 +254,7 @@ public class FXMLUnitsController implements Initializable {
                 MessageResponse response = UnitImp.delete(selected.getIdUnit(), reason);
 
                 if (!response.isError()) {
-                    Utility.createNotification("Unidad dada de baja exitosamente", NotificationType.SUCCESS);
+                    Utility.createNotification("Unidad dada de baja exitosamente", NotificationType.DELETE);
                     loadData();
                 } else {
                     Utility.createAlert("Error", response.getMessage(), NotificationType.FAILURE);

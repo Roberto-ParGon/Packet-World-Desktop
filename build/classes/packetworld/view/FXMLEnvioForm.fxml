@@ -1,133 +1,163 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="packetworld.controller.FXMLEnviosFormController"
-            prefWidth="900.0" prefHeight="780.0" styleClass="modal-root">
-
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="packetworld.controller.FXMLEnviosFormController"
+            prefWidth="950.0" prefHeight="700.0" style="-fx-background-color: #f4f4f4;">
     <children>
-        <HBox fx:id="headerContainer"
-              alignment="CENTER_LEFT"
-              prefHeight="70.0"
-              styleClass="modal-header"
-              AnchorPane.leftAnchor="0.0"
-              AnchorPane.rightAnchor="0.0"
-              AnchorPane.topAnchor="0.0">
+        <HBox alignment="CENTER_LEFT" prefHeight="60.0" style="-fx-background-color: #2c3e50;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <padding>
-                <Insets left="30.0"/>
+                <Insets left="20.0" />
             </padding>
             <children>
-                <Label fx:id="lblTitle" text="Gestión de Envío" styleClass="modal-title"/>
+                <Label text="Gestión de Envíos" textFill="WHITE">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
             </children>
         </HBox>
 
-        <HBox spacing="40.0"
-              AnchorPane.topAnchor="90.0"
-              AnchorPane.bottomAnchor="80.0"
-              AnchorPane.leftAnchor="40.0"
-              AnchorPane.rightAnchor="40.0">
-            <children>
-
-                <VBox spacing="15.0" prefWidth="50.0">
-                </VBox>
-
-                <GridPane hgap="20.0" vgap="12.0" HBox.hgrow="ALWAYS">
-                    <columnConstraints>
-                        <ColumnConstraints percentWidth="50.0"/>
-                        <ColumnConstraints percentWidth="50.0"/>
-                    </columnConstraints>
-
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" AnchorPane.topAnchor="60.0" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <content>
+                <VBox spacing="20.0" style="-fx-background-color: #f4f4f4;">
+                    <padding>
+                        <Insets top="20.0" right="30.0" bottom="20.0" left="30.0" />
+                    </padding>
                     <children>
-                        <Label text="Cliente" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                        <Label text="Fecha Creación" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-
-                        <ComboBox fx:id="cbCliente" maxWidth="Infinity" 
-                                  GridPane.columnIndex="0" GridPane.rowIndex="1"/>
                         
-                        <TextField fx:id="tfFecha" editable="false" style="-fx-opacity: 0.8;" 
-                                   GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-
-                        <Label text="Tracking # (Generado)" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                        <Label text="Costo (Calculado Automáticamente)" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-
-                        <TextField fx:id="tfTracking" editable="false" promptText="Pendiente..." style="-fx-background-color: #f0f0f0;"
-                                   GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                        <TextField fx:id="tfCosto" editable="false" promptText="Se calculará al guardar" style="-fx-background-color: #f0f0f0;"
-                                   GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-
-                        <Label text="Sucursal Origen" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                        <Label text="Dirección Destino" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-
-                        <ComboBox fx:id="cbSucursal" maxWidth="Infinity" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                        <TextField fx:id="tfDestino" promptText="Calle, Número, Colonia, CP..." GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-
-                        <Label text="Destinatario (Nombre)" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <Label text="Teléfono Destinatario" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-
-                        <TextField fx:id="tfDestinatarioNombre" promptText="Nombre de quien recibe" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                        <TextField fx:id="tfDestinatarioTelefono" promptText="10 dígitos" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
-
-                        <Label text="Ciudad Destino" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
-                        <Label text="Estado Destino" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
-
-                        <TextField fx:id="tfCiudadDestino" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
-                        <TextField fx:id="tfEstadoDestino" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
-
-                        <Label text="Peso del Paquete (kg)" styleClass="field-label" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
-                        <Label text="Estatus Actual" styleClass="field-label" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
-
-                        <TextField fx:id="tfPeso" promptText="Ej. 1.5" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
-                        <ComboBox fx:id="cbEstado" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
-
-                        <VBox spacing="8.0" styleClass="assigned-driver-section" 
-                              GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="12">
-                            <padding>
-                                <Insets top="15.0" right="0.0" bottom="0.0" left="0.0"/>
-                            </padding>
-                            <children>
-                                <Separator />
-                                <Label text="Información de Conductor" style="-fx-font-weight:bold; -fx-text-fill: #555;"/>
-                                <HBox spacing="15.0" alignment="CENTER_LEFT">
+                        <TitledPane text="Información General" collapsible="false" animated="false">
+                            <content>
+                                <GridPane hgap="15.0" vgap="15.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints percentWidth="33" />
+                                        <ColumnConstraints percentWidth="33" />
+                                        <ColumnConstraints percentWidth="34" />
+                                    </columnConstraints>
                                     <children>
-                                        <Label text="Conductor Asignado:" />
-                                        <Label fx:id="lblAssignedDriver" text="—" style="-fx-font-weight: bold;"/>
-                                        
-                                        <Pane HBox.hgrow="ALWAYS" />
-                                        
-                                        <Button fx:id="btnUnassignDriver" text="Desasignar Conductor" 
-                                                onAction="#handleUnassignDriver" styleClass="action-button, btn-red" 
-                                                visible="false" managed="false"/>
+                                        <VBox spacing="5.0" GridPane.columnIndex="0">
+                                            <Label text="Número de Guía (Auto)" style="-fx-font-weight: bold;"/>
+                                            <TextField fx:id="tfTracking" editable="false" promptText="Generado automáticamente" style="-fx-background-color: #e9ecef;"/>
+                                        </VBox>
+                                        <VBox spacing="5.0" GridPane.columnIndex="1">
+                                            <Label text="Fecha de Creación" style="-fx-font-weight: bold;"/>
+                                            <TextField fx:id="tfFecha" editable="false" style="-fx-background-color: #e9ecef;"/>
+                                        </VBox>
+                                        <VBox spacing="5.0" GridPane.columnIndex="2">
+                                            <Label text="Estatus" style="-fx-font-weight: bold;"/>
+                                            <ComboBox fx:id="cbEstado" maxWidth="Infinity"/>
+                                        </VBox>
                                     </children>
-                                </HBox>
-                                <Label fx:id="lblAssignedInfo" text="" style="-fx-font-size:11px; -fx-text-fill:gray;"/>
+                                </GridPane>
+                            </content>
+                        </TitledPane>
+
+                        <HBox spacing="20.0">
+                            <children>
+                                <TitledPane text="Origen (Cliente / Sucursal)" collapsible="false" animated="false" HBox.hgrow="ALWAYS">
+                                    <content>
+                                        <GridPane hgap="15.0" vgap="15.0">
+                                            <columnConstraints>
+                                                <ColumnConstraints percentWidth="100" />
+                                            </columnConstraints>
+                                            <children>
+                                                <VBox spacing="5.0" GridPane.rowIndex="0">
+                                                    <Label text="Cliente Remitente" style="-fx-font-weight: bold;"/>
+                                                    <ComboBox fx:id="cbCliente" maxWidth="Infinity" promptText="Seleccione un cliente..."/>
+                                                </VBox>
+                                                <VBox spacing="5.0" GridPane.rowIndex="1">
+                                                    <Label text="Sucursal de Origen" style="-fx-font-weight: bold;"/>
+                                                    <ComboBox fx:id="cbSucursal" maxWidth="Infinity" promptText="Seleccione sucursal..."/>
+                                                </VBox>
+                                            </children>
+                                        </GridPane>
+                                    </content>
+                                </TitledPane>
+
+                                <TitledPane text="Destino" collapsible="false" animated="false" HBox.hgrow="ALWAYS">
+                                    <content>
+                                        <GridPane hgap="15.0" vgap="15.0">
+                                            <columnConstraints>
+                                                <ColumnConstraints percentWidth="50" />
+                                                <ColumnConstraints percentWidth="50" />
+                                            </columnConstraints>
+                                            <children>
+                                                <VBox spacing="5.0" GridPane.columnSpan="2" GridPane.rowIndex="0">
+                                                    <Label text="Dirección de Entrega" style="-fx-font-weight: bold;"/>
+                                                    <TextField fx:id="tfDestino" promptText="Calle, Número, Colonia..."/>
+                                                </VBox>
+                                                <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                                    <Label text="Ciudad" style="-fx-font-weight: bold;"/>
+                                                    <TextField fx:id="tfCiudadDestino"/>
+                                                </VBox>
+                                                <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                    <Label text="Estado" style="-fx-font-weight: bold;"/>
+                                                    <TextField fx:id="tfEstadoDestino"/>
+                                                </VBox>
+                                                <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                                    <Label text="Nombre Destinatario" style="-fx-font-weight: bold;"/>
+                                                    <TextField fx:id="tfDestinatarioNombre"/>
+                                                </VBox>
+                                                <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                                    <Label text="Teléfono Destinatario" style="-fx-font-weight: bold;"/>
+                                                    <TextField fx:id="tfDestinatarioTelefono"/>
+                                                </VBox>
+                                            </children>
+                                        </GridPane>
+                                    </content>
+                                </TitledPane>
                             </children>
-                        </VBox>
+                        </HBox>
+
+                        <TitledPane text="Detalle del Envío" collapsible="false" animated="false">
+                            <content>
+                                <GridPane hgap="15.0" vgap="15.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints percentWidth="50" />
+                                        <ColumnConstraints percentWidth="50" />
+                                    </columnConstraints>
+                                    <children>
+                                        <VBox spacing="5.0" GridPane.columnIndex="0">
+                                            <Label text="Peso Inicial (Paquete 1) [kg]" style="-fx-font-weight: bold;"/>
+                                            <TextField fx:id="tfPeso" promptText="Ej. 1.0"/>
+                                        </VBox>
+                                        <VBox spacing="5.0" GridPane.columnIndex="1">
+                                            <Label text="Costo Total Estimado ($)" style="-fx-font-weight: bold;"/>
+                                            <TextField fx:id="tfCosto" editable="false" promptText="Calculado al guardar" style="-fx-background-color: #e9ecef; -fx-font-weight: bold;"/>
+                                        </VBox>
+                                    </children>
+                                </GridPane>
+                            </content>
+                        </TitledPane>
+                        
+                        <HBox fx:id="driverBox" visible="false" managed="false" alignment="CENTER_LEFT" spacing="10" style="-fx-background-color: #fff3cd; -fx-border-color: #ffeeba; -fx-border-radius: 5; -fx-background-radius: 5;">
+                            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+                            <Label text="Conductor Asignado:" style="-fx-font-weight: bold;"/>
+                            <Label fx:id="lblAssignedDriver" text="Ninguno"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button fx:id="btnUnassignDriver" text="Desasignar" style="-fx-background-color: #dc3545; -fx-text-fill: white;"/>
+                        </HBox>
 
                     </children>
-                </GridPane>
-            </children>
-        </HBox>
+                </VBox>
+            </content>
+        </ScrollPane>
 
-        <HBox spacing="20.0" alignment="CENTER_RIGHT"
-              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <HBox alignment="CENTER_RIGHT" spacing="15.0" prefHeight="60.0" style="-fx-background-color: #ecf0f1; -fx-border-color: #bdc3c7; -fx-border-width: 1 0 0 0;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <padding>
-                <Insets right="40.0" bottom="30.0"/>
+                <Insets right="30.0" />
             </padding>
             <children>
-                <Button fx:id="btnCancel" text="Cancelar" onAction="#handleCancel" styleClass="action-button, btn-cancel" minWidth="120.0"/>
-                <Button fx:id="btnSave" text="Guardar Envío" onAction="#handleSave" styleClass="action-button, btn-save" minWidth="150.0"/>
+                <Button fx:id="btnCancel" text="Cancelar" onAction="#handleCancel" prefWidth="100.0" style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-cursor: hand;"/>
+                <Button fx:id="btnSave" text="Guardar Envío" onAction="#handleSave" prefWidth="140.0" style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
             </children>
         </HBox>
     </children>
-
-    <stylesheets>
-        <URL value="@../resources/styles/collaboratorform.css"/>
-    </stylesheets>
 </AnchorPane>
