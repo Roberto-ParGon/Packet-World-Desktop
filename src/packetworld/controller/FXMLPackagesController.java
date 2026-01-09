@@ -234,7 +234,7 @@ public class FXMLPackagesController implements Initializable {
                 MessageResponse mr = PaqueteImp.deletePackage(selected.getId());
                 Platform.runLater(() -> {
                     if (mr != null && !mr.isError()) {
-                        Utility.createNotification("Paquete eliminado", NotificationType.SUCCESS);
+                        Utility.createNotification("Paquete eliminado", NotificationType.DELETE);
                         loadData();
                     } else {
                         Utility.createAlert("Error", mr != null ? mr.getMessage() : "Error desconocido", NotificationType.FAILURE);

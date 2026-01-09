@@ -61,6 +61,7 @@ public class FXMLEnviosFormController implements Initializable {
     private TextField tfCiudadDestino;
     @FXML
     private TextField tfEstadoDestino;
+
     @FXML
     private HBox driverBox;
     @FXML
@@ -101,22 +102,18 @@ public class FXMLEnviosFormController implements Initializable {
                 if (newV != null) {
                     try {
                         boolean shouldUpdate = !editMode;
-
                         if (editMode && editingEnvio != null) {
                             if (!newV.getId().equals(editingEnvio.getIdCliente())) {
                                 shouldUpdate = true;
                             }
                         }
-
                         if (shouldUpdate) {
                             if (tfDestino != null) {
                                 tfDestino.setText(newV.getFullAddress() == null ? "" : newV.getFullAddress());
                             }
-
                             if (tfDestinatarioTelefono != null) {
                                 tfDestinatarioTelefono.setText(newV.getPhone() == null ? "" : newV.getPhone());
                             }
-
                             if (tfDestinatarioNombre != null) {
                                 tfDestinatarioNombre.setText(newV.getFullName() == null ? "" : newV.getFullName());
                             }
@@ -130,10 +127,7 @@ public class FXMLEnviosFormController implements Initializable {
     }
 
     private void setDefaultFechaNowIfEmpty() {
-        if (tfFecha == null) {
-            return;
-        }
-        if (tfFecha.getText() == null || tfFecha.getText().trim().isEmpty()) {
+        if (tfFecha != null && (tfFecha.getText() == null || tfFecha.getText().trim().isEmpty())) {
             tfFecha.setText(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         }
     }
@@ -142,16 +136,17 @@ public class FXMLEnviosFormController implements Initializable {
         this.editMode = edit;
         this.editingEnvio = envio;
 
-        if (edit && envio != null) {
-            tfTracking.setText(envio.getNumGuia() != null ? envio.getNumGuia() : "");
-            tfFecha.setText(envio.getFechaCreacion() != null ? envio.getFechaCreacion() : LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            tfDestino.setText(envio.getDireccionDestino() != null ? envio.getDireccionDestino() : "");
-            tfPeso.setText(envio.getPeso() != null ? String.valueOf(envio.getPeso()) : "");
+        System.out.println("DEBUG FORM: setEditMode invocado. Edit=" + edit);
 
+        if (edit && envio != null) {
+            tfTracking.setText(envio.getNumGuia());
+            tfFecha.setText(envio.getFechaCreacion());
+            tfDestino.setText(envio.getDireccionDestino());
+            tfPeso.setText(envio.getPeso() != null ? String.valueOf(envio.getPeso()) : "");
             tfCosto.setText(envio.getCosto() != null ? String.format("%.2f", envio.getCosto()) : "");
 
             if (cbEstado != null) {
-                cbEstado.getSelectionModel().select(envio.getEstatus() != null ? envio.getEstatus() : "recibido");
+                cbEstado.getSelectionModel().select(envio.getEstatus());
             }
             if (tfDestinatarioNombre != null) {
                 tfDestinatarioNombre.setText(envio.getDestinatarioNombre());
@@ -174,28 +169,41 @@ public class FXMLEnviosFormController implements Initializable {
                     desiredClientId = envio.getIdCliente();
                 }
             }
+
+            System.out.println("DEBUG FORM: ------------------------------------------------");
+            System.out.println("DEBUG FORM: Intentando seleccionar sucursal...");
+            System.out.println("DEBUG FORM: ID Sucursal en el objeto Envio: " + envio.getIdSucursalOrigen());
+            System.out.println("DEBUG FORM: ¿La lista 'sucursales' del combo tiene datos? Tamaño: " + sucursales.size());
+
+            for (Store s : sucursales) {
+                System.out.println("DEBUG FORM:    Combo Item -> ID: " + s.getIdStore() + " - " + s.getName());
+            }
+
             if (envio.getIdSucursalOrigen() != null) {
                 Store match = findSucursalById(envio.getIdSucursalOrigen());
+
                 if (match != null) {
+                    System.out.println("DEBUG FORM: ¡MATCH ENCONTRADO! Objeto: " + match.getName());
                     cbSucursal.getSelectionModel().select(match);
+
+                    Store selected = cbSucursal.getSelectionModel().getSelectedItem();
+                    System.out.println("DEBUG FORM: Selección final del Combo: " + (selected != null ? selected.getName() : "NADA"));
                 } else {
+                    System.out.println("DEBUG FORM: No se encontró coincidencia inmediata. Guardando en desiredSucursalId.");
                     desiredSucursalId = envio.getIdSucursalOrigen();
                 }
+            } else {
+                System.err.println("DEBUG FORM: ERROR FATAL -> envio.getIdSucursalOrigen() es NULL.");
+                System.err.println("            Causa probable: El Mapper de la API no tiene <result property=\"idSucursalOrigen\"...>");
             }
+            System.out.println("DEBUG FORM: ------------------------------------------------");
 
             if (cbCliente != null) {
                 cbCliente.setDisable(false);
             }
-
         } else {
             tfTracking.setText("Generado automáticamente...");
             tfFecha.setText(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            tfDestino.setText("");
-            tfPeso.setText("");
-            tfCosto.setText("");
-            if (cbEstado != null) {
-                cbEstado.getSelectionModel().select("recibido");
-            }
             if (cbCliente != null) {
                 cbCliente.getSelectionModel().clearSelection();
                 cbCliente.setDisable(false);
@@ -208,7 +216,6 @@ public class FXMLEnviosFormController implements Initializable {
         if (tfTracking != null) {
             tfTracking.setDisable(true);
         }
-
         updateAssignedDriverSection();
     }
 
@@ -246,7 +253,7 @@ public class FXMLEnviosFormController implements Initializable {
             return;
         }
 
-        boolean confirm = Utility.showConfirmation("Desasignar conductor", "¿Deseas desasignar el conductor del envío " + envioId + " ?");
+        boolean confirm = Utility.showConfirmation("Desasignar conductor", "¿Deseas desasignar el conductor?");
         if (!confirm) {
             return;
         }
@@ -256,11 +263,13 @@ public class FXMLEnviosFormController implements Initializable {
             Platform.runLater(() -> {
                 if (mr != null && !mr.isError()) {
                     editingEnvio.setIdColaboradorActualizo(null);
+
                     updateAssignedDriverSection();
+
                     Utility.createNotification("Conductor desasignado", NotificationType.SUCCESS);
-                    operationSuccess = true;
+
                 } else {
-                    String msg = mr == null ? "Respuesta nula" : mr.getMessage();
+                    String msg = mr == null ? "Sin respuesta" : mr.getMessage();
                     Utility.createAlert("Error", msg, NotificationType.FAILURE);
                 }
             });
@@ -276,17 +285,15 @@ public class FXMLEnviosFormController implements Initializable {
     }
 
     private void setupClientComboBox() {
-        if (cbCliente == null) {
-            return;
+        if (cbCliente != null) {
+            cbCliente.setItems(clientes);
         }
-        cbCliente.setItems(clientes);
     }
 
     private void setupSucursalComboBox() {
-        if (cbSucursal == null) {
-            return;
+        if (cbSucursal != null) {
+            cbSucursal.setItems(sucursales);
         }
-        cbSucursal.setItems(sucursales);
     }
 
     private void loadClients() {
@@ -311,24 +318,48 @@ public class FXMLEnviosFormController implements Initializable {
     }
 
     private void loadSucursales() {
+        System.out.println("DEBUG UI: Iniciando hilo de carga de sucursales...");
+
         new Thread(() -> {
             List<Store> list = StoreImp.getAll();
+
+            if (list == null) {
+                System.out.println("DEBUG API: StoreImp.getAll() devolvió NULL.");
+            } else {
+                System.out.println("DEBUG API: StoreImp.getAll() devolvió " + list.size() + " registros.");
+                for (Store s : list) {
+                    System.out.println("   -> API Trajo: ID=" + s.getIdStore() + " | Nombre=" + s.getName() + " | Estatus=" + s.getStatus());
+                }
+            }
+
             Platform.runLater(() -> {
                 if (list != null) {
                     List<Store> active = new ArrayList<>();
                     for (Store s : list) {
                         if (s.isActiva()) {
                             active.add(s);
+                        } else {
+                            System.out.println("DEBUG UI: Filtrando (ocultando) sucursal inactiva ID=" + s.getIdStore());
                         }
                     }
                     sucursales.setAll(active);
+                    System.out.println("DEBUG UI: ComboBox poblado con " + sucursales.size() + " sucursales activas.");
+
                     if (desiredSucursalId != null) {
+                        System.out.println("DEBUG UI: Intentando selección diferida para ID: " + desiredSucursalId);
                         Store match = findSucursalById(desiredSucursalId);
+
                         if (match != null) {
                             cbSucursal.getSelectionModel().select(match);
+                            System.out.println("DEBUG UI: ¡ÉXITO! Sucursal seleccionada diferidamente: " + match.getName());
                             desiredSucursalId = null;
+                        } else {
+                            System.err.println("DEBUG UI: FALLO CRÍTICO. El ID " + desiredSucursalId + " no se encontró en la lista de sucursales activas del ComboBox.");
+                            System.err.println("          Posible causa: La sucursal origen está 'Inactiva' o el ID no coincide.");
                         }
                     }
+                } else {
+                    System.err.println("DEBUG UI: No se pudieron cargar sucursales (Lista nula).");
                 }
             });
         }).start();
@@ -367,15 +398,22 @@ public class FXMLEnviosFormController implements Initializable {
             Utility.createAlert("Validación", "Cliente y Sucursal de origen son obligatorios", NotificationType.INFORMATION);
             return;
         }
+        if (selectedClient.getId() == null || selectedClient.getId() == 0) {
+            Utility.createAlert("Error de Datos", "Cliente inválido. Recargue.", NotificationType.FAILURE);
+            return;
+        }
         if (tfDestino.getText().trim().isEmpty()) {
-            Utility.createAlert("Validación", "La dirección de destino es obligatoria", NotificationType.INFORMATION);
+            Utility.createAlert("Validación", "Destino obligatorio", NotificationType.INFORMATION);
             return;
         }
 
         Envio req = new Envio();
+
         if (editMode && editingEnvio != null) {
             req.setId(editingEnvio.getId());
             req.setNumGuia(editingEnvio.getNumGuia());
+
+            req.setIdColaboradorActualizo(editingEnvio.getIdColaboradorActualizo());
         }
 
         req.setIdCliente(selectedClient.getId());
@@ -388,11 +426,11 @@ public class FXMLEnviosFormController implements Initializable {
         req.setEstatus(cbEstado.getValue() != null ? cbEstado.getValue() : "recibido");
         req.setFechaCreacion(tfFecha.getText());
 
-        Integer collaboratorId = getLoggedCollaboratorId();
-        if (collaboratorId != null) {
-            req.setIdColaboradorActualizo(collaboratorId);
-        } else {
-            System.err.println("ADVERTENCIA: No se encontró usuario en sesión. El campo colaborador quedará nulo.");
+        if (!editMode) {
+            Integer creatorId = getLoggedCollaboratorId();
+            if (creatorId != null) {
+                req.setIdColaboradorActualizo(creatorId);
+            }
         }
 
         Double pesoVal = 1.0;
@@ -404,7 +442,7 @@ public class FXMLEnviosFormController implements Initializable {
                 req.setPeso(1.0);
             }
         } catch (NumberFormatException e) {
-            Utility.createAlert("Validación", "Peso inválido. Use punto decimal.", NotificationType.INFORMATION);
+            Utility.createAlert("Validación", "Peso inválido", NotificationType.INFORMATION);
             return;
         }
 
@@ -426,23 +464,16 @@ public class FXMLEnviosFormController implements Initializable {
             paquetes.add(p);
 
             resp = EnvioImp.register(req, paquetes);
-
-            if (resp != null && !resp.isError()) {
-                this.operationSuccess = true;
-                Utility.createNotification("Envío registrado.\nGuía: " + autoGuia + "\n", NotificationType.SUCCESS);
-                Utility.closeModal(btnSave);
-            } else {
-                Utility.createAlert("Error al registrar", resp != null ? resp.getMessage() : "Sin respuesta", NotificationType.FAILURE);
-            }
         } else {
             resp = EnvioImp.edit(req);
-            if (resp != null && !resp.isError()) {
-                this.operationSuccess = true;
-                Utility.createNotification("Envío actualizado correctamente", NotificationType.SUCCESS);
-                Utility.closeModal(btnSave);
-            } else {
-                Utility.createAlert("Error al actualizar", resp != null ? resp.getMessage() : "Sin respuesta", NotificationType.FAILURE);
-            }
+        }
+
+        if (resp != null && !resp.isError()) {
+            this.operationSuccess = true;
+            Utility.createNotification(!editMode ? "Envío registrado." : "Envío actualizado.", NotificationType.SUCCESS);
+            Utility.closeModal(btnSave);
+        } else {
+            Utility.createAlert("Error", resp != null ? resp.getMessage() : "Sin respuesta", NotificationType.FAILURE);
         }
     }
 

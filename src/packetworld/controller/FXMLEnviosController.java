@@ -227,7 +227,12 @@ public class FXMLEnviosController implements Initializable {
         applyWrappingCellFactory(colDireccion);
         colCiudad.setCellValueFactory(nullSafeValue(Envio::getCiudadDestino));
         colEstadoDestino.setCellValueFactory(nullSafeValue(Envio::getEstadoDestino));
-        colSucursalOrigen.setCellValueFactory(nullSafeValue(e -> e.getIdSucursalOrigen() == null ? "" : String.valueOf(e.getIdSucursalOrigen())));
+        colSucursalOrigen.setCellValueFactory(nullSafeValue(e -> {
+            if (e.getSucursalOrigen() != null && !e.getSucursalOrigen().isEmpty()) {
+                return e.getSucursalOrigen();
+            }
+            return e.getIdSucursalOrigen() == null ? "—" : "ID: " + e.getIdSucursalOrigen();
+        }));
         colCosto.setCellValueFactory(nullSafeValue(e -> {
             Double c = e.getCosto();
             return c == null ? "" : String.format("%.2f", c);

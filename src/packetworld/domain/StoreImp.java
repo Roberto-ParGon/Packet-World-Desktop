@@ -17,10 +17,6 @@ import packetworld.pojo.ResponseHTTP;
 import packetworld.pojo.Store;
 import packetworld.utility.Constants;
 
-/**
- *
- * @author Lenovo
- */
 public class StoreImp {
 
     public static HashMap<String, Object> getAllStoresMap() {
@@ -34,13 +30,15 @@ public class StoreImp {
             try {
                 Type listType = new TypeToken<List<Store>>() {
                 }.getType();
+
                 List<Store> list = gson.fromJson(responseAPI.getContent(), listType);
 
                 responseMap.put("error", false);
                 responseMap.put("stores", list);
             } catch (Exception e) {
+                e.printStackTrace();
                 responseMap.put("error", true);
-                responseMap.put("message", "Error al procesar la lista de sucursales.");
+                responseMap.put("message", "Error al procesar la lista de sucursales: " + e.getMessage());
             }
         } else {
             responseMap.put("error", true);
@@ -52,10 +50,12 @@ public class StoreImp {
 
     public static List<Store> getAll() {
         HashMap<String, Object> result = getAllStoresMap();
-        if (!(boolean) result.get("error")) {
+
+        if (result != null && !(boolean) result.get("error")) {
             return (List<Store>) result.get("stores");
         }
-        return new java.util.ArrayList<>();
+
+        return null;
     }
 
     public static MessageResponse register(Store store) {
