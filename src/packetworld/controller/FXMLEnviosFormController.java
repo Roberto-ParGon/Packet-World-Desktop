@@ -27,7 +27,7 @@ import packetworld.pojo.Paquete;
 import packetworld.pojo.Store;
 import packetworld.utility.NotificationType;
 import packetworld.utility.Utility;
-import packetworld.pojo.DriverAssignmentSession;
+import packetworld.utility.UserSession;
 
 public class FXMLEnviosFormController implements Initializable {
 
@@ -343,11 +343,11 @@ public class FXMLEnviosFormController implements Initializable {
     }
 
     private Integer getLoggedCollaboratorId() {
-        try {
-            return DriverAssignmentSession.getCurrentDriverId();
-        } catch (Exception e) {
-            return null;
+        UserSession session = UserSession.getInstance();
+        if (session != null && session.getUser() != null) {
+            return session.getUser().getIdCollaborator();
         }
+        return null;
     }
 
     private String generateTrackingNumber(Store origin, Envio envio) {
@@ -388,9 +388,11 @@ public class FXMLEnviosFormController implements Initializable {
         req.setEstatus(cbEstado.getValue() != null ? cbEstado.getValue() : "recibido");
         req.setFechaCreacion(tfFecha.getText());
 
-        Integer driverId = getLoggedCollaboratorId();
-        if (driverId != null) {
-            req.setIdColaboradorActualizo(driverId);
+        Integer collaboratorId = getLoggedCollaboratorId();
+        if (collaboratorId != null) {
+            req.setIdColaboradorActualizo(collaboratorId);
+        } else {
+            System.err.println("ADVERTENCIA: No se encontró usuario en sesión. El campo colaborador quedará nulo.");
         }
 
         Double pesoVal = 1.0;
