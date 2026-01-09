@@ -22,6 +22,7 @@ import packetworld.domain.EnvioImp;
 import packetworld.dto.MessageResponse;
 import packetworld.pojo.Envio;
 import packetworld.utility.NotificationType;
+import packetworld.utility.UserSession;
 import packetworld.utility.Utility;
 import java.net.URL;
 import java.util.HashMap;
@@ -119,23 +120,20 @@ public class FXMLEnviosController implements Initializable {
                 }
 
                 String lowerFilter = newValue.toLowerCase().trim();
-
                 String id = (envio.getId() != null) ? String.valueOf(envio.getId()) : "";
                 String idCliente = (envio.getIdCliente() != null) ? String.valueOf(envio.getIdCliente()) : "";
                 String guia = (envio.getNumGuia() != null) ? envio.getNumGuia().toLowerCase() : "";
 
                 switch (filterType) {
                     case "ID":
-                        return id.equals(lowerFilter) || id.contains(lowerFilter);
+                        return id.contains(lowerFilter);
                     case "ID Cliente":
-                        return idCliente.equals(lowerFilter) || idCliente.contains(lowerFilter);
+                        return idCliente.contains(lowerFilter);
                     case "Guía":
                         return guia.contains(lowerFilter);
                     case "General":
                     default:
-                        return id.contains(lowerFilter)
-                                || idCliente.contains(lowerFilter)
-                                || guia.contains(lowerFilter);
+                        return id.contains(lowerFilter) || idCliente.contains(lowerFilter) || guia.contains(lowerFilter);
                 }
             });
         });
@@ -146,12 +144,12 @@ public class FXMLEnviosController implements Initializable {
         ContextMenu contextMenu = new ContextMenu();
         ToggleGroup group = new ToggleGroup();
 
-        RadioMenuItem itemGeneral = createFilterOption("General", group, true);
-        RadioMenuItem itemId = createFilterOption("ID", group, false);
-        RadioMenuItem itemIdCliente = createFilterOption("ID Cliente", group, false);
-        RadioMenuItem itemGuia = createFilterOption("Guía", group, false);
-
-        contextMenu.getItems().addAll(itemGeneral, itemId, itemIdCliente, itemGuia);
+        contextMenu.getItems().addAll(
+                createFilterOption("General", group, true),
+                createFilterOption("ID", group, false),
+                createFilterOption("ID Cliente", group, false),
+                createFilterOption("Guía", group, false)
+        );
         contextMenu.show(lblFilter, event.getScreenX(), event.getScreenY());
     }
 
@@ -159,14 +157,11 @@ public class FXMLEnviosController implements Initializable {
         RadioMenuItem item = new RadioMenuItem(text);
         item.setToggleGroup(group);
         item.setSelected(filterType.equals(text));
-
         item.setOnAction(e -> {
             filterType = text;
-
             String currentSearch = tfSearch.getText();
             tfSearch.setText("");
             tfSearch.setText(currentSearch);
-
             if ("General".equals(text)) {
                 tfSearch.setPromptText("Buscar envío (ID, ID Cliente o Guía)");
             } else {
@@ -187,27 +182,25 @@ public class FXMLEnviosController implements Initializable {
             HashMap<String, Object> resp = EnvioImp.getAll();
             Platform.runLater(() -> {
                 if (resp == null) {
-                    Utility.createAlert("Error", "Respuesta nula del servidor al cargar envíos", NotificationType.FAILURE);
+                    Utility.createAlert("Error", "Respuesta nula del servidor", NotificationType.FAILURE);
                     enviosList.clear();
                     return;
                 }
-                Object errObj = resp.get("error");
-                boolean isError = (errObj instanceof Boolean) ? (Boolean) errObj : true;
+                boolean isError = (Boolean) resp.getOrDefault("error", true);
                 if (isError) {
-                    Object msgObj = resp.get("message");
-                    String msg = msgObj == null ? "Error al cargar envíos" : String.valueOf(msgObj);
+                    String msg = (String) resp.getOrDefault("message", "Error desconocido");
                     Utility.createAlert("Error", msg, NotificationType.FAILURE);
                     enviosList.clear();
                     return;
                 }
-                @SuppressWarnings("unchecked")
+
                 List<Envio> list = (List<Envio>) resp.get("data");
                 if (list != null) {
                     enviosList.setAll(list);
-                    String currentSearch = tfSearch.getText();
-                    if (!currentSearch.isEmpty()) {
+                    if (!tfSearch.getText().isEmpty()) {
+                        String txt = tfSearch.getText();
                         tfSearch.setText("");
-                        tfSearch.setText(currentSearch);
+                        tfSearch.setText(txt);
                     }
                 } else {
                     enviosList.clear();
@@ -217,8 +210,8 @@ public class FXMLEnviosController implements Initializable {
     }
 
     private void configureTable() {
-        colId.setCellValueFactory(nullSafeValue(e -> e.getId() == null ? "" : String.valueOf(e.getId())));
-        colIdCliente.setCellValueFactory(nullSafeValue(e -> e.getIdCliente() == null ? "" : String.valueOf(e.getIdCliente())));
+        colId.setCellValueFactory(nullSafeValue(e -> e.getId()));
+        colIdCliente.setCellValueFactory(nullSafeValue(e -> e.getIdCliente()));
         colGuia.setCellValueFactory(nullSafeValue(Envio::getNumGuia));
         colDestinatario.setCellValueFactory(nullSafeValue(Envio::getDestinatarioNombre));
         applyWrappingCellFactory(colDestinatario);
@@ -227,26 +220,23 @@ public class FXMLEnviosController implements Initializable {
         applyWrappingCellFactory(colDireccion);
         colCiudad.setCellValueFactory(nullSafeValue(Envio::getCiudadDestino));
         colEstadoDestino.setCellValueFactory(nullSafeValue(Envio::getEstadoDestino));
+
         colSucursalOrigen.setCellValueFactory(nullSafeValue(e -> {
             if (e.getSucursalOrigen() != null && !e.getSucursalOrigen().isEmpty()) {
                 return e.getSucursalOrigen();
             }
             return e.getIdSucursalOrigen() == null ? "—" : "ID: " + e.getIdSucursalOrigen();
         }));
-        colCosto.setCellValueFactory(nullSafeValue(e -> {
-            Double c = e.getCosto();
-            return c == null ? "" : String.format("%.2f", c);
-        }));
-        colPeso.setCellValueFactory(nullSafeValue(e -> {
-            Double p = e.getPeso();
-            return p == null ? "" : String.format("%.2f", p);
-        }));
+
+        colCosto.setCellValueFactory(nullSafeValue(e -> e.getCosto() == null ? "" : String.format("%.2f", e.getCosto())));
+        colPeso.setCellValueFactory(nullSafeValue(e -> e.getPeso() == null ? "" : String.format("%.2f", e.getPeso())));
         colEstatus.setCellValueFactory(nullSafeValue(Envio::getEstatus));
         colFechaCreacion.setCellValueFactory(nullSafeValue(Envio::getFechaCreacion));
         colFechaActualizacion.setCellValueFactory(nullSafeValue(Envio::getFechaActualizacion));
+
         colColaborador.setCellValueFactory(nullSafeValue(e -> {
             Integer id = e.getIdColaboradorActualizo();
-            return id == null ? "" : String.valueOf(id);
+            return id == null ? "—" : String.valueOf(id);
         }));
 
         tvEnvios.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -254,60 +244,47 @@ public class FXMLEnviosController implements Initializable {
 
     private <T> Callback<TableColumn.CellDataFeatures<Envio, String>, javafx.beans.value.ObservableValue<String>> nullSafeValue(java.util.function.Function<Envio, T> getter) {
         return cell -> {
-            Envio e = cell.getValue();
-            T v = e == null ? null : getter.apply(e);
-            String s = (v == null) ? "" : String.valueOf(v);
-            return new SimpleStringProperty(s);
+            T v = cell.getValue() == null ? null : getter.apply(cell.getValue());
+            return new SimpleStringProperty(v == null ? "" : String.valueOf(v));
         };
     }
 
     private void applyWrappingCellFactory(TableColumn<Envio, String> col) {
-        col.setCellFactory(new Callback<TableColumn<Envio, String>, TableCell<Envio, String>>() {
+        col.setCellFactory(tc -> new TableCell<Envio, String>() {
+            private final Text text = new Text();
+
+            {
+                text.wrappingWidthProperty().bind(tc.widthProperty().subtract(10));
+                setGraphic(text);
+            }
+
             @Override
-            public TableCell<Envio, String> call(TableColumn<Envio, String> tc) {
-                return new TableCell<Envio, String>() {
-                    private final Text text = new Text();
-
-                    {
-                        text.wrappingWidthProperty().bind(tc.widthProperty().subtract(10));
-                        setGraphic(text);
-                    }
-
-                    @Override
-                    protected void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty || item == null || item.trim().isEmpty()) {
-                            text.setText("");
-                        } else {
-                            text.setText(item);
-                        }
-                    }
-                };
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                text.setText(empty || item == null ? "" : item);
             }
         });
     }
 
     @FXML
     private void handleAdd() {
-        Utility.<FXMLEnviosFormController>openAnimatedModal(
-                "/packetworld/view/FXMLEnvioForm.fxml",
-                controller -> controller.setEditMode(false, null),
-                controller -> controller.isOperationSuccess(),
-                controller -> null
-        );
-        loadData();
+        openForm(false, null);
     }
 
     @FXML
     private void handleEdit() {
         Envio sel = tvEnvios.getSelectionModel().getSelectedItem();
         if (sel == null) {
-            Utility.createAlert("Validación", "Selecciona un envío para editar", NotificationType.INFORMATION);
+            Utility.createAlert("Validación", "Selecciona un envío", NotificationType.INFORMATION);
             return;
         }
+        openForm(true, sel);
+    }
+
+    private void openForm(boolean isEdit, Envio envio) {
         Utility.<FXMLEnviosFormController>openAnimatedModal(
                 "/packetworld/view/FXMLEnvioForm.fxml",
-                controller -> controller.setEditMode(true, sel),
+                controller -> controller.setEditMode(isEdit, envio),
                 controller -> controller.isOperationSuccess(),
                 controller -> null
         );
@@ -318,38 +295,36 @@ public class FXMLEnviosController implements Initializable {
     private void handleDelete() {
         Envio sel = tvEnvios.getSelectionModel().getSelectedItem();
         if (sel == null) {
-            Utility.createAlert("Validación", "Selecciona un envío para eliminar", NotificationType.INFORMATION);
-            return;
-        }
-        boolean confirm = Utility.showConfirmation("Eliminar envío", "¿Eliminar envío id " + sel.getId() + " ?");
-        if (!confirm) {
+            Utility.createAlert("Validación", "Selecciona un envío", NotificationType.INFORMATION);
             return;
         }
 
-        new Thread(() -> {
-            MessageResponse mr = EnvioImp.delete(sel.getId());
-            Platform.runLater(() -> {
-                if (mr != null && !mr.isError()) {
-                    Utility.createNotification("Envío eliminado", NotificationType.DELETE);
-                    loadData();
-                } else {
-                    String msg = mr == null ? "Respuesta nula del servidor" : mr.getMessage();
-                    Utility.createAlert("Error al eliminar", msg, NotificationType.FAILURE);
-                }
-            });
-        }).start();
+        if (Utility.showConfirmation("Eliminar envío", "¿Eliminar envío id " + sel.getId() + " ?")) {
+            new Thread(() -> {
+                MessageResponse mr = EnvioImp.delete(sel.getId());
+                Platform.runLater(() -> {
+                    if (mr != null && !mr.isError()) {
+                        Utility.createNotification("Envío eliminado", NotificationType.DELETE);
+                        loadData();
+                    } else {
+                        Utility.createAlert("Error", mr == null ? "Sin respuesta" : mr.getMessage(), NotificationType.FAILURE);
+                    }
+                });
+            }).start();
+        }
     }
 
     @FXML
     private void handleAssign() {
         Envio sel = tvEnvios.getSelectionModel().getSelectedItem();
         if (sel == null) {
-            Utility.createAlert("Validación", "Selecciona un envío para asignar conductor", NotificationType.INFORMATION);
+            Utility.createAlert("Validación", "Selecciona un envío", NotificationType.INFORMATION);
             return;
         }
-        Integer alreadyAssigned = sel.getIdColaboradorActualizo();
-        if (alreadyAssigned != null) {
-            Utility.createAlert("Validación", "El envío " + sel.getId() + " ya está asignado al conductor " + alreadyAssigned + ". Desasigna antes de reasignar.", NotificationType.INFORMATION);
+
+        Integer alreadyAssigned = sel.getIdConductor();
+        if (alreadyAssigned != null && alreadyAssigned > 0) {
+            Utility.createAlert("Validación", "El envío " + sel.getId() + " ya tiene conductor (ID: " + alreadyAssigned + "). Desasigna primero.", NotificationType.INFORMATION);
             return;
         }
 
@@ -367,7 +342,13 @@ public class FXMLEnviosController implements Initializable {
                 Integer driverId = ctrl.getSelectedDriverId();
                 if (driverId != null) {
                     new Thread(() -> {
-                        MessageResponse mr = EnvioImp.assignDriver(sel.getId(), driverId);
+                        Integer myId = null;
+                        if (UserSession.getInstance().getUser() != null) {
+                            myId = UserSession.getInstance().getUser().getIdCollaborator();
+                        }
+
+                        MessageResponse mr = EnvioImp.assignDriver(sel.getId(), driverId, myId);
+
                         Platform.runLater(() -> {
                             if (mr != null && !mr.isError()) {
                                 Utility.createNotification("Conductor asignado", NotificationType.SUCCESS);
@@ -381,7 +362,7 @@ public class FXMLEnviosController implements Initializable {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            Utility.createAlert("Error", "No se pudo abrir selector de conductores", NotificationType.FAILURE);
+            Utility.createAlert("Error", "No se pudo abrir selector", NotificationType.FAILURE);
         }
     }
 }

@@ -17,9 +17,9 @@ import packetworld.utility.Constants;
 public class EnvioImp {
 
     public static HashMap<String, Object> getAll() {
-        HashMap<String,Object> responseMap = new LinkedHashMap<>();
-        String url = Constants.URL_WS + "envio/obtener-todos"; 
-        
+        HashMap<String, Object> responseMap = new LinkedHashMap<>();
+        String url = Constants.URL_WS + "envio/obtener-todos";
+
         ResponseHTTP apiResp = Connection.requestGET(url);
         if (apiResp == null) {
             responseMap.put("error", true);
@@ -29,7 +29,8 @@ public class EnvioImp {
 
         if (apiResp.getCode() == HttpURLConnection.HTTP_OK) {
             try {
-                Type listType = new TypeToken<List<Envio>>(){}.getType();
+                Type listType = new TypeToken<List<Envio>>() {
+                }.getType();
                 List<Envio> list = new Gson().fromJson(apiResp.getContent(), listType);
                 responseMap.put("error", false);
                 responseMap.put("data", list == null ? java.util.Collections.emptyList() : list);
@@ -57,17 +58,17 @@ public class EnvioImp {
     public static MessageResponse register(Envio envio, List<Paquete> paquetes) {
         MessageResponse response = new MessageResponse();
         String url = Constants.URL_WS + "envio/registrar";
-        
+
         HashMap<String, Object> payload = new HashMap<>();
         payload.put("envio", envio);
         payload.put("paquetes", paquetes);
-        
+
         String json = new Gson().toJson(payload);
-        
+
         System.out.println("DEBUG EnvioImp.register -> Payload: " + json);
 
         ResponseHTTP apiResp = Connection.requestWithBody(url, "POST", json, "application/json");
-        
+
         if (apiResp != null && apiResp.getCode() == HttpURLConnection.HTTP_OK) {
             response = new Gson().fromJson(apiResp.getContent(), MessageResponse.class);
         } else {
@@ -105,11 +106,13 @@ public class EnvioImp {
             HashMap<String, Object> payload = new HashMap<>();
             payload.put("id", envioId);
             payload.put("estatus", nuevoEstatus);
-            if (colaboradorId != null) payload.put("idColaboradorActualizo", colaboradorId);
+            if (colaboradorId != null) {
+                payload.put("idColaboradorActualizo", colaboradorId);
+            }
 
             String body = new Gson().toJson(payload);
             ResponseHTTP apiResp = Connection.requestWithBody(url, "POST", body, "application/json");
-            
+
             if (apiResp == null) {
                 response.setError(true);
                 response.setMessage("No response from server");
@@ -122,8 +125,11 @@ public class EnvioImp {
             } else {
                 try {
                     MessageResponse parsed = new Gson().fromJson(apiResp.getContent(), MessageResponse.class);
-                    if (parsed != null) return parsed;
-                } catch (Exception ignore) {}
+                    if (parsed != null) {
+                        return parsed;
+                    }
+                } catch (Exception ignore) {
+                }
                 response.setError(true);
                 response.setMessage("Error al cambiar estatus: HTTP " + apiResp.getCode());
                 return response;
@@ -148,7 +154,7 @@ public class EnvioImp {
         try {
             ResponseHTTP resp = Connection.requestWithouthBody(url, "DELETE");
             if (resp == null) {
-                resp = Connection.requestWithouthBody(url, "POST"); 
+                resp = Connection.requestWithouthBody(url, "POST");
             }
 
             if (resp == null) {
@@ -188,23 +194,29 @@ public class EnvioImp {
         }
     }
 
-    public static MessageResponse assignDriver(Integer envioId, Integer driverId) {
+    public static MessageResponse assignDriver(Integer envioId, Integer driverId, Integer usuarioLogueadoId) {
         MessageResponse mr = new MessageResponse();
+
         if (envioId == null || driverId == null) {
             mr.setError(true);
             mr.setMessage("Parámetros inválidos");
             return mr;
         }
+
         try {
             String url = Constants.URL_WS + "conductor-asignacion/asignar-envio/" + driverId;
+
             HashMap<String, Object> payload = new HashMap<>();
             payload.put("envioId", envioId);
+
+            payload.put("usuarioLogueadoId", usuarioLogueadoId);
+
             String bodyJson = new Gson().toJson(payload);
 
             ResponseHTTP resp = Connection.requestWithBody(url, "POST", bodyJson, "application/json");
-            
+
             if (resp != null && resp.getCode() == HttpURLConnection.HTTP_OK) {
-                 try {
+                try {
                     MessageResponse parsed = new Gson().fromJson(resp.getContent(), MessageResponse.class);
                     return parsed == null ? mr : parsed;
                 } catch (Exception ex) {
@@ -224,25 +236,25 @@ public class EnvioImp {
             return mr;
         }
     }
-   
-    public static MessageResponse unassignDriver(Integer envioId) {
-        MessageResponse mr = new MessageResponse();
-        if (envioId == null) return mr;
-        try {
-            String url = Constants.URL_WS + "conductor-asignacion/desasignar-envio-por-envio/" + envioId;
-            ResponseHTTP resp = Connection.requestWithouthBody(url, "POST");
-            
-            if (resp != null && resp.getCode() == HttpURLConnection.HTTP_OK) {
-                mr = new Gson().fromJson(resp.getContent(), MessageResponse.class);
-            } else {
-                mr.setError(true);
-                mr.setMessage("Error al desasignar");
-            }
-        } catch (Throwable ex) {
-            ex.printStackTrace();
-            mr.setError(true);
-            mr.setMessage("Error: " + ex.getMessage());
+
+    public static MessageResponse unassignDriver(int envioId, Integer usuarioLogueadoId) {
+        MessageResponse response = new MessageResponse();
+        String url = Constants.URL_WS + "conductor-asignacion/desasignar-envio-por-envio/" + envioId;
+
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("usuarioLogueadoId", usuarioLogueadoId);
+
+        Gson gson = new Gson();
+        String jsonParams = gson.toJson(params);
+
+        ResponseHTTP responseAPI = Connection.requestWithBody(url, "POST", jsonParams, "application/json");
+
+        if (responseAPI.getCode() == HttpURLConnection.HTTP_OK) {
+            response = gson.fromJson(responseAPI.getContent(), MessageResponse.class);
+        } else {
+            response.setError(true);
+            response.setMessage("Error al desasignar. Código: " + responseAPI.getCode());
         }
-        return mr;
+        return response;
     }
 }

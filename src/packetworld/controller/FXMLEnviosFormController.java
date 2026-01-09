@@ -224,7 +224,7 @@ public class FXMLEnviosFormController implements Initializable {
             return;
         }
 
-        if (editingEnvio == null || editingEnvio.getIdColaboradorActualizo() == null) {
+        if (editingEnvio == null || editingEnvio.getIdConductor() == null) {
             lblAssignedDriver.setText("—");
             btnUnassignDriver.setVisible(false);
             btnUnassignDriver.setManaged(false);
@@ -233,7 +233,7 @@ public class FXMLEnviosFormController implements Initializable {
                 driverBox.setManaged(false);
             }
         } else {
-            lblAssignedDriver.setText("ID: " + editingEnvio.getIdColaboradorActualizo());
+            lblAssignedDriver.setText("ID: " + editingEnvio.getIdConductor());
             btnUnassignDriver.setVisible(true);
             btnUnassignDriver.setManaged(true);
             if (driverBox != null) {
@@ -259,15 +259,20 @@ public class FXMLEnviosFormController implements Initializable {
         }
 
         new Thread(() -> {
-            MessageResponse mr = EnvioImp.unassignDriver(envioId);
+            final Integer myId = (UserSession.getInstance().getUser() != null)
+                    ? UserSession.getInstance().getUser().getIdCollaborator()
+                    : null;
+
+            MessageResponse mr = EnvioImp.unassignDriver(envioId, myId);
+
             Platform.runLater(() -> {
                 if (mr != null && !mr.isError()) {
-                    editingEnvio.setIdColaboradorActualizo(null);
+                    editingEnvio.setIdConductor(null);
+
+                    editingEnvio.setIdColaboradorActualizo(myId);
 
                     updateAssignedDriverSection();
-
                     Utility.createNotification("Conductor desasignado", NotificationType.SUCCESS);
-
                 } else {
                     String msg = mr == null ? "Sin respuesta" : mr.getMessage();
                     Utility.createAlert("Error", msg, NotificationType.FAILURE);
@@ -413,7 +418,8 @@ public class FXMLEnviosFormController implements Initializable {
             req.setId(editingEnvio.getId());
             req.setNumGuia(editingEnvio.getNumGuia());
 
-            req.setIdColaboradorActualizo(editingEnvio.getIdColaboradorActualizo());
+            // Mantenemos el conductor existente (o nulo si se desasignó)
+            req.setIdConductor(editingEnvio.getIdConductor());
         }
 
         req.setIdCliente(selectedClient.getId());
@@ -426,12 +432,13 @@ public class FXMLEnviosFormController implements Initializable {
         req.setEstatus(cbEstado.getValue() != null ? cbEstado.getValue() : "recibido");
         req.setFechaCreacion(tfFecha.getText());
 
-        if (!editMode) {
-            Integer creatorId = getLoggedCollaboratorId();
-            if (creatorId != null) {
-                req.setIdColaboradorActualizo(creatorId);
-            }
+        // --- CORRECCIÓN AQUÍ: Asignar auditor SIEMPRE (Creación o Edición) ---
+        Integer loggedUser = getLoggedCollaboratorId();
+        if (loggedUser != null) {
+            // Esto registra quién está haciendo la acción (tú)
+            req.setIdColaboradorActualizo(loggedUser);
         }
+        // ---------------------------------------------------------------------
 
         Double pesoVal = 1.0;
         try {

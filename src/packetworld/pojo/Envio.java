@@ -53,6 +53,9 @@ public class Envio {
     @SerializedName("idColaboradorActualizo")
     private Integer idColaboradorActualizo;
 
+    @SerializedName("idConductor")
+    private Integer idConductor;
+
     @SerializedName("paquetes")
     private List<Paquete> paquetes;
 
@@ -178,6 +181,14 @@ public class Envio {
 
     public void setIdColaboradorActualizo(Integer idColaboradorActualizo) {
         this.idColaboradorActualizo = idColaboradorActualizo;
+    }
+
+    public Integer getIdConductor() {
+        return idConductor;
+    }
+
+    public void setIdConductor(Integer idConductor) {
+        this.idConductor = idConductor;
     }
 
     public List<Paquete> getPaquetes() {
