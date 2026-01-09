@@ -48,7 +48,7 @@
             </children>
         </HBox>
 
-        <TableView fx:id="tvUnits" styleClass="custom-table"
+<TableView fx:id="tvUnits" styleClass="custom-table"
                    AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0"
                    AnchorPane.topAnchor="220.0" AnchorPane.bottomAnchor="30.0">
             <columns>
@@ -58,6 +58,7 @@
                 <TableColumn fx:id="colVIN" text="VIN" />
                 <TableColumn fx:id="colType" text="Tipo" />
                 <TableColumn fx:id="colNII" text="NII" />
+                <TableColumn fx:id="colReason" text="Motivo Baja" />
             </columns>
         </TableView>
     </children>

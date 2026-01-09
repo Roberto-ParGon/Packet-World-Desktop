@@ -12,6 +12,7 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -50,6 +51,8 @@ public class FXMLUnitsController implements Initializable {
     private TableColumn<Unit, String> colType;
     @FXML
     private TableColumn<Unit, String> colNII;
+    @FXML
+    private TableColumn<Unit, String> colReason;
 
     @FXML
     private Button btnEdit;
@@ -64,6 +67,7 @@ public class FXMLUnitsController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         configureTableColumns();
         configureTableSelection();
+        configureRowColoring();
         loadData();
         configureSearchFilter();
         tvUnits.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -76,6 +80,27 @@ public class FXMLUnitsController implements Initializable {
         colVIN.setCellValueFactory(new PropertyValueFactory<>("vin"));
         colType.setCellValueFactory(new PropertyValueFactory<>("type"));
         colNII.setCellValueFactory(new PropertyValueFactory<>("nii"));
+        colReason.setCellValueFactory(new PropertyValueFactory<>("deleteReason"));
+    }
+
+    private void configureRowColoring() {
+        tvUnits.setRowFactory(tv -> new TableRow<Unit>() {
+            @Override
+            protected void updateItem(Unit item, boolean empty) {
+                super.updateItem(item, empty);
+
+                getStyleClass().remove("inactive-row");
+
+                if (item == null || empty) {
+                } else {
+                    if (!item.isActive()) {
+                        if (!getStyleClass().contains("inactive-row")) {
+                            getStyleClass().add("inactive-row");
+                        }
+                    }
+                }
+            }
+        });
     }
 
     private void configureTableSelection() {
@@ -88,11 +113,18 @@ public class FXMLUnitsController implements Initializable {
 
         tvUnits.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             boolean isSelected = (newVal != null);
+
             if (btnEdit != null) {
                 btnEdit.setDisable(!isSelected);
             }
+
             if (btnDelete != null) {
-                btnDelete.setDisable(!isSelected);
+                if (isSelected) {
+
+                    btnDelete.setDisable(!newVal.isActive());
+                } else {
+                    btnDelete.setDisable(true);
+                }
             }
         });
     }
