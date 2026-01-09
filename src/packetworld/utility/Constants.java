@@ -9,7 +9,7 @@ package packetworld.utility;
  * @author Lenovo
  */
 public class Constants {
-    public static final String URL_WS="http://localhost:8080/APIPacketWorld/api/";
+    public static final String URL_WS="http://3.21.128.148:8080/APIPacketWorld/api/";
     public static final int ERROR_MALFORMED_URL = 1001;
     public static final int ERROR_REQUEST = 1002;
     public static final String POST_METHOD = "POST";
